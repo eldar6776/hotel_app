@@ -22,6 +22,7 @@ public class HotelProDbContext : DbContext
     public DbSet<Room> Rooms => Set<Room>();
     public DbSet<Tariff> Tariffs => Set<Tariff>();
     public DbSet<Amenity> Amenities => Set<Amenity>();
+    public DbSet<RoomOutOfOrder> RoomOutOfOrders => Set<RoomOutOfOrder>();
 
     // Guests & Partners
     public DbSet<Country> Countries => Set<Country>();
@@ -74,6 +75,7 @@ public class HotelProDbContext : DbContext
         modelBuilder.ApplyConfiguration(new RoomConfiguration());
         modelBuilder.ApplyConfiguration(new TariffConfiguration());
         modelBuilder.ApplyConfiguration(new AmenityConfiguration());
+        modelBuilder.ApplyConfiguration(new RoomOutOfOrderConfiguration());
 
         modelBuilder.ApplyConfiguration(new CountryConfiguration());
         modelBuilder.ApplyConfiguration(new GuestConfiguration());

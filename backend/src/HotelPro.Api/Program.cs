@@ -108,6 +108,10 @@ builder.Services.AddMemoryCache();
 builder.Services.AddScoped<IFeatureFlagService, FeatureFlagService>();
 builder.Services.AddSingleton<ITranslationService, TranslationService>();
 builder.Services.AddScoped<ITenantService, TenantService>();
+builder.Services.AddScoped<HotelPro.Core.Services.IRoomService, HotelPro.Infrastructure.Services.RoomService>();
+builder.Services.AddScoped<HotelPro.Core.Services.IRoomStatusBroadcaster, HotelPro.Api.Hubs.SignalRBroadcaster>();
+
+builder.Services.AddSignalR();
 
 // JWT Authentication
 var jwtSecret = builder.Configuration["HOTEL_JWT_SECRET"]
@@ -199,6 +203,8 @@ app.UseAuthentication();
 app.UseTenantResolution();
 app.UseAuthorization();
 app.MapControllers();
+
+app.MapHub<HotelPro.Api.Hubs.RoomStatusHub>("/hubs/room-status");
 
 app.InitializeDatabase();
 

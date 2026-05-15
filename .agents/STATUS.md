@@ -1,8 +1,8 @@
 # STATUS — HotelPRO
 
-**Trenutni Status:** Faza 4 COMPLETED — Frontend Foundation. Sljedeci: Faza 5 - Upravljanje Sobama.
+**Trenutni Status:** Faza 5 COMPLETED — Upravljanje Sobama. Sljedeci: Faza 6 - Rezervacije.
 **Datum:** 2026-05-16
-**Pokrivenost:** 89 taskova (Faze 1-18), Faze 1-4 COMPLETED, Faze 5-18 PENDING
+**Pokrivenost:** 93 taskova (Faze 1-18), Faze 1-5 COMPLETED, Faze 6-18 PENDING
 **Dokumentacija:** Svi FSD-ovi AUTHORITATIVE, task fajlovi sa legacy mapping sekcijama
 
 ---
@@ -49,10 +49,10 @@
 - [x] **T4.6: Interaktivni Help sistem (Context-Aware, Guided Tours)** - [COMPLETED 2026-05-16 - opencode (deepseek-v4-pro)]
 
 ### Faza 5: Upravljanje Sobama
-- [ ] **T5.1: CRUD API za sobe, tipove soba i zgrade**
-- [ ] **T5.2: Frontend — interaktivni pregled soba (Floor Plan / Grid)**
-- [ ] **T5.3: Status sobe u realnom vremenu (State Machine + SignalR)**
-- [ ] **T5.4: Upravljanje tarifama, sadrzajima i OOO statusom**
+- [x] **T5.1: CRUD API za sobe, tipove soba i zgrade** - [COMPLETED 2026-05-16 - opencode]
+- [x] **T5.2: Frontend — interaktivni pregled soba (Floor Plan / Grid)** - [COMPLETED 2026-05-16 - opencode]
+- [x] **T5.3: Status sobe u realnom vremenu (State Machine + SignalR)** - [COMPLETED 2026-05-16 - opencode]
+- [x] **T5.4: Upravljanje tarifama, sadrzajima i OOO statusom** - [COMPLETED 2026-05-16 - opencode]
 
 ### Faza 6: Rezervacije (Booking Engine)
 - [ ] **T6.1: CRUD API za rezervacije (pojedinacne i grupne)**
@@ -242,4 +242,41 @@ Sljedece grupe se mogu raditi istovremeno:
   - Auth layout: dodat HelpProvider za konzistentnost help sistema
 - **Build**: `npm run build` prolazi bez gresaka
 - **Lint**: `npm run lint` prolazi bez gresaka
+
+### 2026-05-16 — opencode — Faza 5 COMPLETED
+- **T5.1 COMPLETED**: CRUD API za sobe, tipove soba i zgrade
+  - DTO-ovi: RoomDto, CreateRoomDto, UpdateRoomDto, RoomTypeDto, BuildingDto, RoomFilter, PagedResult (u Core.DTOs)
+  - IRoomService + RoomService sa paginacijom, filterima, validacijom
+  - RoomsController: GET (sa filterima), GET/:id, POST, PUT, PATCH /:id/status, DELETE (soft)
+  - RoomTypesController: CRUD sa validacijom unique code-a
+  - BuildingsController: CRUD sa validacijom unique code-a
+  - RoomNumber unique po zgradi (vec postojeci index)
+  - RBAC: Admin/Manager/Reception/Housekeeping role
+- **T5.3 COMPLETED**: SignalR real-time status + State Machine
+  - RoomStatusTransitions state machine (Free→Reserved→Occupied→Dirty→Free, OOO/OOS tranzicije)
+  - RoomStatusHub (SignalR) sa hotel grupama i auto-join
+  - SignalRBroadcaster interface (Core) → implementacija (Api)
+  - Frontend SignalR klijent sa automatic reconnect (0, 2, 5, 10, 30s)
+  - Toast notifikacije na status change
+  - Real-time azuriranje RoomGrid bez refresh-a
+- **T5.4 COMPLETED**: Tarife, Sadrzaji, OOO management
+  - RoomOutOfOrder entitet + EF migracija
+  - TariffsController: CRUD sa validacijom (BasePrice > 0, ValidFrom < ValidTo)
+  - AmenitiesController: CRUD sa quick toggle
+  - RoomOutOfOrderController: create, list, update, resolve
+  - Automatska promjena RoomStatus na OOO create/resolve
+  - Frontend: /settings/tariffs (tabela + create forma)
+  - Frontend: /settings/amenities (grid kartica + toggle)
+- **T5.2 COMPLETED**: Frontend Room Grid/Floor Plan
+  - /rooms stranica sa Grid i Floor Plan view modom
+  - RoomCard komponenta sa color-coded statusom (6 statusa)
+  - RoomDetail modal sa Informacije/Status tabovima i status change
+  - FilterBar: status multi-select, building, floor, search, reset, refresh
+  - Status legenda iznad grid-a
+  - Responzivni grid (1→2→3→4 kolone)
+  - Skeleton loading state
+  - Sidebar: dodane /settings/tariffs i /settings/amenities rute
+- **Backend**: `dotnet build` prolazi (0 errors)
+- **Frontend**: `npm run build` + `npm run lint` prolaze bez gresaka
+- **Nove依赖nosti**: @microsoft/signalr (frontend), Microsoft.EntityFrameworkCore.Design (Api)
 - **Status**: Svi kritični propusti ispravljeni, Faza 4 potpuno verificirana

@@ -24,7 +24,9 @@ const sidebarItems: SidebarItemData[] = [
   { href: '/folio', icon: Receipt, label: 'Folio' },
   { href: '/housekeeping', icon: Sparkles, label: 'Housekeeping' },
   { href: '/reports', icon: BarChart3, label: 'Izvjestaji' },
-  { href: '/settings', icon: Settings, label: 'Postavke' },
+  { href: '/settings', icon: Settings, label: 'Postavke', helpId: 'sidebar-settings' },
+  { href: '/settings/tariffs', icon: Receipt, label: 'Tarife' },
+  { href: '/settings/amenities', icon: Sparkles, label: 'Sadrzaji' },
 ]
 
 export default function Sidebar() {
