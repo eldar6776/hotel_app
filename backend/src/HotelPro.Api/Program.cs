@@ -3,6 +3,7 @@ using HotelPro.Infrastructure.Data.Interceptors;
 using HotelPro.Infrastructure.BackgroundJobs;
 using HotelPro.Infrastructure.Services;
 using HotelPro.Core.Services;
+using HotelPro.Api.Extensions;
 using HotelPro.Api.Middleware;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -198,6 +199,8 @@ app.UseAuthentication();
 app.UseTenantResolution();
 app.UseAuthorization();
 app.MapControllers();
+
+app.InitializeDatabase();
 
 app.MapGet("/api/health", async ([FromServices] HotelProDbContext dbContext) =>
 {

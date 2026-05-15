@@ -1,0 +1,122 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    /* Primary: Blue */
+    --color-primary-50: 213 92% 95%;
+    --color-primary-100: 214 91% 87%;
+    --color-primary-200: 214 89% 74%;
+    --color-primary-300: 214 87% 58%;
+    --color-primary-400: 214 89% 48%;
+    --color-primary-500: 214 90% 42%;
+    --color-primary-600: 214 88% 36%;
+    --color-primary-700: 215 85% 30%;
+    --color-primary-800: 215 82% 24%;
+    --color-primary-900: 216 78% 18%;
+
+    /* Accent: Gold */
+    --color-accent-50: 42 100% 95%;
+    --color-accent-100: 42 96% 84%;
+    --color-accent-200: 42 93% 70%;
+    --color-accent-300: 42 90% 55%;
+    --color-accent-400: 42 92% 45%;
+    --color-accent-500: 42 90% 38%;
+    --color-accent-600: 42 85% 32%;
+    --color-accent-700: 42 80% 26%;
+    --color-accent-800: 42 75% 20%;
+    --color-accent-900: 42 70% 14%;
+
+    /* Status colors */
+    --color-success: 142 71% 45%;
+    --color-success-light: 142 71% 55%;
+    --color-success-dark: 142 71% 35%;
+
+    --color-warning: 38 92% 50%;
+    --color-warning-light: 38 92% 60%;
+    --color-warning-dark: 38 92% 40%;
+
+    --color-error: 0 84% 60%;
+    --color-error-light: 0 84% 70%;
+    --color-error-dark: 0 84% 50%;
+
+    /* Neutral / Surface */
+    --color-surface: 0 0% 100%;
+    --color-surface-secondary: 220 14% 96%;
+    --color-surface-tertiary: 220 13% 91%;
+    --color-border: 220 13% 85%;
+    --color-text: 220 15% 10%;
+    --color-text-secondary: 220 10% 45%;
+
+    /* Layout */
+    --sidebar-width: 280px;
+    --sidebar-collapsed-width: 64px;
+    --navbar-height: 64px;
+  }
+
+  .dark {
+    --color-surface: 220 18% 10%;
+    --color-surface-secondary: 220 16% 15%;
+    --color-surface-tertiary: 220 14% 20%;
+    --color-border: 220 13% 25%;
+    --color-text: 220 10% 90%;
+    --color-text-secondary: 220 10% 60%;
+  }
+}
+
+@theme inline {
+  --color-primary-50: hsl(var(--color-primary-50) / <alpha-value>);
+  --color-primary-100: hsl(var(--color-primary-100) / <alpha-value>);
+  --color-primary-200: hsl(var(--color-primary-200) / <alpha-value>);
+  --color-primary-300: hsl(var(--color-primary-300) / <alpha-value>);
+  --color-primary-400: hsl(var(--color-primary-400) / <alpha-value>);
+  --color-primary-500: hsl(var(--color-primary-500) / <alpha-value>);
+  --color-primary-600: hsl(var(--color-primary-600) / <alpha-value>);
+  --color-primary-700: hsl(var(--color-primary-700) / <alpha-value>);
+  --color-primary-800: hsl(var(--color-primary-800) / <alpha-value>);
+  --color-primary-900: hsl(var(--color-primary-900) / <alpha-value>);
+
+  --color-accent-50: hsl(var(--color-accent-50) / <alpha-value>);
+  --color-accent-100: hsl(var(--color-accent-100) / <alpha-value>);
+  --color-accent-200: hsl(var(--color-accent-200) / <alpha-value>);
+  --color-accent-300: hsl(var(--color-accent-300) / <alpha-value>);
+  --color-accent-400: hsl(var(--color-accent-400) / <alpha-value>);
+  --color-accent-500: hsl(var(--color-accent-500) / <alpha-value>);
+  --color-accent-600: hsl(var(--color-accent-600) / <alpha-value>);
+  --color-accent-700: hsl(var(--color-accent-700) / <alpha-value>);
+  --color-accent-800: hsl(var(--color-accent-800) / <alpha-value>);
+  --color-accent-900: hsl(var(--color-accent-900) / <alpha-value>);
+
+  --color-success: hsl(var(--color-success) / <alpha-value>);
+  --color-success-light: hsl(var(--color-success-light) / <alpha-value>);
+  --color-success-dark: hsl(var(--color-success-dark) / <alpha-value>);
+
+  --color-warning: hsl(var(--color-warning) / <alpha-value>);
+  --color-warning-light: hsl(var(--color-warning-light) / <alpha-value>);
+  --color-warning-dark: hsl(var(--color-warning-dark) / <alpha-value>);
+
+  --color-error: hsl(var(--color-error) / <alpha-value>);
+  --color-error-light: hsl(var(--color-error-light) / <alpha-value>);
+  --color-error-dark: hsl(var(--color-error-dark) / <alpha-value>);
+
+  --color-surface: hsl(var(--color-surface) / <alpha-value>);
+  --color-surface-secondary: hsl(var(--color-surface-secondary) / <alpha-value>);
+  --color-surface-tertiary: hsl(var(--color-surface-tertiary) / <alpha-value>);
+  --color-border: hsl(var(--color-border) / <alpha-value>);
+  --color-text: hsl(var(--color-text) / <alpha-value>);
+  --color-text-secondary: hsl(var(--color-text-secondary) / <alpha-value>);
+
+  --font-sans: var(--font-inter), system-ui, sans-serif;
+
+  --spacing-4-5: 1.125rem;
+  --spacing-18: 4.5rem;
+  --spacing-88: 22rem;
+  --spacing-100: 25rem;
+  --spacing-120: 30rem;
+
+  --radius-4xl: 2rem;
+}
+
+body {
+  background: hsl(var(--color-surface-secondary) / 1);
+  color: hsl(var(--color-text) / 1);
+}

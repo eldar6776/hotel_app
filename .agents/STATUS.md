@@ -41,12 +41,12 @@
 - [x] **T3.3: Multi-tenant podrska (vise hotela, jedan sistem)** - [COMPLETED 2026-05-15 - opencode]
 
 ### Faza 4: Frontend Foundation
-- [ ] **T4.1: Inicijalizacija Next.js projekta sa Tailwind CSS**
-- [ ] **T4.2: Design System — boje, tipografija, spacing, Dark Mode**
-- [ ] **T4.3: Layout — Sidebar navigacija, Navbar, responzivnost**
-- [ ] **T4.4: Login stranica i JWT integracija**
-- [ ] **T4.5: Dashboard stranica sa KPI karticama**
-- [ ] **T4.6: Interaktivni Help sistem (Context-Aware, Guided Tours)**
+- [-] **T4.1: Inicijalizacija Next.js projekta sa Tailwind CSS** - [IN_PROGRESS] - 2026-05-16 - opencode (deepseek-v4-pro)
+- [-] **T4.2: Design System — boje, tipografija, spacing, Dark Mode** - [IN_PROGRESS] - 2026-05-16 - opencode (deepseek-v4-pro)
+- [-] **T4.3: Layout — Sidebar navigacija, Navbar, responzivnost** - [IN_PROGRESS] - 2026-05-16 - opencode (deepseek-v4-pro)
+- [-] **T4.4: Login stranica i JWT integracija** - [IN_PROGRESS] - 2026-05-16 - opencode (deepseek-v4-pro)
+- [-] **T4.5: Dashboard stranica sa KPI karticama** - [IN_PROGRESS] - 2026-05-16 - opencode (deepseek-v4-pro)
+- [-] **T4.6: Interaktivni Help sistem (Context-Aware, Guided Tours)** - [IN_PROGRESS] - 2026-05-16 - opencode (deepseek-v4-pro)
 
 ### Faza 5: Upravljanje Sobama
 - [ ] **T5.1: CRUD API za sobe, tipove soba i zgrade**
