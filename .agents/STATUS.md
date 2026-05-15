@@ -14,10 +14,10 @@
 - [x] **T0.2: Reorganizacija foldera i .agents struktura** - [COMPLETED] - 2026-05-15 - Antigravity (Claude Opus)
 
 ### Faza 1: Infrastruktura i DevOps
-- [-] **T1.1: Docker Compose za PostgreSQL 18 i dev okruzenje** - [IN_PROGRESS] - 2026-05-15 - opencode
-- [ ] **T1.2: .gitignore, EditorConfig i CI osnova**
-- [ ] **T1.3: Environment varijable i secrets management**
-- [ ] **T1.4: Automatski backup (Docker + S3) i restore procedura**
+- [x] **T1.1: Docker Compose za PostgreSQL 18 i dev okruzenje** - [COMPLETED 2026-05-15 - opencode]
+- [x] **T1.2: .gitignore, EditorConfig i CI osnova** - [COMPLETED 2026-05-15 - opencode]
+- [x] **T1.3: Environment varijable i secrets management** - [COMPLETED 2026-05-15 - opencode]
+- [x] **T1.4: Automatski backup (Docker + S3) i restore procedura** - [COMPLETED 2026-05-15 - opencode]
 
 ### Faza 2: Backend Foundation
 - [ ] **T2.1: Inicijalizacija .NET 8 Web API projekta**
@@ -177,3 +177,30 @@ Sljedece grupe se mogu raditi istovremeno:
 - FSD_03_FRONTEND_FOUNDATION.md prosiren sa legacy UI mapping, routing strukturom, state management, API client konfiguracijom
 - Dodate legacy-to-new mapping sekcije u kljucne taskove: T5.1, T6.1, T7.1, T8.1, T9.1, T10.1, T11.1, T13.1, T14.1, T15.1, T16.1, T17.1, T18.1
 - TASK_DEPENDENCIES.md azuriran sa T12.4 zavisnostima (PABX/CDR → T12.1 + T7.1)
+
+### 2026-05-15 — opencode
+- **T1.1 COMPLETED**: Kreiran `infrastructure/docker-compose.yml` sa PostgreSQL 18 i backup servisom
+- Kreiran `infrastructure/.env.example` sa svim potrebnim varijablama
+- Kreiran `infrastructure/README.md` sa uputstvima
+- Kreiran `infrastructure/scripts/generate-secrets.ps1` za generisanje secret vrijednosti
+- Kreiran `infrastructure/backup/restore.ps1` za restore procedure
+- Kreiran `infrastructure/backup/sync-to-s3.ps1` za opciono S3 backup
+- Kreiran `infrastructure/backup/README.md` sa backup dokumentacijom
+
+### 2026-05-15 — opencode
+- **T1.2 COMPLETED**: Azuriran root `.gitignore` sa svim potrebnim obrascima
+- Kreiran root `.editorconfig` sa ispravnim postavkama za C#, JS/TS, CSS, JSON
+
+### 2026-05-15 — opencode
+- **T1.3 COMPLETED**: `infrastructure/.env.example` sadrzi sve varijable
+- `infrastructure/scripts/generate-secrets.ps1` generise JWT_SECRET, ADMIN_PASSWORD, SMTP_PASSWORD
+- `.gitignore` sadrzi `.env`, `.secrets/`, `*.key` obrasce
+- `docker-compose.yml` koristi `env_file: .env` za ucitavanje varijabli
+
+### 2026-05-15 — opencode
+- **T1.4 COMPLETED**: `docker-compose.yml` sadrzi backup servis sa `prodrigestivill/postgres-backup-local:18`
+- Backup se pokrece na schedule-u @daily (03:00), cuva 30 dana
+- `infrastructure/backup/restore.ps1` podrzava .dump i .sql.gz formate sa potvrdom
+- `infrastructure/backup/sync-to-s3.ps1` za opciono S3 sync
+- `infrastructure/backup/README.md` sa kompletnom dokumentacijom
+- Kreirana `infrastructure/backups/daily/` struktura

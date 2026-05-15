@@ -2,6 +2,10 @@
 # ne izvrsava se, ne mijenja se, ne treba u git-u
 legacy_app/
 
+# Legacy build artifacts (ignorisi samo artefakte, ne source)
+legacy_app/bin/
+legacy_app/obj/
+
 # Visual Studio
 *.suo
 *.user
@@ -38,3 +42,19 @@ out/
 .env
 .env.local
 .env.production
+.secrets/
+*.key
+
+# IDE
+.idea/
+*.swp
+*.swo
+*~
+
+# Docker
+*.log
+
+# Test coverage
+coverage/
+*.coverage
+*.coveragexml
