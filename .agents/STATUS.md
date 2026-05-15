@@ -230,3 +230,16 @@ Sljedece grupe se mogu raditi istovremeno:
 - Build: `npm run build` prolazi bez gresaka, `npm run lint` prolazi
 - Rute: `/`, `/login`, `/dashboard`, proxy middleware za autentifikaciju
 - Tailwind v4 CSS-first konfiguracija (@theme inline), middleware → proxy (Next.js 16 breaking change)
+
+### 2026-05-16 — opencode (kimi-k2.6) — Faza 4 Review & Fixes
+- **Review**: Identifikovani propusti u T4.3 (tour target bug), T4.5 (refresh interval), T4.6 (HelpTooltip nedostaci)
+- **Popravke primijenjene**:
+  - HelpProvider: auto-disable help mode nakon 30s neaktivnosti (timer + event reset)
+  - SidebarItem: `id` → `data-help-id` za ispravne tour targete
+  - HelpTooltip: integrisan u KpiCard, Login formu, Navbar search
+  - Keyboard shortcuts: `?` (toggle help mode), `Ctrl+Enter` (login submit)
+  - Dashboard: grid popravljen na 3 kolone, refresh interval pauzira na hidden tab
+  - Auth layout: dodat HelpProvider za konzistentnost help sistema
+- **Build**: `npm run build` prolazi bez gresaka
+- **Lint**: `npm run lint` prolazi bez gresaka
+- **Status**: Svi kritični propusti ispravljeni, Faza 4 potpuno verificirana

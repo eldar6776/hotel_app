@@ -1,4 +1,5 @@
 import { type LucideIcon } from 'lucide-react'
+import { HelpTooltip } from '@/components/help/HelpTooltip'
 
 interface KpiCardProps {
   icon: LucideIcon
@@ -18,7 +19,7 @@ const colorClasses: Record<string, { bg: string; text: string }> = {
 }
 
 export default function KpiCard({ icon: Icon, label, value, trend, color, helpId }: KpiCardProps) {
-  return (
+  const card = (
     <div
       data-help-id={helpId}
       className="rounded-xl bg-surface p-4 shadow-sm border border-border"
@@ -43,4 +44,10 @@ export default function KpiCard({ icon: Icon, label, value, trend, color, helpId
       </div>
     </div>
   )
+
+  if (helpId) {
+    return <HelpTooltip id={helpId}>{card}</HelpTooltip>
+  }
+
+  return card
 }

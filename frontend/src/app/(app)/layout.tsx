@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { AuthGuard } from '@/components/auth/AuthGuard'
 import AppLayout from '@/components/layout/AppLayout'
 import { HelpProvider, useHelp } from '@/components/help/HelpProvider'
@@ -35,6 +35,26 @@ function AppShell({ children }: { children: React.ReactNode }) {
   const handleSearchOpen = useCallback(() => {
     setCommandOpen(true)
   }, [])
+
+  // Global keyboard shortcuts
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      // ? toggles help mode (avoid when typing in inputs)
+      if (
+        e.key === '?' &&
+        !e.ctrlKey &&
+        !e.metaKey &&
+        !['INPUT', 'TEXTAREA', 'SELECT'].includes(
+          (e.target as HTMLElement)?.tagName || ''
+        )
+      ) {
+        e.preventDefault()
+        toggleHelpMode()
+      }
+    }
+    window.addEventListener('keydown', handler)
+    return () => window.removeEventListener('keydown', handler)
+  }, [toggleHelpMode])
 
   return (
     <>

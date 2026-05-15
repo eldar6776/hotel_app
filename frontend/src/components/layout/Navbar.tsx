@@ -5,6 +5,7 @@ import { useSidebar } from '@/components/layout/SidebarContext'
 import { useTheme } from '@/components/providers/ThemeProvider'
 import NavbarUserMenu from '@/components/layout/NavbarUserMenu'
 import Breadcrumbs from '@/components/layout/Breadcrumbs'
+import { HelpTooltip } from '@/components/help/HelpTooltip'
 
 interface NavbarProps {
   onHelpToggle?: () => void
@@ -28,18 +29,20 @@ export default function Navbar({ onHelpToggle, onSearchOpen }: NavbarProps) {
       <Breadcrumbs />
 
       <div className="ml-auto flex items-center gap-1">
-        <button
-          onClick={onSearchOpen}
-          className="inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-text-secondary hover:bg-surface-secondary dark:hover:bg-surface-tertiary transition-colors"
-          id="navbar-search"
-          title="Pretraga (Ctrl+K)"
-        >
-          <Search className="h-4 w-4" />
-          <span className="hidden lg:inline">Pretraga...</span>
-          <kbd className="hidden lg:inline-flex items-center rounded bg-surface-tertiary px-1.5 py-0.5 text-xs text-text-secondary">
-            Ctrl+K
-          </kbd>
-        </button>
+        <HelpTooltip id="navbar-search">
+          <button
+            onClick={onSearchOpen}
+            className="inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-text-secondary hover:bg-surface-secondary dark:hover:bg-surface-tertiary transition-colors"
+            id="navbar-search"
+            title="Pretraga (Ctrl+K)"
+          >
+            <Search className="h-4 w-4" />
+            <span className="hidden lg:inline">Pretraga...</span>
+            <kbd className="hidden lg:inline-flex items-center rounded bg-surface-tertiary px-1.5 py-0.5 text-xs text-text-secondary">
+              Ctrl+K
+            </kbd>
+          </button>
+        </HelpTooltip>
 
         <button
           onClick={toggleTheme}

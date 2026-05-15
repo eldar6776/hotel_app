@@ -1,12 +1,13 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Hotel } from 'lucide-react'
 import Input from '@/components/ui/Input'
 import Button from '@/components/ui/Button'
 import Checkbox from '@/components/ui/Checkbox'
 import Alert from '@/components/ui/Alert'
+import { HelpTooltip } from '@/components/help/HelpTooltip'
 import { authService } from '@/lib/auth/auth-service'
 import { tokenStorage } from '@/lib/auth/token-storage'
 
@@ -51,6 +52,19 @@ export default function LoginPage() {
     }
   }
 
+  // Ctrl+Enter shortcut to submit form
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.ctrlKey && e.key === 'Enter') {
+        e.preventDefault()
+        const form = document.getElementById('login-form') as HTMLFormElement | null
+        if (form) form.requestSubmit()
+      }
+    }
+    window.addEventListener('keydown', handler)
+    return () => window.removeEventListener('keydown', handler)
+  }, [])
+
   return (
     <div className="w-full max-w-md rounded-xl bg-surface p-8 shadow-lg border border-border">
       <div className="mb-8 text-center">
@@ -61,8 +75,8 @@ export default function LoginPage() {
         <p className="mt-2 text-sm text-text-secondary">Prijava u sistem</p>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div data-help-id="login-email">
+      <form id="login-form" onSubmit={handleSubmit} className="space-y-4">
+        <HelpTooltip id="login-email">
           <Input
             label="Email"
             type="email"
@@ -72,9 +86,9 @@ export default function LoginPage() {
             autoComplete="email"
             required
           />
-        </div>
+        </HelpTooltip>
 
-        <div data-help-id="login-password">
+        <HelpTooltip id="login-password">
           <Input
             label="Lozinka"
             type="password"
@@ -84,15 +98,15 @@ export default function LoginPage() {
             autoComplete="current-password"
             required
           />
-        </div>
+        </HelpTooltip>
 
-        <div data-help-id="login-remember">
+        <HelpTooltip id="login-remember">
           <Checkbox
             label="Zapamti me"
             checked={remember}
             onChange={setRemember}
           />
-        </div>
+        </HelpTooltip>
 
         {error && <Alert type="error">{error}</Alert>}
 

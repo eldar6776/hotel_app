@@ -73,24 +73,43 @@ export default function DashboardPage() {
 
   useEffect(() => {
     let cancelled = false
-    const interval = setInterval(() => {
-      dashboardService.getKpi().then((data) => {
-        if (!cancelled) setKpi(data)
-      }).catch(() => {})
-    }, 60000)
+    let interval: ReturnType<typeof setInterval> | null = null
+
+    const startInterval = () => {
+      if (interval) return
+      interval = setInterval(() => {
+        dashboardService.getKpi().then((data) => {
+          if (!cancelled) setKpi(data)
+        }).catch(() => {})
+      }, 60000)
+    }
+
+    const stopInterval = () => {
+      if (interval) {
+        clearInterval(interval)
+        interval = null
+      }
+    }
 
     const handleVisibility = () => {
       if (document.visibilityState === 'visible') {
         dashboardService.getKpi().then((data) => {
           if (!cancelled) setKpi(data)
         }).catch(() => {})
+        startInterval()
+      } else {
+        stopInterval()
       }
+    }
+
+    if (document.visibilityState === 'visible') {
+      startInterval()
     }
 
     document.addEventListener('visibilitychange', handleVisibility)
     return () => {
       cancelled = true
-      clearInterval(interval)
+      stopInterval()
       document.removeEventListener('visibilitychange', handleVisibility)
     }
   }, [])
@@ -205,10 +224,7 @@ export default function DashboardPage() {
         </p>
       </div>
 
-      <div
-        data-help-id="dashboard-kpi"
-        className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4"
-      >
+      <div data-help-id="dashboard-kpi" className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {kpiCards.map((card) => (
           <KpiCard key={card.label} {...card} />
         ))}
