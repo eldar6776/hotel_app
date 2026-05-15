@@ -1,5 +1,6 @@
 using HotelPro.Core.Entities;
 using HotelPro.Core.Enums;
+using HotelPro.Core.Helpers;
 using BCrypt.Net;
 
 namespace HotelPro.Infrastructure.Data;
@@ -80,7 +81,7 @@ public static class SeedData
                     LastName = "User",
                     Email = "admin@hotelpro.local",
                     Role = EmployeeRole.Admin,
-                    PinHash = BCrypt.Net.BCrypt.HashPassword("123456"),
+                    PinHash = PinHelper.HashPin("123456"),
                     PasswordHash = BCrypt.Net.BCrypt.HashPassword("admin123"),
                     IsActive = true,
                     CanLogin = true,
@@ -94,7 +95,7 @@ public static class SeedData
                     LastName = "User",
                     Email = "reception@hotelpro.local",
                     Role = EmployeeRole.Reception,
-                    PinHash = BCrypt.Net.BCrypt.HashPassword("654321"),
+                    PinHash = PinHelper.HashPin("654321"),
                     PasswordHash = BCrypt.Net.BCrypt.HashPassword("reception123"),
                     IsActive = true,
                     CanLogin = true,
@@ -108,7 +109,7 @@ public static class SeedData
                     LastName = "User",
                     Email = "manager@hotelpro.local",
                     Role = EmployeeRole.Manager,
-                    PinHash = BCrypt.Net.BCrypt.HashPassword("111222"),
+                    PinHash = PinHelper.HashPin("111222"),
                     PasswordHash = BCrypt.Net.BCrypt.HashPassword("manager123"),
                     IsActive = true,
                     CanLogin = true,

@@ -239,5 +239,14 @@ public class SessionCleanupJob : ScheduledJobBase
             db.AccessLogs.RemoveRange(oldLogs);
             await db.SaveChangesAsync(ct);
         }
+
+        var expiredTokens = await db.RefreshTokens
+            .Where(rt => rt.ExpiresAt < cutoff || (rt.IsRevoked && rt.CreatedAt < cutoff))
+            .ToListAsync(ct);
+        if (expiredTokens.Count > 0)
+        {
+            db.RefreshTokens.RemoveRange(expiredTokens);
+            await db.SaveChangesAsync(ct);
+        }
     }
 }

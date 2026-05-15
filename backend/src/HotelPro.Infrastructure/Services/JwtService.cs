@@ -5,6 +5,7 @@ using HotelPro.Core.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
+using BCrypt.Net;
 
 namespace HotelPro.Infrastructure.Services;
 
@@ -83,5 +84,15 @@ public class JwtService : IJwtService
         {
             return null;
         }
+    }
+
+    public bool VerifyPassword(string password, string passwordHash)
+    {
+        return BCrypt.Net.BCrypt.Verify(password, passwordHash);
+    }
+
+    public string HashPassword(string password)
+    {
+        return BCrypt.Net.BCrypt.HashPassword(password);
     }
 }

@@ -218,7 +218,3 @@ app.MapGet("/api/health", async ([FromServices] HotelProDbContext dbContext) =>
 app.Run();
 
 public partial class Program { }
-
-public record LoginRequest(string Email, string Password);
-public record RefreshRequest(string RefreshToken);
-public record AuthResponse(string AccessToken, string RefreshToken, DateTime ExpiresAt, string Role, string Name);

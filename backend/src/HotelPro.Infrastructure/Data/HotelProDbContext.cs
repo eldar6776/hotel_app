@@ -140,7 +140,7 @@ public class HotelProDbContext : DbContext
             {
                 var parameter = Expression.Parameter(entityType.ClrType, "e");
                 var property = Expression.Property(parameter, "HotelId");
-                var method = GetType().GetMethod("GetCurrentTenantId", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)!;
+                var method = typeof(HotelProDbContext).GetMethod(nameof(GetCurrentTenantId), System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)!;
                 var call = Expression.Call(Expression.Constant(this), method);
                 var equal = Expression.Equal(property, call);
                 var lambda = Expression.Lambda(equal, parameter);

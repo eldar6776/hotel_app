@@ -17,7 +17,7 @@ public class TenantResolutionMiddleware
     {
         var path = context.Request.Path.Value?.ToLowerInvariant();
 
-        if (path != null && (path.StartsWith("/health") || path.StartsWith("/api/auth")))
+        if (path != null && (path == "/health" || path == "/api/health" || path.StartsWith("/api/auth")))
         {
             await _next(context);
             return;

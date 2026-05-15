@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using HotelPro.Core.Services;
 using HotelPro.Infrastructure.Data;
-using BCrypt.Net;
 using Microsoft.EntityFrameworkCore;
 using Asp.Versioning;
 
@@ -39,7 +38,7 @@ public class AuthController : ControllerBase
             return Unauthorized(new { error = "InvalidCredentials", message = "Invalid email or password" });
         }
 
-        if (!BCrypt.Net.BCrypt.Verify(request.Password, employee.PasswordHash))
+        if (!_jwtService.VerifyPassword(request.Password, employee.PasswordHash))
         {
             _logger.LogWarning("Invalid password for user: {Email}", request.Email);
             return Unauthorized(new { error = "InvalidCredentials", message = "Invalid email or password" });
