@@ -1,9 +1,9 @@
-# FSD 09: Izvještaji i Statistika
+﻿# FSD 09: Izvještaji i Statistika
 
 ## Status analize
 - **Fajlovi za analizu:** `frmIzvjestaji.vb`, `frmIzvjestajiDnevni.vb`, `OdjavaReport.vb`, `TelReport.vb`, `ModuleKod.vb` (SQL funkcije)
 - **Tabele za analizu:** `printracuni`, `printracunidetalji`, `printracuniavans`, `nocenja`, `relgostsoba`
-- **Status:** CORRECTED
+- **Status:** AUTHORITATIVE
 - **Analizirao:** 2026-05-15
 
 ## 1. Pregled modula

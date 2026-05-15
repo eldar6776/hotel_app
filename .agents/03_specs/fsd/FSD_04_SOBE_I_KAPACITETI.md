@@ -1,9 +1,9 @@
-# FSD 04: Sobe i Kapaciteti
+﻿# FSD 04: Sobe i Kapaciteti
 
 ## Status analize
 - **Fajlovi za analizu:** `frmSobe.vb`, `frmSobaInfo.vb`, `frmSobaInfoPromjena.vb`, `ModuleKod.vb`
 - **Tabele za analizu:** `sobe`, `sobavrsta`, `zgrade`, `sobatarifa`, `sobasadrzaji`, `relgostsoba`
-- **Status:** IN_PROGRESS
+- **Status:** AUTHORITATIVE
 - **Analizirao:** 2026-05-15 - Antigravity (Claude Sonnet 3.5)
 
 ## 1. Pregled modula

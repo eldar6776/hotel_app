@@ -1,9 +1,9 @@
-# FSD 06: Recepcija i Folio
+﻿# FSD 06: Recepcija i Folio
 
 ## Status analize
 - **Fajlovi za analizu:** `frmPrijava1.vb`, `frmOdjava1.vb`, `frmTroskovi.vb`, `frmTroskoviNoc.vb`
 - **Tabele za analizu:** `folio`, `nocenja`, `troskovi`, `troskovipojedinacni`, `troskovisuma`, `troskovivrste`, `posjetafolio`, `neplaceni`
-- **Status:** IN_PROGRESS
+- **Status:** AUTHORITATIVE
 - **Analizirao:** 2026-05-15 - Antigravity (Claude Sonnet 3.5)
 
 ## 1. Pregled modula

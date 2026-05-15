@@ -1,9 +1,9 @@
-# FSD 11: Hardver Integracije (RFID i Kontroleri)
+﻿# FSD 11: Hardver Integracije (RFID i Kontroleri)
 
 ## Status analize
 - **Fajlovi za analizu:** `classKard.vb`, `frmUpisKard.vb`
 - **Tabele za analizu:** `logcont`, `sobe` (polje `idkon`)
-- **Status:** COMPLETED
+- **Status:** AUTHORITATIVE
 - **Analizirao:** 2026-05-15 - Antigravity (Claude Sonnet 3.5)
 
 ## 1. Pregled modula
@@ -56,16 +56,16 @@ Sistem rigorozno prati odgovore enkodera:
 - **Master kartica**: Sobarice imaju pristup cijelim spratovima/zgradama.
 - **Prekid komunikacije (`NC`)**: Ako mrežna veza sa enkoderom pukne, sistem mora obavijestiti korisnika da kartica NIJE kodirana iako je check-in u bazi možda uspio.
 
-## 6. Otvorena pitanja (rije�ena)
+## 6. Otvorena pitanja (rije�ena)
 
 ### OQ-08-001: RFID enkoder
-Hotel ima sopstveno vlasnicko rje�enje (proprietary C# kod). Enkoder je Mifare karticni reader/writer koji upisuje podatke u sektore kartice. Nije eksterni .exe fajl � integrisan je direktno u aplikaciju kroz klase `classKard.vb` i `kard_imedia.vb`.
+Hotel ima sopstveno vlasnicko rje�enje (proprietary C# kod). Enkoder je Mifare karticni reader/writer koji upisuje podatke u sektore kartice. Nije eksterni .exe fajl � integrisan je direktno u aplikaciju kroz klase `classKard.vb` i `kard_imedia.vb`.
 
 ### OQ-08-002: Mobilni kljuc (BLE)
-NE � sistem ne treba podr�avati BLE mobilni kljuc.
+NE � sistem ne treba podr�avati BLE mobilni kljuc.
 
 ### RS485 kontroler soba
-- HTTP bridge: 1 bridge po hotelu (pooling za vi�e zgrada)
+- HTTP bridge: 1 bridge po hotelu (pooling za vi�e zgrada)
 - Maksimalno 370 kontrolera soba na jednom RS485 busu
 - Svi kontroleri su na jednom RS485 bus-u spojeni na jedan HTTP?RS485 bridge
 - Bridge u sebi ima listu svih adresa i sam radi polling i transfer logova
@@ -96,7 +96,7 @@ public class MockRoomControl : IRoomControl
     public Task SetTemperatureAsync(string roomId, double temp, double hyst)
     {
         _rooms[roomId].TargetTemperature = temp;
-        return Task.CompletedTask;
+        return Task.AUTHORITATIVETask;
     }
 
     public Task<RoomStatus> ReadStatusAsync(string roomId)
@@ -223,8 +223,8 @@ Predefinisani eventi:
 booking.created      → Channel Manager (Booking.com, Airbnb)
 booking.cancelled    → Channel Manager
 booking.modified     → Channel Manager
-checkin.completed    → POS, Housekeeping
-checkout.completed   → POS, Payment Gateway
+checkin.AUTHORITATIVE    → POS, Housekeeping
+checkout.AUTHORITATIVE   → POS, Payment Gateway
 payment.received     → Payment Gateway
 room.status.changed  → Housekeeping
 rate.plan.updated    → Revenue Management

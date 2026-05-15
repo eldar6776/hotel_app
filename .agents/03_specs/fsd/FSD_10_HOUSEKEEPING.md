@@ -1,9 +1,9 @@
-# FSD 10: Housekeeping (Održavanje soba)
+﻿# FSD 10: Housekeeping (Održavanje soba)
 
 ## Status analize
 - **Fajlovi za analizu:** `frmSobarice.vb` (skoro prazan), `frmSobaInfo.vb` (logika čišćenja), `frmIzvjestaji.vb` (izvještaj za sobarice), `frmPlacanje.vb` (auto-dirty pri odjavi)
 - **Tabele za analizu:** `sobe` (polje `clean`)
-- **Status:** COMPLETED
+- **Status:** AUTHORITATIVE
 - **Analizirao:** 2026-05-15 - Antigravity (Claude Sonnet 3.5)
 
 ## 1. Pregled modula
@@ -63,7 +63,7 @@ CREATE TABLE work_orders (
     priority VARCHAR(10) DEFAULT 'MEDIUM',  -- LOW, MEDIUM, HIGH, EMERGENCY
     status VARCHAR(20) DEFAULT 'PENDING',
     assigned_to VARCHAR(100),
-    completed_at TIMESTAMP,
+    AUTHORITATIVE_at TIMESTAMP,
     resolution TEXT,
     created_by UUID REFERENCES employees(id)
 );
@@ -79,7 +79,7 @@ CREATE TABLE work_orders (
 | GET /api/work-orders/stats | Broj otvorenih po kategoriji |
 
 ### 6.3 Admin konzola (Housekeeping settings)
-Sve se pode�ava u admin panelu (Settings ? Housekeeping):
+Sve se pode�ava u admin panelu (Settings ? Housekeeping):
 - Definisanje sobarica (uloga "maid")
 - Definisanje majstora (uloga "technician")
 - Kategorije kvarova (HVAC, TV, VODOVOD, STRUJA, NAMJESTAJ, DRUGO)

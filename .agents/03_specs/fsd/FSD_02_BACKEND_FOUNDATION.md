@@ -1,4 +1,4 @@
-# FSD 2: Backend Foundation
+ï»¿# FSD 2: Backend Foundation
 
 Status: AUTHORITATIVE
 Last validated: 2026-05-15
@@ -196,23 +196,23 @@ public class LegacyMigrator
 Stara MySQL shema: `legacy_app/novaBazaJHotel 20150602 0848.sql`
 Stara aplikacija: `legacy_app/Radna.sln`
 
-## 9. Audit log
+## 10. Audit log
 
-### 9.1 Konfiguracija (admin panel)
-Sve postavke se podešavaju u admin konzoli (Settings ? Audit):
+### 10.1 Konfiguracija (admin panel)
+Sve postavke se podeï¿½avaju u admin konzoli (Settings ? Audit):
 - Ukljucivanje/iskljucivanje audit-a po tabeli (checkboxes za svaki entitet)
 - Rok cuvanja: podesiv (default 90 dana aktivni + 5 godina arhiva)
-- Cirkularno logiranje za lokalni fajl sistem (kad fajl dostigne max velicinu, briše se najstariji zapis)
+- Cirkularno logiranje za lokalni fajl sistem (kad fajl dostigne max velicinu, briï¿½e se najstariji zapis)
 
-### 9.2 Šta se auditira
+### 10.2 ï¿½ta se auditira
 Minimalno: finansijske transakcije, check-in/out, promjene na rezervacijama, kreiranje/izmjena gostiju.
 Opciono (per tabela): svaka CRUD operacija na svim entitetima.
 
-### 9.3 Lokacija
+### 10.3 Lokacija
 Ista baza, tabela `audit_logs` sa JSONB poljima.
 Lokalni fajl sistem: cirkularni log fajl (`/data/hotelpro/logs/audit.log`) kao dodatna opcija.
 
-## 10. Scheduled Tasks (Background Jobs)
+## 11. Scheduled Tasks (Background Jobs)
 
 Sistemski taskovi koji se izvrsavaju automatski, bez ljudske intervencije.
 
@@ -241,7 +241,7 @@ public class NoShowDetectionJob : IJob
 }
 ```
 
-## 11. Feature Flags â€” postepeno uvodjenje funkcionalnosti
+## 12. Feature Flags â€” postepeno uvodjenje funkcionalnosti
 
 In-house hoteli ne upgrade-uju svi istovremeno. Feature flags omogucavaju postepeno uvodjenje.
 
@@ -285,7 +285,7 @@ public class FeatureFlagService
 }
 ```
 
-## 12. Multi-language
+## 13. Multi-language
 
 Hoteli u razlicitim regijama zahtijevaju razlicite jezike.
 
@@ -306,7 +306,7 @@ public interface ITranslationService
 }
 ```
 
-## 13. Restrikcije
+## 14. Restrikcije
 
 - Ne kopirati staru shemu doslovno â€” modernizovati imenovanje i tipove
 - Ne koristiti stored procedure â€” sva logika u C# servisu

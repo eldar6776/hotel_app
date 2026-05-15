@@ -1,9 +1,9 @@
-# FSD 12: Telefonska Centrala (PABX Integracija)
+ï»¿# FSD 12: Telefonska Centrala (PABX Integracija)
 
 ## Status analize
 - **Fajlovi za analizu:** `frmTarifaPozivi.vb`, `frmTarifaPoziviNovo.vb`
 - **Tabele za analizu:** `telpozivi`, `telpozivi_stara`, `telefonskiimenik`
-- **Status:** COMPLETED
+- **Status:** AUTHORITATIVE
 - **Analizirao:** 2026-05-15 - Antigravity (Claude Sonnet 3.5)
 
 ## 1. Pregled modula
@@ -54,13 +54,13 @@ graph TD
 - **Dugi pozivi**: Pozivi koji traju preko ponoÄ‡i (retko, ali moguÄ‡e).
 - **Besplatni pozivi**: Lokalni pozivi unutar hotela ili hitne sluÅ¾be koji imaju cenu 0.
 
-## 6. Otvorena pitanja (riješena)
+## 6. Otvorena pitanja (rijeï¿½ena)
 
 ### OQ-07-001: telpozivi podaci
-U legacy kodu se mora nalaziti serial driver koji cita podatke sa telefonske centrale (slicno kao RFID enkoder — direktna serijska komunikacija, ne eksterni middleware).
+U legacy kodu se mora nalaziti serial driver koji cita podatke sa telefonske centrale (slicno kao RFID enkoder ï¿½ direktna serijska komunikacija, ne eksterni middleware).
 
 ### OQ-07-002: Wake-up call
-Potrebno provjeriti da li je ovo riješeno u legacy kodu ili treba nova implementacija.
+Potrebno provjeriti da li je ovo rijeï¿½eno u legacy kodu ili treba nova implementacija.
 
 ## 7. Preporuke za novi sistem
 - **IP-PBX Integracija**: Novi sistem bi trebao direktno komunicirati sa modernim IP centralama (npr. Asterisk, 3CX) putem API-ja ili Webhook-ova.

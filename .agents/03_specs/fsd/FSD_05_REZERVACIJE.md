@@ -1,9 +1,9 @@
-# FSD 05: Rezervacije (PMS Core)
+﻿# FSD 05: Rezervacije (PMS Core)
 
 ## Status analize
 - **Fajlovi za analizu:** `frmRezervacije.vb`, `frmRezervacije_unos.vb`, `frmRezervacijeNove.vb`, `frmRezervacijePregled.vb`, `frmRezervacijePrebaci.vb`
 - **Tabele za analizu:** `rezervacije`, `rezervacije1`, `rezervacijegrupe`, `rezervacijasobe`, `rezervacijasobe1`, `rezervacijaprijava`, `rezervacijeizvor`, `rezervacijetip`, `relgostsoba`
-- **Status:** IN_PROGRESS
+- **Status:** AUTHORITATIVE
 - **Analizirao:** 2026-05-15 - Antigravity (Claude Sonnet 3.5)
 
 ## 1. Pregled modula

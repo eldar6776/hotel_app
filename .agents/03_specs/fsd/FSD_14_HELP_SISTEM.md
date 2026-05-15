@@ -1,8 +1,8 @@
-# FSD 14: Interaktivni Help Sistem
+﻿# FSD 14: Interaktivni Help Sistem
 
 ## Status analize
 - **Fajlovi za analizu:** Nema značajnog legacy koda (samo bazični ToolTips u `frmGosti.vb`, `frmPrijava1.vb`)
-- **Status:** NEW PROPOSAL
+- **Status:** AUTHORITATIVE
 - **Analizirao:** 2026-05-15 - Antigravity (Claude Sonnet 3.5)
 
 ## 1. Cilj i vizija
