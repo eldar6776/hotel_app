@@ -15,7 +15,7 @@ public class EmployeeConfiguration : IEntityTypeConfiguration<Employee>
         builder.Property(x => x.Email).HasMaxLength(255).IsRequired();
         builder.Property(x => x.Phone).HasMaxLength(50);
         builder.Property(x => x.Role).HasConversion<string>().HasMaxLength(30).IsRequired();
-        builder.Property(x => x.PinCode).HasMaxLength(6).IsRequired();
+        builder.Property(x => x.PinHash).HasMaxLength(64);
         builder.HasQueryFilter(x => x.IsActive);
 
         builder.HasIndex(x => x.Email).IsUnique();

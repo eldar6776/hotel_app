@@ -36,9 +36,9 @@
 - [x] **T2.14: Legacy MySQL → PostgreSQL ETL migrator** - [COMPLETED 2026-05-15 - opencode]
 
 ### Faza 3: Autentifikacija i Autorizacija
-- [ ] **T3.1: JWT autentifikacija i login endpoint**
-- [ ] **T3.2: RBAC — uloge (admin, recepcija, sobarica, menadzer)**
-- [ ] **T3.3: Multi-tenant podrska (vise hotela, jedan sistem)**
+- [x] **T3.1: JWT autentifikacija i login endpoint** - [COMPLETED 2026-05-15 - opencode]
+- [x] **T3.2: RBAC — uloge (admin, recepcija, sobarica, menadzer)** - [COMPLETED 2026-05-15 - opencode]
+- [x] **T3.3: Multi-tenant podrska (vise hotela, jedan sistem)** - [COMPLETED 2026-05-15 - opencode]
 
 ### Faza 4: Frontend Foundation
 - [ ] **T4.1: Inicijalizacija Next.js projekta sa Tailwind CSS**

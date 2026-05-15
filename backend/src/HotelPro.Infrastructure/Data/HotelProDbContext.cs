@@ -1,13 +1,19 @@
 using HotelPro.Core.Entities;
+using HotelPro.Core.Interfaces;
 using HotelPro.Infrastructure.Data.Configurations;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace HotelPro.Infrastructure.Data;
 
 public class HotelProDbContext : DbContext
 {
-    public HotelProDbContext(DbContextOptions<HotelProDbContext> options) : base(options)
+    private readonly IHttpContextAccessor? _httpContextAccessor;
+
+    public HotelProDbContext(DbContextOptions<HotelProDbContext> options, IHttpContextAccessor? httpContextAccessor = null) : base(options)
     {
+        _httpContextAccessor = httpContextAccessor;
     }
 
     // Rooms
@@ -53,9 +59,11 @@ public class HotelProDbContext : DbContext
     public DbSet<AccessLog> AccessLogs => Set<AccessLog>();
 
     // System
+    public DbSet<Hotel> Hotels => Set<Hotel>();
     public DbSet<AuditLog> AuditLogs => Set<AuditLog>();
     public DbSet<FeatureFlag> FeatureFlags => Set<FeatureFlag>();
     public DbSet<LegacyIdMapping> LegacyIdMappings => Set<LegacyIdMapping>();
+    public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -122,5 +130,32 @@ public class HotelProDbContext : DbContext
             b.HasKey(x => x.Id);
             b.HasIndex(x => new { x.EntityType, x.LegacyId }).IsUnique();
         });
+
+        modelBuilder.ApplyConfiguration(new RefreshTokenConfiguration());
+        modelBuilder.ApplyConfiguration(new HotelConfiguration());
+
+        foreach (var entityType in modelBuilder.Model.GetEntityTypes())
+        {
+            if (typeof(IHaveHotelId).IsAssignableFrom(entityType.ClrType))
+            {
+                var parameter = Expression.Parameter(entityType.ClrType, "e");
+                var property = Expression.Property(parameter, "HotelId");
+                var method = GetType().GetMethod("GetCurrentTenantId", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)!;
+                var call = Expression.Call(Expression.Constant(this), method);
+                var equal = Expression.Equal(property, call);
+                var lambda = Expression.Lambda(equal, parameter);
+                modelBuilder.Entity(entityType.ClrType).HasQueryFilter(lambda);
+            }
+        }
+    }
+
+    private Guid? GetCurrentTenantId()
+    {
+        var httpContext = _httpContextAccessor?.HttpContext;
+        if (httpContext?.Items.TryGetValue("HotelId", out var hotelIdObj) == true)
+        {
+            return hotelIdObj as Guid?;
+        }
+        return null;
     }
 }

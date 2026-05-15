@@ -10,7 +10,7 @@ public class Employee
     public string Email { get; set; } = string.Empty;
     public string? Phone { get; set; }
     public EmployeeRole Role { get; set; }
-    public string PinCode { get; set; } = string.Empty;
+    public string? PinHash { get; set; }
     public string? PasswordHash { get; set; }
     public bool IsActive { get; set; } = true;
     public bool CanLogin { get; set; } = true;

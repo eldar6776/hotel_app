@@ -1,5 +1,6 @@
 using HotelPro.Core.Entities;
 using HotelPro.Core.Enums;
+using BCrypt.Net;
 
 namespace HotelPro.Infrastructure.Data;
 
@@ -8,6 +9,24 @@ public static class SeedData
     public static void Initialize(HotelProDbContext context)
     {
         if (context.BookingSources.Any()) return;
+
+        var hotelId = Guid.NewGuid();
+        context.Hotels.Add(new Hotel
+        {
+            Id = hotelId,
+            Name = "Grand Hotel Demo",
+            Code = "DEMO",
+            Address = "Main Street 1",
+            City = "Zagreb",
+            Country = "Croatia",
+            Phone = "+385 1 234 5678",
+            Email = "info@grandhoteldemo.local",
+            Currency = "EUR",
+            TimeZone = "Europe/Zagreb",
+            IsActive = true,
+            CreatedAt = DateTime.UtcNow
+        });
+        context.SaveChanges();
 
         context.BookingSources.AddRange(
             new BookingSource { Id = Guid.NewGuid(), Name = "Direct", Code = "DIR", IsActive = true },
@@ -49,5 +68,55 @@ public static class SeedData
         );
 
         context.SaveChanges();
+
+        // Seed employees with hashed passwords
+        if (!context.Employees.Any())
+        {
+            context.Employees.AddRange(
+                new Employee
+                {
+                    Id = Guid.NewGuid(),
+                    FirstName = "Admin",
+                    LastName = "User",
+                    Email = "admin@hotelpro.local",
+                    Role = EmployeeRole.Admin,
+                    PinHash = BCrypt.Net.BCrypt.HashPassword("123456"),
+                    PasswordHash = BCrypt.Net.BCrypt.HashPassword("admin123"),
+                    IsActive = true,
+                    CanLogin = true,
+                    CreatedAt = DateTime.UtcNow,
+                    UpdatedAt = DateTime.UtcNow
+                },
+                new Employee
+                {
+                    Id = Guid.NewGuid(),
+                    FirstName = "Reception",
+                    LastName = "User",
+                    Email = "reception@hotelpro.local",
+                    Role = EmployeeRole.Reception,
+                    PinHash = BCrypt.Net.BCrypt.HashPassword("654321"),
+                    PasswordHash = BCrypt.Net.BCrypt.HashPassword("reception123"),
+                    IsActive = true,
+                    CanLogin = true,
+                    CreatedAt = DateTime.UtcNow,
+                    UpdatedAt = DateTime.UtcNow
+                },
+                new Employee
+                {
+                    Id = Guid.NewGuid(),
+                    FirstName = "Manager",
+                    LastName = "User",
+                    Email = "manager@hotelpro.local",
+                    Role = EmployeeRole.Manager,
+                    PinHash = BCrypt.Net.BCrypt.HashPassword("111222"),
+                    PasswordHash = BCrypt.Net.BCrypt.HashPassword("manager123"),
+                    IsActive = true,
+                    CanLogin = true,
+                    CreatedAt = DateTime.UtcNow,
+                    UpdatedAt = DateTime.UtcNow
+                }
+            );
+            context.SaveChanges();
+        }
     }
 }

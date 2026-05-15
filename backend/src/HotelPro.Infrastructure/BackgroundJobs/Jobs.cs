@@ -59,10 +59,72 @@ public class NightAuditJob : ScheduledJobBase
 
         var today = DateTime.UtcNow.Date;
         var checkedInBookings = await db.Bookings
-            .Where(b => b.Status == BookingStatus.CheckedIn && b.DepartureDate >= today)
+            .Include(b => b.BookingRooms)
+            .Where(b => b.Status == BookingStatus.CheckedIn && b.DepartureDate > today)
             .ToListAsync(ct);
 
         logger.LogInformation("[{JobName}] Processing {Count} active bookings for night audit", JobName, checkedInBookings.Count);
+
+        int stayNightsCreated = 0;
+        int chargesCreated = 0;
+
+        foreach (var booking in checkedInBookings)
+        {
+            var folio = await db.Folios
+                .FirstOrDefaultAsync(f => f.BookingId == booking.Id && f.Status == FolioStatus.Open, ct);
+
+            if (folio == null) continue;
+
+            var existingStayNight = await db.StayNights
+                .AnyAsync(s => s.FolioId == folio.Id && s.Date == today, ct);
+
+            if (existingStayNight) continue;
+
+            var isComplementary = booking.BookingTypeId.HasValue
+                && await db.BookingTypes.AnyAsync(bt => bt.Id == booking.BookingTypeId && bt.Code == "COMP", ct);
+
+            foreach (var bookingRoom in booking.BookingRooms)
+            {
+                var stayNight = new HotelPro.Core.Entities.StayNight
+                {
+                    Id = Guid.NewGuid(),
+                    FolioId = folio.Id,
+                    Date = today,
+                    RoomPrice = bookingRoom.PricePerNight,
+                    IsComp = isComplementary,
+                    Notes = $"Night audit auto-charge for room {bookingRoom.RoomId}"
+                };
+                db.StayNights.Add(stayNight);
+                stayNightsCreated++;
+
+                if (!stayNight.IsComp)
+                {
+                    var charge = new HotelPro.Core.Entities.Charge
+                    {
+                        Id = Guid.NewGuid(),
+                        FolioId = folio.Id,
+                        Description = $"Night audit - room charge ({today:yyyy-MM-dd})",
+                        Quantity = 1,
+                        UnitPrice = bookingRoom.PricePerNight,
+                        TotalPrice = bookingRoom.PricePerNight,
+                        VatAmount = 0,
+                        ChargeDate = today,
+                        IsTaxable = true
+                    };
+                    db.Charges.Add(charge);
+                    chargesCreated++;
+
+                    folio.Balance += bookingRoom.PricePerNight;
+                }
+            }
+        }
+
+        if (stayNightsCreated > 0 || chargesCreated > 0)
+        {
+            await db.SaveChangesAsync(ct);
+            logger.LogInformation("[{JobName}] Created {StayNights} stay night records and {Charges} charges",
+                JobName, stayNightsCreated, chargesCreated);
+        }
     }
 }
 

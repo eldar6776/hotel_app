@@ -3,12 +3,16 @@ using HotelPro.Infrastructure.Data.Interceptors;
 using HotelPro.Infrastructure.BackgroundJobs;
 using HotelPro.Infrastructure.Services;
 using HotelPro.Core.Services;
+using HotelPro.Api.Middleware;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Asp.Versioning;
 using Asp.Versioning.ApiExplorer;
 using System.Threading.RateLimiting;
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -102,6 +106,51 @@ builder.Services.AddScoped<AuditInterceptor>();
 builder.Services.AddMemoryCache();
 builder.Services.AddScoped<IFeatureFlagService, FeatureFlagService>();
 builder.Services.AddSingleton<ITranslationService, TranslationService>();
+builder.Services.AddScoped<ITenantService, TenantService>();
+
+// JWT Authentication
+var jwtSecret = builder.Configuration["HOTEL_JWT_SECRET"]
+    ?? Environment.GetEnvironmentVariable("HOTEL_JWT_SECRET")
+    ?? throw new InvalidOperationException("HOTEL_JWT_SECRET is not configured");
+var jwtIssuer = builder.Configuration["HOTEL_JWT_ISSUER"] ?? "hotelpro.local";
+var jwtAudience = builder.Configuration["HOTEL_JWT_AUDIENCE"] ?? "hotelpro-api";
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = jwtIssuer,
+            ValidAudience = jwtAudience,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSecret)),
+            ClockSkew = TimeSpan.Zero
+        };
+    });
+
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"));
+    options.AddPolicy("Management", policy => policy.RequireRole("Admin", "Manager"));
+    options.AddPolicy("CanManageRooms", policy =>
+        policy.RequireAssertion(context =>
+            context.User.IsInRole("Admin") || context.User.IsInRole("Manager") || context.User.IsInRole("Reception")));
+    options.AddPolicy("CanManageBookings", policy =>
+        policy.RequireAssertion(context =>
+            context.User.IsInRole("Admin") || context.User.IsInRole("Manager") || context.User.IsInRole("Reception")));
+    options.AddPolicy("CanViewReports", policy =>
+        policy.RequireAssertion(context =>
+            context.User.IsInRole("Admin") || context.User.IsInRole("Manager")));
+    options.AddPolicy("CanHousekeep", policy =>
+        policy.RequireAssertion(context =>
+            context.User.IsInRole("Admin") || context.User.IsInRole("Housekeeping")));
+});
+
+// JWT Service
+builder.Services.AddScoped<IJwtService, JwtService>();
 
 // Database
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
@@ -145,15 +194,10 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseCors("AllowFrontend");
 app.UseRateLimiter();
+app.UseAuthentication();
+app.UseTenantResolution();
 app.UseAuthorization();
 app.MapControllers();
-
-// Seed data
-using (var scope = app.Services.CreateScope())
-{
-    var db = scope.ServiceProvider.GetRequiredService<HotelProDbContext>();
-    SeedData.Initialize(db);
-}
 
 app.MapGet("/api/health", async ([FromServices] HotelProDbContext dbContext) =>
 {
@@ -174,3 +218,7 @@ app.MapGet("/api/health", async ([FromServices] HotelProDbContext dbContext) =>
 app.Run();
 
 public partial class Program { }
+
+public record LoginRequest(string Email, string Password);
+public record RefreshRequest(string RefreshToken);
+public record AuthResponse(string AccessToken, string RefreshToken, DateTime ExpiresAt, string Role, string Name);
