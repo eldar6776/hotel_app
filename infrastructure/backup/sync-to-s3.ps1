@@ -4,7 +4,13 @@
 .DESCRIPTION
     Uses aws s3 sync to upload local backup files to an S3 bucket.
     Requires AWS CLI to be installed and configured.
+.PARAMETER DryRun
+    If specified, shows what would be uploaded without actually uploading.
 #>
+
+param(
+    [switch]$DryRun
+)
 
 $ErrorActionPreference = "Stop"
 
@@ -27,11 +33,23 @@ if ($s3Prefix) {
     $s3Path = "$s3Path/$s3Prefix"
 }
 
-Write-Host "Syncing backups to $s3Path ..."
-aws s3 sync $backupDir $s3Path --storage-class STANDARD_IA
+$awsArgs = @("s3", "sync", $backupDir, $s3Path, "--storage-class", "STANDARD_IA", "--checksum-mode", "ENABLED")
+
+if ($DryRun) {
+    $awsArgs += "--dryrun"
+    Write-Host "DRY RUN - showing what would be uploaded:"
+} else {
+    Write-Host "Syncing backups to $s3Path ..."
+}
+
+& aws @awsArgs
 
 if ($LASTEXITCODE -eq 0) {
-    Write-Host "S3 sync completed successfully." -ForegroundColor Green
+    if ($DryRun) {
+        Write-Host "Dry run completed. No files were uploaded." -ForegroundColor Green
+    } else {
+        Write-Host "S3 sync completed successfully with checksum verification." -ForegroundColor Green
+    }
 } else {
     Write-Error "S3 sync failed with exit code: $LASTEXITCODE"
     exit 1

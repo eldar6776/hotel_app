@@ -17,7 +17,11 @@ infrastructure/backups/
     hotelpro_2026-05-15_030001.dump.gz
     hotelpro_2026-05-16_030001.dump.gz
     ...
+  weekly/
+    (symlink or copy of last backup from each week)
 ```
+
+Note: The backup image writes directly to `/backups/`. The `daily/` subfolder structure is managed by the backup retention policy. Files are automatically deleted after `BACKUP_KEEP_DAYS` (30 days).
 
 ## Off-site S3 Backup (Optional)
 

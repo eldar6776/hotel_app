@@ -68,5 +68,40 @@ cp .env.example .env
 Za generisanje sigurnih secret vrijednosti:
 
 ```powershell
-./scripts/generate-secrets.ps1
+./scripts/generate-secrets.ps1 -WriteToFile
+```
+
+## Troubleshooting
+
+### PostgreSQL se ne pokrece
+
+```bash
+docker compose logs postgres
+```
+
+Provjerite da port 5432 nije vec u upotrebi.
+
+### Healthcheck fails
+
+```bash
+docker compose exec postgres pg_isready -U hotel -d hotelpro
+```
+
+Ako vrati "no response", provjerite da li je kontejner pokrenut i da li su environment varijable ispravne.
+
+### Backup ne radi
+
+```bash
+docker compose logs backup
+```
+
+Provjerite da postgres kontejner ima status "healthy" prije nego backup servis pokrene.
+
+### Reset everything
+
+```bash
+docker compose down -v
+rm -f .env
+cp .env.example .env
+docker compose up -d
 ```

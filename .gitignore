@@ -1,10 +1,10 @@
 # Legacy VB.NET aplikacija - citav folder je referenca,
-# ne izvrsava se, ne mijenja se, ne treba u git-u
-legacy_app/
-
-# Legacy build artifacts (ignorisi samo artefakte, ne source)
+# ne izvrsava se, ne mijenja se
+# Source code ostaje u git-u, samo build artefakti se ignorisu
 legacy_app/bin/
 legacy_app/obj/
+legacy_app/*.suo
+legacy_app/*.user
 
 # Visual Studio
 *.suo

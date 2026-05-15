@@ -64,11 +64,39 @@ if ($confirmation -ne "y" -and $confirmation -ne "Y") {
 
 Write-Host "Restoring backup: $BackupFile"
 
+# Validate Docker context
+$dockerComposeRunning = docker compose ps --format json 2>$null
+if (-not $dockerComposeRunning -or $LASTEXITCODE -ne 0) {
+    Write-Error "Docker Compose services are not running. Start them first: docker compose up -d"
+    exit 1
+}
+
+# Check if postgres container is healthy
+$pgStatus = docker compose ps postgres --format "{{.Status}}" 2>$null
+if ($pgStatus -notmatch "healthy") {
+    Write-Error "PostgreSQL container is not healthy. Status: $pgStatus"
+    exit 1
+}
+
+# Copy backup file to Docker volume if not already accessible
+$backupFileName = Split-Path $BackupFile -Leaf
+$backupInContainer = "/backups/$backupFileName"
+
+# Check if file is already in the backups volume
+$fileExists = docker compose exec -T postgres test -f $backupInContainer 2>$null
+if ($LASTEXITCODE -ne 0) {
+    Write-Host "Copying backup file to Docker volume..."
+    docker cp $BackupFile "hotelpro-backup:$backupInContainer"
+    if ($LASTEXITCODE -ne 0) {
+        Write-Error "Failed to copy backup file to Docker volume."
+        exit 1
+    }
+}
+
 if ($extension -eq ".dump") {
-    $envVar = "PGPASSWORD=hotel_dev_2026"
     & docker compose exec -T postgres dropdb -U hotel --if-exists $Database 2>$null
     & docker compose exec -T postgres createdb -U hotel $Database
-    & docker compose exec -T postgres pg_restore -U hotel -d $Database -c --if-exists "/backups/$(Split-Path $BackupFile -Leaf)"
+    & docker compose exec -T postgres pg_restore -U hotel -d $Database -c --if-exists $backupInContainer
 } elseif ($extension -eq ".sql") {
     & docker compose exec -T postgres psql -U hotel -d postgres -c "DROP DATABASE IF EXISTS $Database;"
     & docker compose exec -T postgres psql -U hotel -d postgres -c "CREATE DATABASE $Database;"

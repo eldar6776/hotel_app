@@ -4,7 +4,14 @@
 .DESCRIPTION
     Generates random strings for JWT_SECRET, ADMIN_PASSWORD, and SMTP_PASSWORD.
     Compatible with PowerShell 5.1 (Windows) and PowerShell Core (macOS/Linux).
+.PARAMETER WriteToFile
+    If specified, writes the generated values to infrastructure/.env file
+    using .env.example as a template.
 #>
+
+param(
+    [switch]$WriteToFile
+)
 
 function Generate-RandomString {
     param(
@@ -31,5 +38,27 @@ Write-Host "HOTEL_JWT_SECRET=$jwtSecret"
 Write-Host "HOTEL_ADMIN_PASSWORD=$adminPassword"
 Write-Host "SMTP_PASSWORD=$smtpPassword"
 Write-Host ""
-Write-Host "Copy these values to infrastructure/.env file."
-Write-Host "NEVER commit .env to version control."
+
+if ($WriteToFile) {
+    $envExamplePath = Join-Path $PSScriptRoot "..\.env.example"
+    $envPath = Join-Path $PSScriptRoot "..\.env"
+
+    if (-not (Test-Path $envExamplePath)) {
+        Write-Error ".env.example not found at: $envExamplePath"
+        exit 1
+    }
+
+    $envContent = Get-Content $envExamplePath
+    $envContent = $envContent -replace 'HOTEL_JWT_SECRET=.*', "HOTEL_JWT_SECRET=$jwtSecret"
+    $envContent = $envContent -replace 'HOTEL_ADMIN_PASSWORD=.*', "HOTEL_ADMIN_PASSWORD=$adminPassword"
+    $envContent = $envContent -replace 'SMTP_PASSWORD=.*', "SMTP_PASSWORD=$smtpPassword"
+
+    $envContent | Set-Content -Path $envPath -Encoding UTF8
+    Write-Host "Written to $envPath" -ForegroundColor Green
+    Write-Host "NEVER commit .env to version control." -ForegroundColor Yellow
+} else {
+    Write-Host "Copy these values to infrastructure/.env file."
+    Write-Host "NEVER commit .env to version control."
+    Write-Host ""
+    Write-Host "Tip: Run with -WriteToFile to automatically generate .env file."
+}
