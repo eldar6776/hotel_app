@@ -1,0 +1,7 @@
+# INSTRUCTIONS_FOR_AGENTS
+
+Procitaj:
+
+1. `AGENT_TASK.md`
+2. `01_governance/WORKFLOW_RULES.md`
+3. `STATUS.md`

@@ -1,0 +1,6 @@
+# MASTER_INSTRUCTIONS
+
+Procitaj:
+
+1. `AGENT_TASK.md`
+2. `01_governance/MASTER_INSTRUCTIONS.md`

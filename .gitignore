@@ -1,0 +1,40 @@
+# Legacy VB.NET aplikacija - citav folder je referenca,
+# ne izvrsava se, ne mijenja se, ne treba u git-u
+legacy_app/
+
+# Visual Studio
+*.suo
+*.user
+*.sln.docstates
+.vs/
+
+# Build artifacts
+bin/
+obj/
+*.exe
+*.dll
+*.pdb
+*.xml
+*.config
+*.manifest
+packages/
+
+# OS files
+Thumbs.db
+.DS_Store
+Desktop.ini
+Radna.suo
+
+# .NET
+*.nupkg
+project.lock.json
+
+# Node
+node_modules/
+.next/
+out/
+
+# Environment
+.env
+.env.local
+.env.production
