@@ -20,20 +20,20 @@
 - [x] **T1.4: Automatski backup (Docker + S3) i restore procedura** - [COMPLETED 2026-05-15 - opencode]
 
 ### Faza 2: Backend Foundation
-- [ ] **T2.1: Inicijalizacija .NET 8 Web API projekta**
-- [ ] **T2.2: EF Core konfiguracija i PostgreSQL konekcija**
-- [ ] **T2.3: Migracija DB sheme — Sobe, VrsteSoba, Zgrade**
-- [ ] **T2.4: Migracija DB sheme — Gosti, GostDokument, Partneri**
-- [ ] **T2.5: Migracija DB sheme — Rezervacije, RezervacijeGrupe, RelGostSoba**
-- [ ] **T2.6: Migracija DB sheme — Folio, Placanje, Troskovi**
-- [ ] **T2.7: Migracija DB sheme — Radnici, Smjene, SobaricaLog**
-- [ ] **T2.8: API verzioniranje (v1, v2, header api-supported-versions)**
-- [ ] **T2.9: Rate limiting (staff, guest, auth)**
-- [ ] **T2.10: Audit log (EF Core interceptor, JSONB)**
-- [ ] **T2.11: Scheduled jobs (No-Show, Night audit, Backup, IoT check)**
-- [ ] **T2.12: Feature flags (per-hotel, postepeno uvodjenje)**
-- [ ] **T2.13: Multi-language podrska (hr, en, de, it)**
-- [ ] **T2.14: Legacy MySQL → PostgreSQL ETL migrator**
+- [x] **T2.1: Inicijalizacija .NET 8 Web API projekta** - [COMPLETED 2026-05-15 - opencode]
+- [x] **T2.2: EF Core konfiguracija i PostgreSQL konekcija** - [COMPLETED 2026-05-15 - opencode]
+- [x] **T2.3: Migracija DB sheme — Sobe, VrsteSoba, Zgrade** - [COMPLETED 2026-05-15 - opencode]
+- [x] **T2.4: Migracija DB sheme — Gosti, Dokumenti, Partneri** - [COMPLETED 2026-05-15 - opencode]
+- [x] **T2.5: Migracija DB sheme — Rezervacije, RezervacijeGrupe, RelGostSoba** - [COMPLETED 2026-05-15 - opencode]
+- [x] **T2.6: Migracija DB sheme — Folio, Placanje, Troskovi** - [COMPLETED 2026-05-15 - opencode]
+- [x] **T2.7: Migracija DB sheme — Radnici, Smjene, SobaricaLog** - [COMPLETED 2026-05-15 - opencode]
+- [x] **T2.8: API verzioniranje (v1, v2, header api-supported-versions)** - [COMPLETED 2026-05-15 - opencode]
+- [x] **T2.9: Rate limiting (staff, guest, auth)** - [COMPLETED 2026-05-15 - opencode]
+- [x] **T2.10: Audit log (EF Core interceptor, JSONB)** - [COMPLETED 2026-05-15 - opencode]
+- [x] **T2.11: Scheduled jobs (No-Show, Night audit, Backup, IoT check)** - [COMPLETED 2026-05-15 - opencode]
+- [x] **T2.12: Feature flags (per-hotel, postepeno uvodjenje)** - [COMPLETED 2026-05-15 - opencode]
+- [x] **T2.13: Multi-language podrska (hr, en, de, it)** - [COMPLETED 2026-05-15 - opencode]
+- [x] **T2.14: Legacy MySQL → PostgreSQL ETL migrator** - [COMPLETED 2026-05-15 - opencode]
 
 ### Faza 3: Autentifikacija i Autorizacija
 - [ ] **T3.1: JWT autentifikacija i login endpoint**
@@ -198,7 +198,19 @@ Sljedece grupe se mogu raditi istovremeno:
 - `docker-compose.yml` koristi `env_file: .env` za ucitavanje varijabli
 
 ### 2026-05-15 — opencode
-- **T1.4 COMPLETED**: `docker-compose.yml` sadrzi backup servis sa `prodrigestivill/postgres-backup-local:18`
+- **Faza 2 COMPLETED**: Kompletna Backend Foundation implementacija
+- T2.1: .NET 8 solution sa 4 projekta (Api, Core, Infrastructure, Tests)
+- T2.2: EF Core + PostgreSQL konfiguracija, HotelProDbContext
+- T2.3-T2.7: 35+ entiteta sa Fluent API konfiguracijama (Sobe, Gosti, Rezervacije, Finansije, Osoblje)
+- T2.8: API verzioniranje (v1/v2) sa Asp.Versioning
+- T2.9: Rate limiting (Staff/Guest/Auth politike)
+- T2.10: Audit log interceptor sa JSONB poljima
+- T2.11: 7 scheduled jobova (NoShow, NightAudit, DailyReport, Backup, IoT, DND, SessionCleanup)
+- T2.12: Feature flags sa caching-om i procentualnim rollout-om
+- T2.13: Multi-language (hr/en/de/it) sa 50+ kljuceva
+- T2.14: Legacy ETL migrator sa HRK→EUR konverzijom
+- Build: `dotnet build` prolazi bez gresaka
+- Testovi: `dotnet test` prolazi (2 testa)
 - Backup se pokrece na schedule-u @daily (03:00), cuva 30 dana
 - `infrastructure/backup/restore.ps1` podrzava .dump i .sql.gz formate sa potvrdom
 - `infrastructure/backup/sync-to-s3.ps1` za opciono S3 sync

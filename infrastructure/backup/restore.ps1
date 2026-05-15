@@ -86,7 +86,7 @@ $backupInContainer = "/backups/$backupFileName"
 $fileExists = docker compose exec -T postgres test -f $backupInContainer 2>$null
 if ($LASTEXITCODE -ne 0) {
     Write-Host "Copying backup file to Docker volume..."
-    docker cp $BackupFile "hotelpro-backup:$backupInContainer"
+    docker cp $BackupFile "hotelpro-postgres:$backupInContainer"
     if ($LASTEXITCODE -ne 0) {
         Write-Error "Failed to copy backup file to Docker volume."
         exit 1

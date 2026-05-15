@@ -10,6 +10,7 @@ jobs:
   backend-build:
     name: Backend (.NET 8)
     runs-on: ubuntu-latest
+    if: hashFiles('backend/**/*.csproj') != ''
     steps:
       - uses: actions/checkout@v4
 
@@ -19,17 +20,21 @@ jobs:
           dotnet-version: '8.0.x'
 
       - name: Restore dependencies
-        run: dotnet restore backend/
+        run: dotnet restore
+        working-directory: backend/
 
       - name: Build
-        run: dotnet build backend/ --no-restore --configuration Release
+        run: dotnet build --no-restore --configuration Release
+        working-directory: backend/
 
       - name: Test
-        run: dotnet test backend/ --no-build --verbosity normal
+        run: dotnet test --no-build --verbosity normal
+        working-directory: backend/
 
   frontend-build:
     name: Frontend (Next.js)
     runs-on: ubuntu-latest
+    if: hashFiles('frontend/package.json') != ''
     steps:
       - uses: actions/checkout@v4
 
