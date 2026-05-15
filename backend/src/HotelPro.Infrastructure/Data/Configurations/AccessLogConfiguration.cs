@@ -10,7 +10,7 @@ public class AccessLogConfiguration : IEntityTypeConfiguration<AccessLog>
     {
         builder.ToTable("access_logs");
         builder.HasKey(x => x.Id);
-        builder.Property(x => x.Action).HasMaxLength(30).IsRequired();
+        builder.Property(x => x.Action).HasConversion<string>().HasMaxLength(30).IsRequired();
         builder.Property(x => x.IpAddress).HasMaxLength(45).IsRequired();
 
         builder.HasIndex(x => x.Timestamp);

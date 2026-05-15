@@ -1,3 +1,5 @@
+using HotelPro.Core.Enums;
+
 namespace HotelPro.Core.Entities;
 
 public class Invoice
@@ -11,7 +13,7 @@ public class Invoice
     public decimal TotalNet { get; set; }
     public decimal TotalVat { get; set; }
     public decimal TotalGross { get; set; }
-    public string Status { get; set; } = string.Empty;
+    public InvoiceStatus Status { get; set; }
     public string? PdfUrl { get; set; }
     public DateTime CreatedAt { get; set; }
 

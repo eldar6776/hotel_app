@@ -10,7 +10,7 @@ public class RoomAssignmentConfiguration : IEntityTypeConfiguration<RoomAssignme
     {
         builder.ToTable("room_assignments");
         builder.HasKey(x => x.Id);
-        builder.Property(x => x.Status).HasMaxLength(20).IsRequired();
+        builder.Property(x => x.Status).HasConversion<string>().HasMaxLength(20).IsRequired();
 
         builder.HasOne(x => x.Room)
             .WithMany()

@@ -1,3 +1,5 @@
+using HotelPro.Core.Enums;
+
 namespace HotelPro.Core.Entities;
 
 public class Shift
@@ -7,7 +9,7 @@ public class Shift
     public DateTime ShiftDate { get; set; }
     public TimeOnly StartTime { get; set; }
     public TimeOnly EndTime { get; set; }
-    public string ShiftType { get; set; } = string.Empty;
+    public ShiftType ShiftType { get; set; }
     public string? Notes { get; set; }
 
     public Employee Employee { get; set; } = null!;

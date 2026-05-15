@@ -11,10 +11,10 @@ public class BookingConfiguration : IEntityTypeConfiguration<Booking>
         builder.ToTable("bookings");
         builder.HasKey(x => x.Id);
         builder.Property(x => x.BookingNumber).HasMaxLength(20).IsRequired();
-        builder.Property(x => x.Status).HasMaxLength(20).IsRequired();
+        builder.Property(x => x.Status).HasConversion<string>().HasMaxLength(20).IsRequired();
         builder.Property(x => x.TotalPrice).HasColumnType("decimal(18,2)").IsRequired();
         builder.Property(x => x.Currency).HasMaxLength(3).IsRequired();
-        builder.Property(x => x.PaymentStatus).HasMaxLength(20).IsRequired();
+        builder.Property(x => x.PaymentStatus).HasConversion<string>().HasMaxLength(20).IsRequired();
 
         builder.HasIndex(x => x.BookingNumber).IsUnique();
         builder.HasIndex(x => x.GuestId);

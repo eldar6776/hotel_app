@@ -1,3 +1,5 @@
+using HotelPro.Core.Enums;
+
 namespace HotelPro.Core.Entities;
 
 public class Folio
@@ -7,7 +9,7 @@ public class Folio
     public Guid? BookingId { get; set; }
     public Guid? BookingRoomId { get; set; }
     public Guid? GuestId { get; set; }
-    public string Status { get; set; } = string.Empty;
+    public FolioStatus Status { get; set; }
     public decimal Balance { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime? ClosedAt { get; set; }

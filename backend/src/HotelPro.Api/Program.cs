@@ -104,7 +104,8 @@ builder.Services.AddScoped<IFeatureFlagService, FeatureFlagService>();
 builder.Services.AddSingleton<ITranslationService, TranslationService>();
 
 // Database
-var connectionString = Environment.GetEnvironmentVariable("HOTEL_DB_CONN");
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
+    ?? Environment.GetEnvironmentVariable("HOTEL_DB_CONN");
 if (string.IsNullOrWhiteSpace(connectionString))
 {
     throw new InvalidOperationException("HOTEL_DB_CONN environment variable is not set");
@@ -147,6 +148,13 @@ app.UseRateLimiter();
 app.UseAuthorization();
 app.MapControllers();
 
+// Seed data
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<HotelProDbContext>();
+    SeedData.Initialize(db);
+}
+
 app.MapGet("/api/health", async ([FromServices] HotelProDbContext dbContext) =>
 {
     try
@@ -156,7 +164,7 @@ app.MapGet("/api/health", async ([FromServices] HotelProDbContext dbContext) =>
     }
     catch
     {
-        return Results.Ok(new { status = "healthy", database = "unhealthy", timestamp = DateTime.UtcNow });
+        return Results.Problem("Database connection failed", statusCode: 503);
     }
 })
 .RequireRateLimiting("Staff")

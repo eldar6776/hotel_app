@@ -1,3 +1,5 @@
+using HotelPro.Core.Enums;
+
 namespace HotelPro.Core.Entities;
 
 public class HousekeepingLog
@@ -5,8 +7,8 @@ public class HousekeepingLog
     public Guid Id { get; set; }
     public Guid RoomId { get; set; }
     public Guid EmployeeId { get; set; }
-    public string Action { get; set; } = string.Empty;
-    public string Status { get; set; } = string.Empty;
+    public HousekeepingAction Action { get; set; }
+    public HousekeepingStatus Status { get; set; }
     public DateTime? ScheduledAt { get; set; }
     public DateTime? StartedAt { get; set; }
     public DateTime? CompletedAt { get; set; }

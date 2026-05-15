@@ -14,7 +14,7 @@ public class InvoiceConfiguration : IEntityTypeConfiguration<Invoice>
         builder.Property(x => x.TotalNet).HasColumnType("decimal(18,2)").IsRequired();
         builder.Property(x => x.TotalVat).HasColumnType("decimal(18,2)").IsRequired();
         builder.Property(x => x.TotalGross).HasColumnType("decimal(18,2)").IsRequired();
-        builder.Property(x => x.Status).HasMaxLength(20).IsRequired();
+        builder.Property(x => x.Status).HasConversion<string>().HasMaxLength(20).IsRequired();
 
         builder.HasIndex(x => x.InvoiceNumber).IsUnique();
 

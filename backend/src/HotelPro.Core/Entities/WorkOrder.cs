@@ -1,3 +1,5 @@
+using HotelPro.Core.Enums;
+
 namespace HotelPro.Core.Entities;
 
 public class WorkOrder
@@ -6,10 +8,10 @@ public class WorkOrder
     public Guid? RoomId { get; set; }
     public Guid ReportedById { get; set; }
     public Guid? AssignedToId { get; set; }
-    public string Priority { get; set; } = string.Empty;
-    public string Category { get; set; } = string.Empty;
+    public WorkOrderPriority Priority { get; set; }
+    public WorkOrderCategory Category { get; set; }
     public string Description { get; set; } = string.Empty;
-    public string Status { get; set; } = string.Empty;
+    public WorkOrderStatus Status { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime? ResolvedAt { get; set; }
     public string? ResolutionNotes { get; set; }

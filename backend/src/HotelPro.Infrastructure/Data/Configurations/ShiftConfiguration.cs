@@ -10,7 +10,7 @@ public class ShiftConfiguration : IEntityTypeConfiguration<Shift>
     {
         builder.ToTable("shifts");
         builder.HasKey(x => x.Id);
-        builder.Property(x => x.ShiftType).HasMaxLength(20).IsRequired();
+        builder.Property(x => x.ShiftType).HasConversion<string>().HasMaxLength(20).IsRequired();
 
         builder.HasIndex(x => new { x.EmployeeId, x.ShiftDate });
 

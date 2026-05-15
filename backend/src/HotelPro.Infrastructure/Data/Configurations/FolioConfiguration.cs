@@ -12,7 +12,7 @@ public class FolioConfiguration : IEntityTypeConfiguration<Folio>
         builder.HasKey(x => x.Id);
         builder.Property(x => x.FolioNumber).HasMaxLength(20).IsRequired();
         builder.Property(x => x.Balance).HasColumnType("decimal(18,2)").IsRequired();
-        builder.Property(x => x.Status).HasMaxLength(20).IsRequired();
+        builder.Property(x => x.Status).HasConversion<string>().HasMaxLength(20).IsRequired();
 
         builder.HasIndex(x => x.BookingId);
         builder.HasIndex(x => x.GuestId);

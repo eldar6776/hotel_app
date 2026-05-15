@@ -10,10 +10,10 @@ public class WorkOrderConfiguration : IEntityTypeConfiguration<WorkOrder>
     {
         builder.ToTable("work_orders");
         builder.HasKey(x => x.Id);
-        builder.Property(x => x.Priority).HasMaxLength(20).IsRequired();
-        builder.Property(x => x.Category).HasMaxLength(30).IsRequired();
+        builder.Property(x => x.Priority).HasConversion<string>().HasMaxLength(20).IsRequired();
+        builder.Property(x => x.Category).HasConversion<string>().HasMaxLength(30).IsRequired();
         builder.Property(x => x.Description).HasMaxLength(1000).IsRequired();
-        builder.Property(x => x.Status).HasMaxLength(20).IsRequired();
+        builder.Property(x => x.Status).HasConversion<string>().HasMaxLength(20).IsRequired();
 
         builder.HasOne(x => x.Room)
             .WithMany()

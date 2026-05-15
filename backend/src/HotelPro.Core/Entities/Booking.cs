@@ -1,3 +1,5 @@
+using HotelPro.Core.Enums;
+
 namespace HotelPro.Core.Entities;
 
 public class Booking
@@ -9,14 +11,14 @@ public class Booking
     public Guid? BookingSourceId { get; set; }
     public Guid? PartnerId { get; set; }
     public Guid? SalesAgentId { get; set; }
-    public string Status { get; set; } = string.Empty;
+    public BookingStatus Status { get; set; }
     public DateTime ArrivalDate { get; set; }
     public DateTime DepartureDate { get; set; }
     public int Adults { get; set; }
     public int Children { get; set; }
     public decimal TotalPrice { get; set; }
     public string Currency { get; set; } = "EUR";
-    public string PaymentStatus { get; set; } = string.Empty;
+    public PaymentStatus PaymentStatus { get; set; }
     public string? Notes { get; set; }
     public string? InternalNotes { get; set; }
     public string? ConfirmationCode { get; set; }

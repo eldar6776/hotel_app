@@ -10,7 +10,7 @@ public class BookingHistoryConfiguration : IEntityTypeConfiguration<BookingHisto
     {
         builder.ToTable("booking_histories");
         builder.HasKey(x => x.Id);
-        builder.Property(x => x.Action).HasMaxLength(30).IsRequired();
+        builder.Property(x => x.Action).HasConversion<string>().HasMaxLength(30).IsRequired();
 
         builder.HasIndex(x => x.BookingId);
         builder.HasIndex(x => x.ChangedAt);

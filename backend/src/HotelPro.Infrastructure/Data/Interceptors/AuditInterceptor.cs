@@ -26,7 +26,7 @@ public class AuditInterceptor : SaveChangesInterceptor
 
         foreach (var entry in context.ChangeTracker.Entries())
         {
-            var entityType = entry.Entity.GetType();
+            var entityType = entry.Metadata.ClrType;
             var auditableAttr = entityType.GetCustomAttributes(typeof(AuditableAttribute), true).FirstOrDefault() as AuditableAttribute;
             if (auditableAttr == null || !auditableAttr.TrackChanges) continue;
             if (entry.State is not (EntityState.Added or EntityState.Modified or EntityState.Deleted)) continue;
@@ -48,6 +48,9 @@ public class AuditInterceptor : SaveChangesInterceptor
 
             var entityId = entry.Properties.FirstOrDefault(p => p.Metadata.Name == "Id")?.CurrentValue?.ToString() ?? string.Empty;
 
+            var userIdClaim = _httpContextAccessor?.HttpContext?.User?.FindFirst("sub")?.Value;
+            var emailClaim = _httpContextAccessor?.HttpContext?.User?.FindFirst("email")?.Value;
+
             auditLogs.Add(new AuditLog
             {
                 Id = Guid.NewGuid(),
@@ -57,6 +60,8 @@ public class AuditInterceptor : SaveChangesInterceptor
                 OldValues = oldValues != null ? JsonSerializer.Serialize(oldValues) : null,
                 NewValues = newValues != null ? JsonSerializer.Serialize(newValues) : null,
                 ChangedProperties = changedProps != null ? JsonSerializer.Serialize(changedProps) : null,
+                ChangedById = Guid.TryParse(userIdClaim, out var userId) ? userId : null,
+                ChangedByEmail = emailClaim,
                 ChangedAt = DateTime.UtcNow,
                 IpAddress = _httpContextAccessor?.HttpContext?.Connection.RemoteIpAddress?.ToString()
             });

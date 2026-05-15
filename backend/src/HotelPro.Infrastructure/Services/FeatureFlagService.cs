@@ -39,7 +39,7 @@ public class FeatureFlagService : IFeatureFlagService
             if (flag.RolloutPercentage >= 100) return true;
             if (flag.RolloutPercentage <= 0) return false;
 
-            return hotelId.HasValue && Math.Abs(hotelId.Value.GetHashCode()) % 100 < flag.RolloutPercentage;
+            return hotelId.HasValue && GetDeterministicHash(hotelId.Value) % 100 < flag.RolloutPercentage;
         });
     }
 
@@ -94,5 +94,16 @@ public class FeatureFlagService : IFeatureFlagService
     {
         _cache.Remove($"feature_{featureName}_{hotelId}");
         _cache.Remove($"feature_{featureName}_");
+    }
+
+    private static int GetDeterministicHash(Guid guid)
+    {
+        var bytes = guid.ToByteArray();
+        int hash = 0;
+        for (int i = 0; i < bytes.Length; i++)
+        {
+            hash = (hash * 31) + bytes[i];
+        }
+        return Math.Abs(hash);
     }
 }

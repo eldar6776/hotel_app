@@ -10,8 +10,8 @@ public class HousekeepingLogConfiguration : IEntityTypeConfiguration<Housekeepin
     {
         builder.ToTable("housekeeping_logs");
         builder.HasKey(x => x.Id);
-        builder.Property(x => x.Action).HasMaxLength(30).IsRequired();
-        builder.Property(x => x.Status).HasMaxLength(20).IsRequired();
+        builder.Property(x => x.Action).HasConversion<string>().HasMaxLength(30).IsRequired();
+        builder.Property(x => x.Status).HasConversion<string>().HasMaxLength(20).IsRequired();
 
         builder.HasIndex(x => new { x.RoomId, x.Status });
 

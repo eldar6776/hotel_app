@@ -1,10 +1,12 @@
+using HotelPro.Core.Enums;
+
 namespace HotelPro.Core.Entities;
 
 public class BookingHistory
 {
     public Guid Id { get; set; }
     public Guid BookingId { get; set; }
-    public string Action { get; set; } = string.Empty;
+    public BookingHistoryAction Action { get; set; }
     public string? PreviousValue { get; set; }
     public string? NewValue { get; set; }
     public Guid? ChangedById { get; set; }

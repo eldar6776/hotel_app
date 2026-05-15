@@ -1,6 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using HotelPro.Core.Enums;
 using HotelPro.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 
@@ -24,12 +25,12 @@ public class NoShowDetectionJob : ScheduledJobBase
 
         var cutoff = DateTime.UtcNow.Date.AddHours(6);
         var noShows = await db.Bookings
-            .Where(b => b.Status == "Confirmed" && b.ArrivalDate < cutoff)
+            .Where(b => b.Status == BookingStatus.Confirmed && b.ArrivalDate < cutoff)
             .ToListAsync(ct);
 
         foreach (var booking in noShows)
         {
-            booking.Status = "NoShow";
+            booking.Status = BookingStatus.NoShow;
             booking.UpdatedAt = DateTime.UtcNow;
             booking.CancellationReason = "Auto-detected no-show";
         }
@@ -58,7 +59,7 @@ public class NightAuditJob : ScheduledJobBase
 
         var today = DateTime.UtcNow.Date;
         var checkedInBookings = await db.Bookings
-            .Where(b => b.Status == "CheckedIn" && b.DepartureDate >= today)
+            .Where(b => b.Status == BookingStatus.CheckedIn && b.DepartureDate >= today)
             .ToListAsync(ct);
 
         logger.LogInformation("[{JobName}] Processing {Count} active bookings for night audit", JobName, checkedInBookings.Count);
@@ -80,10 +81,14 @@ public class DailyReportJob : ScheduledJobBase
     {
         using var scope = _scopeFactory.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<HotelProDbContext>();
+        var logger = scope.ServiceProvider.GetRequiredService<ILogger<DailyReportJob>>();
 
         var totalRooms = await db.Rooms.CountAsync(ct);
-        var occupiedRooms = await db.Rooms.CountAsync(r => r.Status == HotelPro.Core.Enums.RoomStatus.Occupied, ct);
+        var occupiedRooms = await db.Rooms.CountAsync(r => r.Status == RoomStatus.Occupied, ct);
         var occupancyRate = totalRooms > 0 ? (double)occupiedRooms / totalRooms * 100 : 0;
+
+        logger.LogInformation("[{JobName}] Daily report: {OccupancyRate:F1}% occupancy ({Occupied}/{Total} rooms)",
+            JobName, occupancyRate, occupiedRooms, totalRooms);
     }
 }
 
@@ -96,6 +101,8 @@ public class BackupTriggerJob : ScheduledJobBase
 
     protected override Task ExecuteJobAsync(CancellationToken ct)
     {
+        // Backup is handled by Docker service (prodrigestivill/postgres-backup-local)
+        // This job serves as a placeholder for future custom backup logic
         return Task.CompletedTask;
     }
 }
@@ -128,6 +135,22 @@ public class DndExpiryJob : ScheduledJobBase
     {
         using var scope = _scopeFactory.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<HotelProDbContext>();
+        var logger = scope.ServiceProvider.GetRequiredService<ILogger<DndExpiryJob>>();
+
+        var expiredDnd = DateTime.UtcNow.AddHours(-24);
+        var dndRooms = await db.Rooms
+            .Where(r => r.Status == RoomStatus.OutOfOrder && r.Notes != null && r.Notes.Contains("DND"))
+            .ToListAsync(ct);
+
+        foreach (var room in dndRooms)
+        {
+            room.Status = RoomStatus.Dirty;
+            room.Notes = room.Notes?.Replace("DND", "").Trim();
+            logger.LogInformation("[{JobName}] Room {RoomNumber} DND expired, status changed to Dirty", JobName, room.RoomNumber);
+        }
+
+        if (dndRooms.Count > 0)
+            await db.SaveChangesAsync(ct);
     }
 }
 
