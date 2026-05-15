@@ -61,7 +61,7 @@ export default function TariffsPage() {
     }
   }
 
-  if (isLoading) return <div className="animate-pulse h-64 rounded-xl bg-gray-200 dark:bg-gray-700"></div>
+  if (isLoading) return <div className="animate-pulse h-64 rounded-xl bg-surface-tertiary"></div>
 
   return (
     <div className="space-y-4">
@@ -75,15 +75,15 @@ export default function TariffsPage() {
       {showForm && (
         <form onSubmit={handleSubmit} className="rounded-xl border border-border bg-surface p-4 space-y-3">
           <div className="grid grid-cols-2 gap-3">
-            <input required placeholder="Naziv" value={form.name} onChange={e => setForm({...form, name: e.target.value})} className="rounded-lg border border-border bg-background px-3 py-2 text-sm text-text" />
-            <select value={form.roomTypeId} onChange={e => setForm({...form, roomTypeId: e.target.value})} className="rounded-lg border border-border bg-background px-3 py-2 text-sm text-text">
+            <input required placeholder="Naziv" value={form.name} onChange={e => setForm({...form, name: e.target.value})} className="rounded-lg border border-border bg-surface px-3 py-2 text-sm text-text" />
+            <select value={form.roomTypeId} onChange={e => setForm({...form, roomTypeId: e.target.value})} className="rounded-lg border border-border bg-surface px-3 py-2 text-sm text-text">
               <option value="">Globalna</option>
               {roomTypes.map(rt => <option key={rt.id} value={rt.id}>{rt.name}</option>)}
             </select>
-            <input type="date" value={form.validFrom} onChange={e => setForm({...form, validFrom: e.target.value})} className="rounded-lg border border-border bg-background px-3 py-2 text-sm text-text" />
-            <input type="date" value={form.validTo} onChange={e => setForm({...form, validTo: e.target.value})} className="rounded-lg border border-border bg-background px-3 py-2 text-sm text-text" />
-            <input required type="number" step="0.01" placeholder="Cijena" value={form.basePrice} onChange={e => setForm({...form, basePrice: e.target.value})} className="rounded-lg border border-border bg-background px-3 py-2 text-sm text-text" />
-            <select value={form.currency} onChange={e => setForm({...form, currency: e.target.value})} className="rounded-lg border border-border bg-background px-3 py-2 text-sm text-text">
+            <input type="date" value={form.validFrom} onChange={e => setForm({...form, validFrom: e.target.value})} className="rounded-lg border border-border bg-surface px-3 py-2 text-sm text-text" />
+            <input type="date" value={form.validTo} onChange={e => setForm({...form, validTo: e.target.value})} className="rounded-lg border border-border bg-surface px-3 py-2 text-sm text-text" />
+            <input required type="number" step="0.01" placeholder="Cijena" value={form.basePrice} onChange={e => setForm({...form, basePrice: e.target.value})} className="rounded-lg border border-border bg-surface px-3 py-2 text-sm text-text" />
+            <select value={form.currency} onChange={e => setForm({...form, currency: e.target.value})} className="rounded-lg border border-border bg-surface px-3 py-2 text-sm text-text">
               <option value="EUR">EUR</option>
               <option value="USD">USD</option>
               <option value="GBP">GBP</option>
@@ -112,7 +112,7 @@ export default function TariffsPage() {
                 <td className="px-4 py-3 text-text">{t.basePrice.toFixed(2)} {t.currency}</td>
                 <td className="px-4 py-3 text-text-secondary">{t.validFrom ? new Date(t.validFrom).toLocaleDateString() : '-'} do {t.validTo ? new Date(t.validTo).toLocaleDateString() : '-'}</td>
                 <td className="px-4 py-3">
-                  <button onClick={() => toggleActive(t.id, t.isActive)} className={`rounded-full px-2 py-0.5 text-xs font-medium ${t.isActive ? 'bg-emerald-500 text-white' : 'bg-gray-400 text-white'}`}>
+                  <button onClick={() => toggleActive(t.id, t.isActive)} className={`rounded-full px-2 py-0.5 text-xs font-medium ${t.isActive ? 'bg-emerald-500 text-white' : 'bg-surface-tertiary text-text-secondary'}`}>
                     {t.isActive ? 'Aktivna' : 'Neaktivna'}
                   </button>
                 </td>

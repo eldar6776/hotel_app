@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState, useCallback, useRef } from 'react'
 import type { RoomDto, RoomStatus, BuildingDto, RoomStatusChange } from '@/types/rooms'
 import { roomService } from '@/lib/rooms/room-service'
 import { RoomCard } from '@/components/rooms/RoomCard'
@@ -18,7 +18,8 @@ export default function RoomsPage() {
   const [floorFilter, setFloorFilter] = useState('')
   const [search, setSearch] = useState('')
   const [isLoading, setIsLoading] = useState(true)
-  const [toast, setToast] = useState<string | null>(null)
+  const [toast, setToast] = useState<{ message: string; roomId: string } | null>(null)
+  const connectionRef = useRef<import('@microsoft/signalr').HubConnection | null>(null)
 
   const loadRooms = useCallback(async () => {
     setIsLoading(true)
@@ -54,12 +55,15 @@ export default function RoomsPage() {
   }, [loadRooms, loadBuildings])
 
   useEffect(() => {
-    const token = localStorage.getItem('hotelpro_token')
+    const token = localStorage.getItem('hotelpro_access_token')
     if (!token || typeof window === 'undefined') return
 
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'
+    let cancelled = false
 
     import('@microsoft/signalr').then((signalR) => {
+      if (cancelled) return
+
       const connection = new signalR.HubConnectionBuilder()
         .withUrl(`${apiUrl}/hubs/room-status`, {
           accessTokenFactory: () => token,
@@ -73,16 +77,21 @@ export default function RoomsPage() {
             room.id === data.roomId ? { ...room, status: data.newStatus } : room
           )
         )
-        setToast(`Soba ${data.roomNumber}: ${data.oldStatus} -> ${data.newStatus}`)
+        setToast({ message: `Soba ${data.roomNumber}: ${data.oldStatus} -> ${data.newStatus}`, roomId: data.roomId })
         setTimeout(() => setToast(null), 5000)
       })
 
       connection.start().catch(() => {})
-
-      return () => {
-        connection.stop()
-      }
+      connectionRef.current = connection
     })
+
+    return () => {
+      cancelled = true
+      if (connectionRef.current) {
+        connectionRef.current.stop()
+        connectionRef.current = null
+      }
+    }
   }, [])
 
   const handleRoomClick = (room: RoomDto) => {
@@ -95,6 +104,16 @@ export default function RoomsPage() {
     if (selectedRoom) {
       roomService.getRoom(selectedRoom.id).then(setSelectedRoom)
     }
+  }
+
+  const handleToastClick = () => {
+    if (toast) {
+      roomService.getRoom(toast.roomId).then((room) => {
+        setSelectedRoom(room)
+        setIsDetailOpen(true)
+      }).catch(() => {})
+    }
+    setToast(null)
   }
 
   const handleReset = () => {
@@ -117,13 +136,13 @@ export default function RoomsPage() {
         <div className="flex gap-2">
           <button
             onClick={() => setViewMode('grid')}
-            className={`rounded-lg px-3 py-1.5 text-sm font-medium ${viewMode === 'grid' ? 'bg-primary-500 text-white' : 'bg-gray-100 text-text-secondary dark:bg-gray-700'}`}
+            className={`rounded-lg px-3 py-1.5 text-sm font-medium ${viewMode === 'grid' ? 'bg-primary-500 text-white' : 'bg-surface-tertiary text-text-secondary hover:bg-surface-secondary'}`}
           >
             Grid
           </button>
           <button
             onClick={() => setViewMode('floor')}
-            className={`rounded-lg px-3 py-1.5 text-sm font-medium ${viewMode === 'floor' ? 'bg-primary-500 text-white' : 'bg-gray-100 text-text-secondary dark:bg-gray-700'}`}
+            className={`rounded-lg px-3 py-1.5 text-sm font-medium ${viewMode === 'floor' ? 'bg-primary-500 text-white' : 'bg-surface-tertiary text-text-secondary hover:bg-surface-secondary'}`}
           >
             Floor Plan
           </button>
@@ -156,7 +175,7 @@ export default function RoomsPage() {
       {isLoading ? (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {Array.from({ length: 8 }).map((_, i) => (
-            <div key={i} className="h-36 animate-pulse rounded-xl bg-gray-200 dark:bg-gray-700"></div>
+            <div key={i} className="h-36 animate-pulse rounded-xl bg-surface-tertiary"></div>
           ))}
         </div>
       ) : viewMode === 'grid' ? (
@@ -190,9 +209,13 @@ export default function RoomsPage() {
       )}
 
       {toast && (
-        <div className="fixed bottom-4 right-4 z-50 rounded-lg bg-surface p-3 shadow-lg border border-border">
-          <p className="text-sm text-text">{toast}</p>
-        </div>
+        <button
+          onClick={handleToastClick}
+          className="fixed bottom-4 right-4 z-50 cursor-pointer rounded-lg bg-surface p-3 shadow-lg border border-border hover:bg-surface-secondary transition-colors"
+        >
+          <p className="text-sm text-text">{toast.message}</p>
+          <p className="text-xs text-text-secondary mt-1">Klikni za detalje</p>
+        </button>
       )}
     </div>
   )

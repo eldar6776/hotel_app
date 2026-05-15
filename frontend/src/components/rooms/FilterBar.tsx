@@ -57,7 +57,7 @@ export function FilterBar({
               className={`rounded-lg px-3 py-1.5 text-xs font-medium transition ${
                 statusFilter.includes(opt.value)
                   ? 'bg-primary-500 text-white'
-                  : 'bg-gray-100 text-text-secondary hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600'
+                  : 'bg-surface-tertiary text-text-secondary hover:bg-surface-secondary'
               }`}
             >
               {opt.label}
@@ -68,7 +68,7 @@ export function FilterBar({
         <select
           value={buildingFilter}
           onChange={(e) => onBuildingChange(e.target.value)}
-          className="rounded-lg border border-border bg-background px-3 py-1.5 text-sm text-text"
+          className="rounded-lg border border-border bg-surface px-3 py-1.5 text-sm text-text"
         >
           <option value="">Sve zgrade</option>
           {buildings.map((b) => (
@@ -79,7 +79,7 @@ export function FilterBar({
         <select
           value={floorFilter}
           onChange={(e) => onFloorChange(e.target.value)}
-          className="rounded-lg border border-border bg-background px-3 py-1.5 text-sm text-text"
+          className="rounded-lg border border-border bg-surface px-3 py-1.5 text-sm text-text"
         >
           <option value="">Svi katovi</option>
           {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map((f) => (
@@ -92,7 +92,7 @@ export function FilterBar({
           placeholder="Pretrazi po broju..."
           value={search}
           onChange={(e) => onSearchChange(e.target.value)}
-          className="rounded-lg border border-border bg-background px-3 py-1.5 text-sm text-text"
+          className="rounded-lg border border-border bg-surface px-3 py-1.5 text-sm text-text"
         />
 
         <button onClick={onRefresh} className="rounded-lg bg-primary-500 px-3 py-1.5 text-sm font-medium text-white hover:bg-primary-600">

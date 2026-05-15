@@ -48,7 +48,7 @@ export default function AmenitiesPage() {
     }
   }
 
-  if (isLoading) return <div className="animate-pulse h-64 rounded-xl bg-gray-200 dark:bg-gray-700"></div>
+  if (isLoading) return <div className="animate-pulse h-64 rounded-xl bg-surface-tertiary"></div>
 
   return (
     <div className="space-y-4">
@@ -62,8 +62,8 @@ export default function AmenitiesPage() {
       {showForm && (
         <form onSubmit={handleSubmit} className="rounded-xl border border-border bg-surface p-4 space-y-3">
           <div className="flex gap-3">
-            <input required placeholder="Naziv" value={form.name} onChange={e => setForm({...form, name: e.target.value})} className="rounded-lg border border-border bg-background px-3 py-2 text-sm text-text flex-1" />
-            <input placeholder="Ikona (emoji)" value={form.icon} onChange={e => setForm({...form, icon: e.target.value})} className="rounded-lg border border-border bg-background px-3 py-2 text-sm text-text w-24 text-center" />
+            <input required placeholder="Naziv" value={form.name} onChange={e => setForm({...form, name: e.target.value})} className="rounded-lg border border-border bg-surface px-3 py-2 text-sm text-text flex-1" />
+            <input placeholder="Ikona (emoji)" value={form.icon} onChange={e => setForm({...form, icon: e.target.value})} className="rounded-lg border border-border bg-surface px-3 py-2 text-sm text-text w-24 text-center" />
             <button type="submit" className="rounded-lg bg-primary-500 px-4 py-2 text-sm font-medium text-white">Kreiraj</button>
           </div>
         </form>
@@ -76,7 +76,7 @@ export default function AmenitiesPage() {
               {a.icon && <span className="text-2xl">{a.icon}</span>}
               <span className="font-medium text-text">{a.name}</span>
             </div>
-            <button onClick={() => toggleActive(a.id, a.isActive)} className={`rounded-full px-2 py-0.5 text-xs font-medium ${a.isActive ? 'bg-emerald-500 text-white' : 'bg-gray-400 text-white'}`}>
+            <button onClick={() => toggleActive(a.id, a.isActive)} className={`rounded-full px-2 py-0.5 text-xs font-medium ${a.isActive ? 'bg-emerald-500 text-white' : 'bg-surface-tertiary text-text-secondary'}`}>
               {a.isActive ? 'Aktivan' : 'Neaktivan'}
             </button>
           </div>

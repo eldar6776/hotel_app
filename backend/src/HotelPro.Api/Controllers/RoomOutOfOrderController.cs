@@ -36,7 +36,7 @@ public class RoomOutOfOrderController : ControllerBase
             .Select(o => new RoomOutOfOrderDto(
                 o.Id,
                 o.RoomId,
-                _dbContext.Rooms.Where(r => r.Id == o.RoomId).Select(r => r.RoomNumber).FirstOrDefault(),
+                _dbContext.Rooms.Where(r => r.Id == o.RoomId).Select(r => r.RoomNumber).FirstOrDefault() ?? "Unknown",
                 o.Reason,
                 o.Description,
                 o.StartDate,

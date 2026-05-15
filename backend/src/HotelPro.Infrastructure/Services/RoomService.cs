@@ -139,7 +139,8 @@ public class RoomService : IRoomService
         _dbContext.Rooms.Add(room);
         await _dbContext.SaveChangesAsync();
 
-        return await GetRoomByIdAsync(room.Id);
+        return await GetRoomByIdAsync(room.Id)
+            ?? throw new InvalidOperationException($"Room with ID {room.Id} not found after creation.");
     }
 
     public async Task<RoomDto> UpdateRoomAsync(Guid id, UpdateRoomDto dto)
@@ -194,7 +195,8 @@ public class RoomService : IRoomService
 
         await _dbContext.SaveChangesAsync();
 
-        return await GetRoomByIdAsync(room.Id);
+        return await GetRoomByIdAsync(room.Id)
+            ?? throw new InvalidOperationException($"Room with ID {room.Id} not found after update.");
     }
 
     public async Task UpdateRoomStatusAsync(Guid id, RoomStatus newStatus)
