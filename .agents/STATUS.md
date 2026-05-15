@@ -1,8 +1,8 @@
 # STATUS — HotelPRO
 
-**Trenutni Status:** Faza 0 COMPLETED — Planiranje i Arhitektura. Sljedeci: T1.1 PENDING.
-**Datum:** 2026-05-15
-**Pokrivenost:** 89 taskova (Faze 1-18), svi PENDING osim Faze 0
+**Trenutni Status:** Faza 4 COMPLETED — Frontend Foundation. Sljedeci: Faza 5 - Upravljanje Sobama.
+**Datum:** 2026-05-16
+**Pokrivenost:** 89 taskova (Faze 1-18), Faze 1-4 COMPLETED, Faze 5-18 PENDING
 **Dokumentacija:** Svi FSD-ovi AUTHORITATIVE, task fajlovi sa legacy mapping sekcijama
 
 ---
@@ -41,12 +41,12 @@
 - [x] **T3.3: Multi-tenant podrska (vise hotela, jedan sistem)** - [COMPLETED 2026-05-15 - opencode]
 
 ### Faza 4: Frontend Foundation
-- [-] **T4.1: Inicijalizacija Next.js projekta sa Tailwind CSS** - [IN_PROGRESS] - 2026-05-16 - opencode (deepseek-v4-pro)
-- [-] **T4.2: Design System — boje, tipografija, spacing, Dark Mode** - [IN_PROGRESS] - 2026-05-16 - opencode (deepseek-v4-pro)
-- [-] **T4.3: Layout — Sidebar navigacija, Navbar, responzivnost** - [IN_PROGRESS] - 2026-05-16 - opencode (deepseek-v4-pro)
-- [-] **T4.4: Login stranica i JWT integracija** - [IN_PROGRESS] - 2026-05-16 - opencode (deepseek-v4-pro)
-- [-] **T4.5: Dashboard stranica sa KPI karticama** - [IN_PROGRESS] - 2026-05-16 - opencode (deepseek-v4-pro)
-- [-] **T4.6: Interaktivni Help sistem (Context-Aware, Guided Tours)** - [IN_PROGRESS] - 2026-05-16 - opencode (deepseek-v4-pro)
+- [x] **T4.1: Inicijalizacija Next.js projekta sa Tailwind CSS** - [COMPLETED 2026-05-16 - opencode (deepseek-v4-pro)]
+- [x] **T4.2: Design System — boje, tipografija, spacing, Dark Mode** - [COMPLETED 2026-05-16 - opencode (deepseek-v4-pro)]
+- [x] **T4.3: Layout — Sidebar navigacija, Navbar, responzivnost** - [COMPLETED 2026-05-16 - opencode (deepseek-v4-pro)]
+- [x] **T4.4: Login stranica i JWT integracija** - [COMPLETED 2026-05-16 - opencode (deepseek-v4-pro)]
+- [x] **T4.5: Dashboard stranica sa KPI karticama** - [COMPLETED 2026-05-16 - opencode (deepseek-v4-pro)]
+- [x] **T4.6: Interaktivni Help sistem (Context-Aware, Guided Tours)** - [COMPLETED 2026-05-16 - opencode (deepseek-v4-pro)]
 
 ### Faza 5: Upravljanje Sobama
 - [ ] **T5.1: CRUD API za sobe, tipove soba i zgrade**
@@ -216,3 +216,17 @@ Sljedece grupe se mogu raditi istovremeno:
 - `infrastructure/backup/sync-to-s3.ps1` za opciono S3 sync
 - `infrastructure/backup/README.md` sa kompletnom dokumentacijom
 - Kreirana `infrastructure/backups/daily/` struktura
+
+### 2026-05-16 — opencode (deepseek-v4-pro)
+- **Faza 4 COMPLETED**: Frontend Foundation — svi taskovi implementirani
+- T4.1: Next.js 16.2.6 + Tailwind v4, Inter font, HSL custom boje, dark mode class strategija
+- T4.2: Design system — HSL paleta, ThemeProvider (localStorage persist, context), spacing/radius tokeni
+- T4.3: Layout — Sidebar (280px/64px), Navbar (64px), MobileSidebar overlay, Breadcrumbs, SidebarContext, AppLayout
+- T4.4: Login stranica (`/login`), token-storage (localStorage/sessionStorage), axios interceptor (JWT + refresh), AuthGuard, proxy.ts middleware
+- T4.5: Dashboard (`/dashboard`) — 8 KPI kartica, OccupancyChart (chart.js), RecentBookings tabela, UpcomingCheckins lista, skeleton loading, auto-refresh 60s
+- T4.6: Help sistem — HelpProvider (context-aware tooltips), HelpTooltip, TourProvider (react-joyride guided tours), CommandPalette (Ctrl+K)
+- UI primitives: Input, Button, Checkbox, Alert, Badge, Skeleton
+- Dependency: axios, lucide-react, chart.js, react-chartjs-2, react-joyride
+- Build: `npm run build` prolazi bez gresaka, `npm run lint` prolazi
+- Rute: `/`, `/login`, `/dashboard`, proxy middleware za autentifikaciju
+- Tailwind v4 CSS-first konfiguracija (@theme inline), middleware → proxy (Next.js 16 breaking change)
