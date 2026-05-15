@@ -1,39 +1,32 @@
 using HotelPro.Core.Enums;
+using HotelPro.Core.Interfaces;
 
 namespace HotelPro.Core.Entities;
 
-public class Booking
+public class Booking : IHaveHotelId
 {
     public Guid Id { get; set; }
-    public string BookingNumber { get; set; } = string.Empty;
+    public Guid HotelId { get; set; }
     public Guid GuestId { get; set; }
-    public Guid? BookingTypeId { get; set; }
-    public Guid? BookingSourceId { get; set; }
-    public Guid? PartnerId { get; set; }
-    public Guid? SalesAgentId { get; set; }
+    public Guid? GroupId { get; set; }
+    public BookingSource Source { get; set; }
+    public BookingType Type { get; set; }
     public BookingStatus Status { get; set; }
     public DateTime ArrivalDate { get; set; }
     public DateTime DepartureDate { get; set; }
-    public int Adults { get; set; }
-    public int Children { get; set; }
+    public int AdultCount { get; set; }
+    public int ChildCount { get; set; }
     public decimal TotalPrice { get; set; }
+    public decimal ExchangeRateTotal { get; set; }
     public string Currency { get; set; } = "EUR";
-    public PaymentStatus PaymentStatus { get; set; }
     public string? Notes { get; set; }
     public string? InternalNotes { get; set; }
-    public string? ConfirmationCode { get; set; }
-    public Guid? CreatedById { get; set; }
+    public string? CancellationReason { get; set; }
+    public DateTime? CancelledAt { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
-    public DateTime? CancelledAt { get; set; }
-    public string? CancellationReason { get; set; }
 
     public Guest Guest { get; set; } = null!;
-    public BookingType? BookingType { get; set; }
-    public BookingSource? BookingSource { get; set; }
-    public Partner? Partner { get; set; }
-    public SalesAgent? SalesAgent { get; set; }
-    public Employee? CreatedBy { get; set; }
     public ICollection<BookingRoom> BookingRooms { get; set; } = new List<BookingRoom>();
     public ICollection<BookingHistory> Histories { get; set; } = new List<BookingHistory>();
 }

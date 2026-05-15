@@ -32,8 +32,6 @@ public class HotelProDbContext : DbContext
     public DbSet<SalesAgent> SalesAgents => Set<SalesAgent>();
 
     // Bookings
-    public DbSet<BookingSource> BookingSources => Set<BookingSource>();
-    public DbSet<BookingType> BookingTypes => Set<BookingType>();
     public DbSet<Booking> Bookings => Set<Booking>();
     public DbSet<BookingRoom> BookingRooms => Set<BookingRoom>();
     public DbSet<GroupBooking> GroupBookings => Set<GroupBooking>();
@@ -83,8 +81,6 @@ public class HotelProDbContext : DbContext
         modelBuilder.ApplyConfiguration(new PartnerConfiguration());
         modelBuilder.ApplyConfiguration(new SalesAgentConfiguration());
 
-        modelBuilder.ApplyConfiguration(new BookingSourceConfiguration());
-        modelBuilder.ApplyConfiguration(new BookingTypeConfiguration());
         modelBuilder.ApplyConfiguration(new BookingConfiguration());
         modelBuilder.ApplyConfiguration(new BookingRoomConfiguration());
         modelBuilder.ApplyConfiguration(new GroupBookingConfiguration());
@@ -144,7 +140,8 @@ public class HotelProDbContext : DbContext
                 var property = Expression.Property(parameter, "HotelId");
                 var method = typeof(HotelProDbContext).GetMethod(nameof(GetCurrentTenantId), System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)!;
                 var call = Expression.Call(Expression.Constant(this), method);
-                var equal = Expression.Equal(property, call);
+                var nullableProperty = Expression.Convert(property, typeof(Guid?));
+                var equal = Expression.Equal(nullableProperty, call);
                 var lambda = Expression.Lambda(equal, parameter);
                 modelBuilder.Entity(entityType.ClrType).HasQueryFilter(lambda);
             }

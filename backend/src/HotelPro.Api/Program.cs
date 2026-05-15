@@ -110,6 +110,8 @@ builder.Services.AddSingleton<ITranslationService, TranslationService>();
 builder.Services.AddScoped<ITenantService, TenantService>();
 builder.Services.AddScoped<HotelPro.Core.Services.IRoomService, HotelPro.Infrastructure.Services.RoomService>();
 builder.Services.AddScoped<HotelPro.Core.Services.IRoomStatusBroadcaster, HotelPro.Api.Hubs.SignalRBroadcaster>();
+builder.Services.AddScoped<HotelPro.Core.Interfaces.IBookingRepository, HotelPro.Infrastructure.Repositories.BookingRepository>();
+builder.Services.AddScoped<HotelPro.Core.Services.IBookingService, HotelPro.Infrastructure.Services.BookingService>();
 
 builder.Services.AddSignalR();
 

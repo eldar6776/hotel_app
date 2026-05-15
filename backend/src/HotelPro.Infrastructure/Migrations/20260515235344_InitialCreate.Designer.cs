@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace HotelPro.Infrastructure.Migrations
 {
     [DbContext(typeof(HotelProDbContext))]
-    [Migration("20260515230303_AddRoomOutOfOrder")]
-    partial class AddRoomOutOfOrder
+    [Migration("20260515235344_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -139,22 +139,11 @@ namespace HotelPro.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<int>("Adults")
+                    b.Property<int>("AdultCount")
                         .HasColumnType("integer");
 
                     b.Property<DateTime>("ArrivalDate")
                         .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("BookingNumber")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("character varying(20)");
-
-                    b.Property<Guid?>("BookingSourceId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid?>("BookingTypeId")
-                        .HasColumnType("uuid");
 
                     b.Property<string>("CancellationReason")
                         .HasColumnType("text");
@@ -162,17 +151,11 @@ namespace HotelPro.Infrastructure.Migrations
                     b.Property<DateTime?>("CancelledAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<int>("Children")
+                    b.Property<int>("ChildCount")
                         .HasColumnType("integer");
-
-                    b.Property<string>("ConfirmationCode")
-                        .HasColumnType("text");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
-
-                    b.Property<Guid?>("CreatedById")
-                        .HasColumnType("uuid");
 
                     b.Property<string>("Currency")
                         .IsRequired()
@@ -182,7 +165,16 @@ namespace HotelPro.Infrastructure.Migrations
                     b.Property<DateTime>("DepartureDate")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<decimal>("ExchangeRateTotal")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<Guid?>("GroupId")
+                        .HasColumnType("uuid");
+
                     b.Property<Guid>("GuestId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("HotelId")
                         .HasColumnType("uuid");
 
                     b.Property<string>("InternalNotes")
@@ -191,16 +183,10 @@ namespace HotelPro.Infrastructure.Migrations
                     b.Property<string>("Notes")
                         .HasColumnType("text");
 
-                    b.Property<Guid?>("PartnerId")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("PaymentStatus")
+                    b.Property<string>("Source")
                         .IsRequired()
                         .HasMaxLength(20)
                         .HasColumnType("character varying(20)");
-
-                    b.Property<Guid?>("SalesAgentId")
-                        .HasColumnType("uuid");
 
                     b.Property<string>("Status")
                         .IsRequired()
@@ -210,25 +196,27 @@ namespace HotelPro.Infrastructure.Migrations
                     b.Property<decimal>("TotalPrice")
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("BookingNumber")
-                        .IsUnique();
+                    b.HasIndex("ArrivalDate");
 
-                    b.HasIndex("BookingSourceId");
+                    b.HasIndex("DepartureDate");
 
-                    b.HasIndex("BookingTypeId");
-
-                    b.HasIndex("CreatedById");
+                    b.HasIndex("GroupId");
 
                     b.HasIndex("GuestId");
 
-                    b.HasIndex("PartnerId");
+                    b.HasIndex("HotelId");
 
-                    b.HasIndex("SalesAgentId");
+                    b.HasIndex("Status");
 
                     b.ToTable("bookings", (string)null);
                 });
@@ -276,31 +264,19 @@ namespace HotelPro.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<int>("Adults")
-                        .HasColumnType("integer");
-
                     b.Property<Guid>("BookingId")
                         .HasColumnType("uuid");
-
-                    b.Property<DateTime>("CheckInDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime>("CheckOutDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("Children")
-                        .HasColumnType("integer");
-
-                    b.Property<Guid?>("GuestId")
-                        .HasColumnType("uuid");
-
-                    b.Property<bool>("IsMainGuest")
-                        .HasColumnType("boolean");
 
                     b.Property<decimal>("PricePerNight")
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<Guid>("RatePlanId")
+                        .HasColumnType("uuid");
+
                     b.Property<Guid?>("RoomId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("RoomTypeId")
                         .HasColumnType("uuid");
 
                     b.Property<string>("Status")
@@ -312,62 +288,11 @@ namespace HotelPro.Infrastructure.Migrations
 
                     b.HasIndex("BookingId");
 
-                    b.HasIndex("GuestId");
-
                     b.HasIndex("RoomId");
 
+                    b.HasIndex("RoomTypeId");
+
                     b.ToTable("booking_rooms", (string)null);
-                });
-
-            modelBuilder.Entity("HotelPro.Core.Entities.BookingSource", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Code")
-                        .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("character varying(10)");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("booking_sources", (string)null);
-                });
-
-            modelBuilder.Entity("HotelPro.Core.Entities.BookingType", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Code")
-                        .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("character varying(10)");
-
-                    b.Property<string>("Color")
-                        .HasColumnType("text");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("booking_types", (string)null);
                 });
 
             modelBuilder.Entity("HotelPro.Core.Entities.Building", b =>
@@ -1700,48 +1625,13 @@ namespace HotelPro.Infrastructure.Migrations
 
             modelBuilder.Entity("HotelPro.Core.Entities.Booking", b =>
                 {
-                    b.HasOne("HotelPro.Core.Entities.BookingSource", "BookingSource")
-                        .WithMany()
-                        .HasForeignKey("BookingSourceId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("HotelPro.Core.Entities.BookingType", "BookingType")
-                        .WithMany()
-                        .HasForeignKey("BookingTypeId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("HotelPro.Core.Entities.Employee", "CreatedBy")
-                        .WithMany()
-                        .HasForeignKey("CreatedById")
-                        .OnDelete(DeleteBehavior.Restrict);
-
                     b.HasOne("HotelPro.Core.Entities.Guest", "Guest")
                         .WithMany()
                         .HasForeignKey("GuestId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("HotelPro.Core.Entities.Partner", "Partner")
-                        .WithMany()
-                        .HasForeignKey("PartnerId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("HotelPro.Core.Entities.SalesAgent", "SalesAgent")
-                        .WithMany()
-                        .HasForeignKey("SalesAgentId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.Navigation("BookingSource");
-
-                    b.Navigation("BookingType");
-
-                    b.Navigation("CreatedBy");
-
                     b.Navigation("Guest");
-
-                    b.Navigation("Partner");
-
-                    b.Navigation("SalesAgent");
                 });
 
             modelBuilder.Entity("HotelPro.Core.Entities.BookingHistory", b =>
@@ -1770,21 +1660,22 @@ namespace HotelPro.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("HotelPro.Core.Entities.Guest", "Guest")
-                        .WithMany()
-                        .HasForeignKey("GuestId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
                     b.HasOne("HotelPro.Core.Entities.Room", "Room")
                         .WithMany()
                         .HasForeignKey("RoomId")
                         .OnDelete(DeleteBehavior.Restrict);
 
+                    b.HasOne("HotelPro.Core.Entities.RoomType", "RoomType")
+                        .WithMany()
+                        .HasForeignKey("RoomTypeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.Navigation("Booking");
 
-                    b.Navigation("Guest");
-
                     b.Navigation("Room");
+
+                    b.Navigation("RoomType");
                 });
 
             modelBuilder.Entity("HotelPro.Core.Entities.Charge", b =>

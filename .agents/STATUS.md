@@ -55,8 +55,8 @@
 - [x] **T5.4: Upravljanje tarifama, sadrzajima i OOO statusom** - [COMPLETED 2026-05-16 - opencode]
 
 ### Faza 6: Rezervacije (Booking Engine)
-- [ ] **T6.1: CRUD API za rezervacije (pojedinacne i grupne)**
-- [ ] **T6.2: Frontend — interaktivni Drag & Drop Gantt kalendar**
+- [x] **T6.1: CRUD API za rezervacije (pojedinacne i grupne)** - [COMPLETED 2026-05-16 - opencode (kimi-k2.6)]
+- [-] **T6.2: Frontend — interaktivni Drag & Drop Gantt kalendar** - [IN_PROGRESS] - 2026-05-16 - opencode (kimi-k2.6)
 - [ ] **T6.3: Provjera dostupnosti i logika kolizija (double-booking prevention)**
 - [ ] **T6.4: Email potvrda rezervacije**
 - [ ] **T6.5: Grupne rezervacije — blokiranje soba, master racun, posebni cjenovnici**
@@ -280,3 +280,28 @@ Sljedece grupe se mogu raditi istovremeno:
 - **Frontend**: `npm run build` + `npm run lint` prolaze bez gresaka
 - **Nove依赖nosti**: @microsoft/signalr (frontend), Microsoft.EntityFrameworkCore.Design (Api)
 - **Status**: Svi kritični propusti ispravljeni, Faza 4 potpuno verificirana
+
+### 2026-05-16 — opencode (kimi-k2.6) — T6.1 COMPLETED
+- **Entiteti**: Booking i BookingRoom prilagodjeni specifikaciji T6.1
+  - BookingSource i BookingType pretvoreni iz entiteta u enum-e (Direct, BookingCom, Expedia, HotelWebsite, Phone, WalkIn, Corporate, TravelAgency / Normal, Group, Corporate, TravelAgency, Complementary)
+  - BookingStatus: Provisional → Pending
+  - BookingRoomStatus: Pending/CheckedIn/CheckedOut/Cancelled → Blocked/Assigned/Released/Occupied
+  - Dodati: HotelId, GroupId, ExchangeRateTotal, AdultCount/ChildCount
+  - Uklonjeni: BookingNumber, BookingSourceId, BookingTypeId, PartnerId, SalesAgentId, PaymentStatus, ConfirmationCode, CreatedById
+- **EF Core**: Azurirane konfiguracije, uklonjeni stari entiteti, kreirana nova InitialCreate migracija
+- **DTO-ovi**: BookingDto, BookingRoomDto, CreateBookingDto, UpdateBookingDto, BookingFilter, PagedResult
+- **Repository**: IBookingRepository + BookingRepository (GetById, GetByIdWithRooms, GetAll/Count sa filterima, Add, Update, Delete)
+- **Service**: IBookingService + BookingService
+  - Automatski izracun TotalPrice = sum(BookingRoom.PricePerNight * broj noci)
+  - Status workflow enforcement: Pending→Confirmed→CheckedIn→CheckedOut, dozvoljeni prelasci u Cancelled
+  - Validacija: Arrival < Departure, AdultCount >= 1 (osim Complementary)
+  - DELETE samo ako je status Pending
+- **Controller**: BookingsController (api/v2/bookings)
+  - GET /api/v2/bookings (sa filterima: status, fromDate, toDate, guestId, roomId)
+  - GET /api/v2/bookings/{id}
+  - POST /api/v2/bookings
+  - PUT /api/v2/bookings/{id}
+  - PATCH /api/v2/bookings/{id}/status
+  - DELETE /api/v2/bookings/{id}
+  - RBAC: CanManageBookings / Admin,Manager za DELETE
+- **Backend**: `dotnet build` prolazi (0 errors), `dotnet test` prolazi (6/6)

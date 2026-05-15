@@ -2,7 +2,7 @@ namespace HotelPro.Core.Enums;
 
 public enum BookingStatus
 {
-    Provisional,
+    Pending,
     Confirmed,
     CheckedIn,
     CheckedOut,
@@ -20,10 +20,10 @@ public enum PaymentStatus
 
 public enum BookingRoomStatus
 {
-    Pending,
-    CheckedIn,
-    CheckedOut,
-    Cancelled
+    Blocked,
+    Assigned,
+    Released,
+    Occupied
 }
 
 public enum BookingHistoryAction
@@ -116,6 +116,27 @@ public enum WorkOrderStatus
     InProgress,
     Resolved,
     Closed
+}
+
+public enum BookingSource
+{
+    Direct,
+    BookingCom,
+    Expedia,
+    HotelWebsite,
+    Phone,
+    WalkIn,
+    Corporate,
+    TravelAgency
+}
+
+public enum BookingType
+{
+    Normal,
+    Group,
+    Corporate,
+    TravelAgency,
+    Complementary
 }
 
 public enum AccessAction

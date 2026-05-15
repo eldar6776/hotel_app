@@ -80,8 +80,7 @@ public class NightAuditJob : ScheduledJobBase
 
             if (existingStayNight) continue;
 
-            var isComplementary = booking.BookingTypeId.HasValue
-                && await db.BookingTypes.AnyAsync(bt => bt.Id == booking.BookingTypeId && bt.Code == "COMP", ct);
+            var isComplementary = booking.Type == BookingType.Complementary;
 
             foreach (var bookingRoom in booking.BookingRooms)
             {

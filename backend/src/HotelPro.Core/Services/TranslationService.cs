@@ -79,7 +79,7 @@ public class TranslationService : ITranslationService
             ["booking.status.checkedout"] = "Checked Out",
             ["booking.status.cancelled"] = "Cancelled",
             ["booking.status.noshow"] = "No Show",
-            ["booking.status.provisional"] = "Provisional",
+            ["booking.status.pending"] = "Pending",
             ["room.status.free"] = "Free",
             ["room.status.occupied"] = "Occupied",
             ["room.status.reserved"] = "Reserved",

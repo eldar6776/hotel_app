@@ -9,7 +9,7 @@ public static class SeedData
 {
     public static void Initialize(HotelProDbContext context)
     {
-        if (context.BookingSources.Any()) return;
+        if (context.Hotels.Any()) return;
 
         var hotelId = Guid.NewGuid();
         context.Hotels.Add(new Hotel
@@ -28,21 +28,6 @@ public static class SeedData
             CreatedAt = DateTime.UtcNow
         });
         context.SaveChanges();
-
-        context.BookingSources.AddRange(
-            new BookingSource { Id = Guid.NewGuid(), Name = "Direct", Code = "DIR", IsActive = true },
-            new BookingSource { Id = Guid.NewGuid(), Name = "Booking.com", Code = "BCOM", IsActive = true },
-            new BookingSource { Id = Guid.NewGuid(), Name = "Airbnb", Code = "ABNB", IsActive = true },
-            new BookingSource { Id = Guid.NewGuid(), Name = "Expedia", Code = "EXP", IsActive = true },
-            new BookingSource { Id = Guid.NewGuid(), Name = "Walk-in", Code = "WALK", IsActive = true }
-        );
-
-        context.BookingTypes.AddRange(
-            new BookingType { Id = Guid.NewGuid(), Name = "Individual", Code = "IND", Color = "#4CAF50", IsActive = true },
-            new BookingType { Id = Guid.NewGuid(), Name = "Group", Code = "GRP", Color = "#2196F3", IsActive = true },
-            new BookingType { Id = Guid.NewGuid(), Name = "Corporate", Code = "CORP", Color = "#FF9800", IsActive = true },
-            new BookingType { Id = Guid.NewGuid(), Name = "VIP", Code = "VIP", Color = "#9C27B0", IsActive = true }
-        );
 
         context.PaymentMethods.AddRange(
             new PaymentMethod { Id = Guid.NewGuid(), Name = "Cash", Code = "CASH", IsActive = true },

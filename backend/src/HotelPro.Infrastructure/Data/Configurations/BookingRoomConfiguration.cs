@@ -15,6 +15,7 @@ public class BookingRoomConfiguration : IEntityTypeConfiguration<BookingRoom>
 
         builder.HasIndex(x => x.BookingId);
         builder.HasIndex(x => x.RoomId);
+        builder.HasIndex(x => x.RoomTypeId);
 
         builder.HasOne(x => x.Booking)
             .WithMany(x => x.BookingRooms)
@@ -27,9 +28,9 @@ public class BookingRoomConfiguration : IEntityTypeConfiguration<BookingRoom>
             .OnDelete(DeleteBehavior.Restrict)
             .IsRequired(false);
 
-        builder.HasOne(x => x.Guest)
+        builder.HasOne(x => x.RoomType)
             .WithMany()
-            .HasForeignKey(x => x.GuestId)
+            .HasForeignKey(x => x.RoomTypeId)
             .OnDelete(DeleteBehavior.Restrict);
     }
 }

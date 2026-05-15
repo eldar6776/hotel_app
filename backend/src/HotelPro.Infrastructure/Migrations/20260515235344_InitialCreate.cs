@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace HotelPro.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class AddRoomOutOfOrder : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -44,35 +44,6 @@ namespace HotelPro.Infrastructure.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_audit_logs", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "booking_sources",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
-                    Code = table.Column<string>(type: "character varying(10)", maxLength: 10, nullable: false),
-                    IsActive = table.Column<bool>(type: "boolean", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_booking_sources", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "booking_types",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
-                    Code = table.Column<string>(type: "character varying(10)", maxLength: 10, nullable: false),
-                    Color = table.Column<string>(type: "text", nullable: true),
-                    IsActive = table.Column<bool>(type: "boolean", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_booking_types", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -461,6 +432,42 @@ namespace HotelPro.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "bookings",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    HotelId = table.Column<Guid>(type: "uuid", nullable: false),
+                    GuestId = table.Column<Guid>(type: "uuid", nullable: false),
+                    GroupId = table.Column<Guid>(type: "uuid", nullable: true),
+                    Source = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: false),
+                    Type = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: false),
+                    Status = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: false),
+                    ArrivalDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    DepartureDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    AdultCount = table.Column<int>(type: "integer", nullable: false),
+                    ChildCount = table.Column<int>(type: "integer", nullable: false),
+                    TotalPrice = table.Column<decimal>(type: "numeric(18,2)", nullable: false),
+                    ExchangeRateTotal = table.Column<decimal>(type: "numeric(18,2)", nullable: false),
+                    Currency = table.Column<string>(type: "character varying(3)", maxLength: 3, nullable: false),
+                    Notes = table.Column<string>(type: "text", nullable: true),
+                    InternalNotes = table.Column<string>(type: "text", nullable: true),
+                    CancellationReason = table.Column<string>(type: "text", nullable: true),
+                    CancelledAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_bookings", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_bookings_guests_GuestId",
+                        column: x => x.GuestId,
+                        principalTable: "guests",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "guest_documents",
                 columns: table => new
                 {
@@ -646,75 +653,6 @@ namespace HotelPro.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "bookings",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    BookingNumber = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: false),
-                    GuestId = table.Column<Guid>(type: "uuid", nullable: false),
-                    BookingTypeId = table.Column<Guid>(type: "uuid", nullable: true),
-                    BookingSourceId = table.Column<Guid>(type: "uuid", nullable: true),
-                    PartnerId = table.Column<Guid>(type: "uuid", nullable: true),
-                    SalesAgentId = table.Column<Guid>(type: "uuid", nullable: true),
-                    Status = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: false),
-                    ArrivalDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    DepartureDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    Adults = table.Column<int>(type: "integer", nullable: false),
-                    Children = table.Column<int>(type: "integer", nullable: false),
-                    TotalPrice = table.Column<decimal>(type: "numeric(18,2)", nullable: false),
-                    Currency = table.Column<string>(type: "character varying(3)", maxLength: 3, nullable: false),
-                    PaymentStatus = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: false),
-                    Notes = table.Column<string>(type: "text", nullable: true),
-                    InternalNotes = table.Column<string>(type: "text", nullable: true),
-                    ConfirmationCode = table.Column<string>(type: "text", nullable: true),
-                    CreatedById = table.Column<Guid>(type: "uuid", nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    CancelledAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    CancellationReason = table.Column<string>(type: "text", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_bookings", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_bookings_booking_sources_BookingSourceId",
-                        column: x => x.BookingSourceId,
-                        principalTable: "booking_sources",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_bookings_booking_types_BookingTypeId",
-                        column: x => x.BookingTypeId,
-                        principalTable: "booking_types",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_bookings_employees_CreatedById",
-                        column: x => x.CreatedById,
-                        principalTable: "employees",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_bookings_guests_GuestId",
-                        column: x => x.GuestId,
-                        principalTable: "guests",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_bookings_partners_PartnerId",
-                        column: x => x.PartnerId,
-                        principalTable: "partners",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_bookings_sales_agents_SalesAgentId",
-                        column: x => x.SalesAgentId,
-                        principalTable: "sales_agents",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "booking_histories",
                 columns: table => new
                 {
@@ -750,13 +688,9 @@ namespace HotelPro.Infrastructure.Migrations
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     BookingId = table.Column<Guid>(type: "uuid", nullable: false),
                     RoomId = table.Column<Guid>(type: "uuid", nullable: true),
-                    GuestId = table.Column<Guid>(type: "uuid", nullable: true),
-                    CheckInDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    CheckOutDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    Adults = table.Column<int>(type: "integer", nullable: false),
-                    Children = table.Column<int>(type: "integer", nullable: false),
+                    RoomTypeId = table.Column<Guid>(type: "uuid", nullable: false),
+                    RatePlanId = table.Column<Guid>(type: "uuid", nullable: false),
                     PricePerNight = table.Column<decimal>(type: "numeric(18,2)", nullable: false),
-                    IsMainGuest = table.Column<bool>(type: "boolean", nullable: false),
                     Status = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: false)
                 },
                 constraints: table =>
@@ -769,9 +703,9 @@ namespace HotelPro.Infrastructure.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_booking_rooms_guests_GuestId",
-                        column: x => x.GuestId,
-                        principalTable: "guests",
+                        name: "FK_booking_rooms_room_types_RoomTypeId",
+                        column: x => x.RoomTypeId,
+                        principalTable: "room_types",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
@@ -1068,35 +1002,29 @@ namespace HotelPro.Infrastructure.Migrations
                 column: "BookingId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_booking_rooms_GuestId",
-                table: "booking_rooms",
-                column: "GuestId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_booking_rooms_RoomId",
                 table: "booking_rooms",
                 column: "RoomId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_bookings_BookingNumber",
-                table: "bookings",
-                column: "BookingNumber",
-                unique: true);
+                name: "IX_booking_rooms_RoomTypeId",
+                table: "booking_rooms",
+                column: "RoomTypeId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_bookings_BookingSourceId",
+                name: "IX_bookings_ArrivalDate",
                 table: "bookings",
-                column: "BookingSourceId");
+                column: "ArrivalDate");
 
             migrationBuilder.CreateIndex(
-                name: "IX_bookings_BookingTypeId",
+                name: "IX_bookings_DepartureDate",
                 table: "bookings",
-                column: "BookingTypeId");
+                column: "DepartureDate");
 
             migrationBuilder.CreateIndex(
-                name: "IX_bookings_CreatedById",
+                name: "IX_bookings_GroupId",
                 table: "bookings",
-                column: "CreatedById");
+                column: "GroupId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_bookings_GuestId",
@@ -1104,14 +1032,14 @@ namespace HotelPro.Infrastructure.Migrations
                 column: "GuestId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_bookings_PartnerId",
+                name: "IX_bookings_HotelId",
                 table: "bookings",
-                column: "PartnerId");
+                column: "HotelId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_bookings_SalesAgentId",
+                name: "IX_bookings_Status",
                 table: "bookings",
-                column: "SalesAgentId");
+                column: "Status");
 
             migrationBuilder.CreateIndex(
                 name: "IX_charges_FolioId",
@@ -1411,6 +1339,9 @@ namespace HotelPro.Infrastructure.Migrations
                 name: "room_out_of_order");
 
             migrationBuilder.DropTable(
+                name: "sales_agents");
+
+            migrationBuilder.DropTable(
                 name: "shifts");
 
             migrationBuilder.DropTable(
@@ -1432,6 +1363,12 @@ namespace HotelPro.Infrastructure.Migrations
                 name: "payment_methods");
 
             migrationBuilder.DropTable(
+                name: "partners");
+
+            migrationBuilder.DropTable(
+                name: "employees");
+
+            migrationBuilder.DropTable(
                 name: "folios");
 
             migrationBuilder.DropTable(
@@ -1444,28 +1381,13 @@ namespace HotelPro.Infrastructure.Migrations
                 name: "rooms");
 
             migrationBuilder.DropTable(
-                name: "booking_sources");
-
-            migrationBuilder.DropTable(
-                name: "booking_types");
-
-            migrationBuilder.DropTable(
-                name: "employees");
-
-            migrationBuilder.DropTable(
                 name: "guests");
-
-            migrationBuilder.DropTable(
-                name: "sales_agents");
 
             migrationBuilder.DropTable(
                 name: "buildings");
 
             migrationBuilder.DropTable(
                 name: "room_types");
-
-            migrationBuilder.DropTable(
-                name: "partners");
 
             migrationBuilder.DropTable(
                 name: "countries");
