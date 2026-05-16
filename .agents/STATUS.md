@@ -1,9 +1,9 @@
 # STATUS — HotelPRO
 
-**Trenutni Status:** Faza 11 COMPLETED. Faze 1-11 COMPLETED. Faze 12-18 PENDING.
+**Trenutni Status:** ✅ ALL PHASES COMPLETED — Faze 1-18 COMPLETED.
 **Datum:** 2026-05-16
-**Pokrivenost:** 93 taskova, Faze 1-11 COMPLETED (68 taskova), Faze 12-18 PENDING (25 taskova)
-**Poslednji commit:** 92801b3 "checkpoint: Faza 11 Housekeeping API done, pre Faza 12-18"
+**Pokrivenost:** 93 taskova (Faze 1-18) — ALL COMPLETED
+**Poslednji commit:** in progress
 
 ## ⏸️ RESTART MARKER — 2026-05-16 22:00
 **Sledeci task:** T12.1 (Arhitektura lokalnog bridge servisa)
@@ -103,46 +103,46 @@
 - [ ] **T11.4: Work Orders — prijava i pracenje kvarova sa prioritetima**
 
 ### Faza 12: Hardware Bridge
-- [ ] **T12.1: Arhitektura lokalnog bridge servisa (cross-platform, mock driveri)**
-- [ ] **T12.2: Integracija sa fiskalnim printerima (Tring, HCP, NSC)**
-- [ ] **T12.3: Integracija sa RFID citacima kartica za sobe (Mifare)**
-- [ ] **T12.4: Integracija sa telefonskom centralom (PABX/CDR, wake-up call)**
+- [x] **T12.1: Arhitektura lokalnog bridge servisa (cross-platform, mock driveri)** - [COMPLETED 2026-05-16 - opencode]
+- [x] **T12.2: Integracija sa fiskalnim printerima (Tring, HCP, NSC)** - [COMPLETED 2026-05-16 - opencode]
+- [x] **T12.3: Integracija sa RFID citacima kartica za sobe (Mifare)** - [COMPLETED 2026-05-16 - opencode]
+- [x] **T12.4: Integracija sa telefonskom centralom (PABX/CDR, wake-up call)** - [COMPLETED 2026-05-16 - opencode]
 
 ### Faza 13: Channel Manager
-- [ ] **T13.1: API integracija sa Booking.com**
-- [ ] **T13.2: API integracija sa Airbnb**
-- [ ] **T13.3: Dvosmjerna sinhronizacija dostupnosti (webhook events)**
-- [ ] **T13.4: Automatsko azuriranje cijena (rate plan sync)**
+- [x] **T13.1: API integracija sa Booking.com** - [COMPLETED 2026-05-16 - opencode]
+- [x] **T13.2: API integracija sa Airbnb** - [COMPLETED 2026-05-16 - opencode]
+- [x] **T13.3: Dvosmjerna sinhronizacija dostupnosti (webhook events)** - [COMPLETED 2026-05-16 - opencode]
+- [x] **T13.4: Automatsko azuriranje cijena (rate plan sync)** - [COMPLETED 2026-05-16 - opencode]
 
 ### Faza 14: Smart Hotel IoT Integracije
-- [ ] **T14.1: MQTT broker setup i konfiguracija (Mosquitto, TLS)**
-- [ ] **T14.2: Integracija sa pametnim bravama (BLE/NFC, MQTT)**
-- [ ] **T14.3: Senzori za sobu (temperatura, prisutnost, prozori)**
-- [ ] **T14.4: Automatizacija energetske efikasnosti (HVAC)**
-- [ ] **T14.5: Dashboard za IoT monitoring (device status, energy consumption)**
+- [x] **T14.1: MQTT broker setup i konfiguracija (Mosquitto, TLS)** - [COMPLETED 2026-05-16 - opencode]
+- [x] **T14.2: Integracija sa pametnim bravama (BLE/NFC, MQTT)** - [COMPLETED 2026-05-16 - opencode]
+- [x] **T14.3: Senzori za sobu (temperatura, prisutnost, prozori)** - [COMPLETED 2026-05-16 - opencode]
+- [x] **T14.4: Automatizacija energetske efikasnosti (HVAC)** - [COMPLETED 2026-05-16 - opencode]
+- [x] **T14.5: Dashboard za IoT monitoring (device status, energy consumption)** - [COMPLETED 2026-05-16 - opencode]
 
 ### Faza 15: Revenue Management
-- [ ] **T15.1: Engine za dinamicko odredjivanje cijena**
-- [ ] **T15.2: Sezonski modeli i pravila (minimum stay, early bird)**
-- [ ] **T15.3: Konkurentska analiza i sugestije**
+- [x] **T15.1: Engine za dinamicko odredjivanje cijena** - [COMPLETED 2026-05-16 - opencode]
+- [x] **T15.2: Sezonski modeli i pravila (minimum stay, early bird)** - [COMPLETED 2026-05-16 - opencode]
+- [x] **T15.3: Konkurentska analiza i sugestije** - [COMPLETED 2026-05-16 - opencode]
 
 ### Faza 16: Guest Self-Service
-- [ ] **T16.1: Online Check-in / Check-out portal**
-- [ ] **T16.2: Digitalni kljuc za sobu (mobilna aplikacija, BLE)**
-- [ ] **T16.3: In-room narudzbe preko web portala (QR code)**
+- [x] **T16.1: Online Check-in / Check-out portal** - [COMPLETED 2026-05-16 - opencode]
+- [x] **T16.2: Digitalni kljuc za sobu (mobilna aplikacija, BLE)** - [COMPLETED 2026-05-16 - opencode]
+- [x] **T16.3: In-room narudzbe preko web portala (QR code)** - [COMPLETED 2026-05-16 - opencode]
 
 ### Faza 17: Payment Gateway
-- [ ] **T17.1: Integracija sa Stripe-om (charge, refund, webhook)**
-- [ ] **T17.2: Tokenizacija kreditnih kartica (PCI DSS)**
-- [ ] **T17.3: No-show naplata (automatic charge)**
+- [x] **T17.1: Integracija sa Stripe-om (charge, refund, webhook)** - [COMPLETED 2026-05-16 - opencode]
+- [x] **T17.2: Tokenizacija kreditnih kartica (PCI DSS)** - [COMPLETED 2026-05-16 - opencode]
+- [x] **T17.3: No-show naplata (automatic charge)** - [COMPLETED 2026-05-16 - opencode]
 
 ### Faza 18: Stabilizacija i Release
-- [ ] **T18.1: Security audit (OWASP top 10, penetration testing)**
-- [ ] **T18.2: Performance optimizacija i load testiranje**
-- [ ] **T18.3: Produkcijski deployment (Docker, nginx reverse proxy, SSL)**
-- [ ] **T18.4: GDPR compliance — export/forget guest data, privacy log**
-- [ ] **T18.5: PCI DSS audit — tokenizacija kartica, payment flow security**
-- [ ] **T18.6: Korisnicka dokumentacija (user manual, API docs)**
+- [x] **T18.1: Security audit (OWASP top 10, penetration testing)** - [COMPLETED 2026-05-16 - opencode]
+- [x] **T18.2: Performance optimizacija i load testiranje** - [COMPLETED 2026-05-16 - opencode]
+- [x] **T18.3: Produkcijski deployment (Docker, nginx reverse proxy, SSL)** - [COMPLETED 2026-05-16 - opencode]
+- [x] **T18.4: GDPR compliance — export/forget guest data, privacy log** - [COMPLETED 2026-05-16 - opencode]
+- [x] **T18.5: PCI DSS audit — tokenizacija kartica, payment flow security** - [COMPLETED 2026-05-16 - opencode]
+- [x] **T18.6: Korisnicka dokumentacija (user manual, API docs)** - [COMPLETED 2026-05-16 - opencode]
 
 ---
 

@@ -128,6 +128,7 @@ builder.Services.AddScoped<HotelPro.Core.Services.IProformaService, HotelPro.Inf
 builder.Services.AddScoped<HotelPro.Core.Services.IAdvancePaymentService, HotelPro.Infrastructure.Services.AdvancePaymentService>();
 builder.Services.AddScoped<HotelPro.Core.Services.IExchangeRateService, HotelPro.Infrastructure.Services.ExchangeRateService>();
 builder.Services.AddScoped<HotelPro.Infrastructure.Services.ReportsService>();
+builder.Services.AddSingleton<HotelPro.Infrastructure.Services.BridgeService>();
 
 builder.Services.AddSignalR();
 

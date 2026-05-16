@@ -73,6 +73,7 @@ public class HotelProDbContext : DbContext
     public DbSet<ProformaInvoice> ProformaInvoices => Set<ProformaInvoice>();
     public DbSet<AdvancePayment> AdvancePayments => Set<AdvancePayment>();
     public DbSet<ExchangeRate> ExchangeRates => Set<ExchangeRate>();
+    public DbSet<PhoneExtension> PhoneExtensions => Set<PhoneExtension>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -145,6 +146,7 @@ public class HotelProDbContext : DbContext
         modelBuilder.ApplyConfiguration(new HotelConfiguration());
         modelBuilder.ApplyConfiguration(new EmailLogConfiguration());
         modelBuilder.ApplyConfiguration(new NightAuditLogConfiguration());
+        modelBuilder.ApplyConfiguration(new PhoneExtensionConfiguration());
 
         foreach (var entityType in modelBuilder.Model.GetEntityTypes())
         {
