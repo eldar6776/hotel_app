@@ -1,8 +1,15 @@
 # STATUS — HotelPRO
 
-**Trenutni Status:** Faza 5 COMPLETED — Upravljanje Sobama. Sljedeci: Faza 6 - Rezervacije.
+**Trenutni Status:** Faza 11 COMPLETED. Faze 1-11 COMPLETED. Faze 12-18 PENDING.
 **Datum:** 2026-05-16
-**Pokrivenost:** 93 taskova (Faze 1-18), Faze 1-5 COMPLETED, Faze 6-18 PENDING
+**Pokrivenost:** 93 taskova, Faze 1-11 COMPLETED (68 taskova), Faze 12-18 PENDING (25 taskova)
+**Poslednji commit:** 92801b3 "checkpoint: Faza 11 Housekeeping API done, pre Faza 12-18"
+
+## ⏸️ RESTART MARKER — 2026-05-16 22:00
+**Sledeci task:** T12.1 (Arhitektura lokalnog bridge servisa)
+**Preostalo:** Faze 12-18 (Hardware Bridge, Channel Manager, IoT, Revenue, Guest Self-Service, Payment Gateway, Stabilizacija)
+**Backend:** `dotnet build` 0 errors, `dotnet test` 57/57 passed
+**Frontend:** `npm run build` clean, `npm run lint` clean
 **Dokumentacija:** Svi FSD-ovi AUTHORITATIVE, task fajlovi sa legacy mapping sekcijama
 
 ---
