@@ -11,17 +11,17 @@ export const bookingService = {
     if (filters?.roomId) params.append('roomId', filters.roomId)
     if (filters?.page) params.append('page', String(filters.page))
     if (filters?.pageSize) params.append('pageSize', String(filters.pageSize))
-    const response = await apiClient.get(`/v2/bookings?${params}`)
+    const response = await apiClient.get(`/bookings?${params}`)
     return response.data
   },
 
   async getBooking(id: string): Promise<BookingDto> {
-    const response = await apiClient.get(`/v2/bookings/${id}`)
+    const response = await apiClient.get(`/bookings/${id}`)
     return response.data
   },
 
   async updateStatus(id: string, status: BookingStatus): Promise<void> {
-    await apiClient.patch(`/v2/bookings/${id}/status`, status)
+    await apiClient.patch(`/bookings/${id}/status`, status)
   },
 
   async updateBooking(id: string, data: {
@@ -29,7 +29,7 @@ export const bookingService = {
     departureDate?: string
     roomId?: string | null
   }): Promise<BookingDto> {
-    const response = await apiClient.put(`/v2/bookings/${id}`, data)
+    const response = await apiClient.put(`/bookings/${id}`, data)
     return response.data
   },
 }

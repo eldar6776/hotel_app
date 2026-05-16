@@ -11,26 +11,26 @@ export const roomService = {
     if (filters?.search) params.append('search', filters.search)
     if (filters?.page) params.append('page', String(filters.page))
     if (filters?.pageSize) params.append('pageSize', String(filters.pageSize))
-    const response = await apiClient.get(`/v2/rooms?${params}`)
+    const response = await apiClient.get(`/rooms?${params}`)
     return response.data
   },
 
   async getRoom(id: string): Promise<RoomDto> {
-    const response = await apiClient.get(`/v2/rooms/${id}`)
+    const response = await apiClient.get(`/rooms/${id}`)
     return response.data
   },
 
   async updateStatus(id: string, status: RoomStatus): Promise<void> {
-    await apiClient.patch(`/v2/rooms/${id}/status`, status)
+    await apiClient.patch(`/rooms/${id}/status`, status)
   },
 
   async getRoomTypes(): Promise<RoomTypeDto[]> {
-    const response = await apiClient.get('/v2/room-types')
+    const response = await apiClient.get('/room-types')
     return response.data
   },
 
   async getBuildings(): Promise<BuildingDto[]> {
-    const response = await apiClient.get('/v2/buildings')
+    const response = await apiClient.get('/buildings')
     return response.data
   },
 }

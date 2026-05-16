@@ -2,7 +2,7 @@ import axios from 'axios'
 import { tokenStorage } from '@/lib/auth/token-storage'
 
 const apiClient = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5149',
+  baseURL: (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5149') + '/api/v2',
   headers: { 'Content-Type': 'application/json' },
 })
 
