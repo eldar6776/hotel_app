@@ -13,12 +13,13 @@ public class Guest
     public string? City { get; set; }
     public string? PostalCode { get; set; }
     public Guid? CountryId { get; set; }
-    public string? IdDocumentType { get; set; }
-    public string? IdDocumentNumber { get; set; }
-    public string? Nationality { get; set; }
+    public int? NationalityCountryId { get; set; }
     public bool IsCompany { get; set; }
     public string? CompanyName { get; set; }
     public string? VatNumber { get; set; }
+    public bool GdprConsentGiven { get; set; }
+    public DateTime? GdprConsentDate { get; set; }
+    public string? GdprConsentVersion { get; set; }
     public string? Notes { get; set; }
     public bool IsActive { get; set; } = true;
     public DateTime CreatedAt { get; set; }

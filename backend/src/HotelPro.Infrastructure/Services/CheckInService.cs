@@ -81,7 +81,7 @@ public class CheckInService : ICheckInService
                 {
                     Id = Guid.NewGuid(),
                     GuestId = booking.GuestId,
-                    DocumentType = doc.DocumentType,
+                    DocumentType = Enum.TryParse<DocumentType>(doc.DocumentType, true, out var dt) ? dt : DocumentType.Other,
                     DocumentNumber = doc.DocumentNumber,
                     ExpiryDate = doc.ExpiryDate,
                 };

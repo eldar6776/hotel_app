@@ -167,3 +167,12 @@ public enum ChargeType
     Service,
     Other
 }
+
+public enum DocumentType
+{
+    Passport,
+    IDCard,
+    DrivingLicence,
+    ResidencePermit,
+    Other
+}

@@ -122,6 +122,7 @@ builder.Services.AddScoped<HotelPro.Core.Services.IFolioService, HotelPro.Infras
 builder.Services.AddScoped<HotelPro.Core.Services.ICheckInService, HotelPro.Infrastructure.Services.CheckInService>();
 builder.Services.AddScoped<HotelPro.Core.Services.ICheckOutService, HotelPro.Infrastructure.Services.CheckOutService>();
 builder.Services.AddScoped<HotelPro.Core.Services.INightAuditService, HotelPro.Infrastructure.Services.NightAuditService>();
+builder.Services.AddScoped<HotelPro.Core.Services.IGuestService, HotelPro.Infrastructure.Services.GuestService>();
 
 builder.Services.AddSignalR();
 
