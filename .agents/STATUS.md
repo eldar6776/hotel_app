@@ -56,7 +56,7 @@
 
 ### Faza 6: Rezervacije (Booking Engine)
 - [x] **T6.1: CRUD API za rezervacije (pojedinacne i grupne)** - [COMPLETED 2026-05-16 - opencode (kimi-k2.6)]
-- [-] **T6.2: Frontend — interaktivni Drag & Drop Gantt kalendar** - [IN_PROGRESS] - 2026-05-16 - opencode (kimi-k2.6)
+- [x] **T6.2: Frontend — interaktivni Drag & Drop Gantt kalendar** - [COMPLETED 2026-05-16 - opencode (kimi-k2.6)]
 - [ ] **T6.3: Provjera dostupnosti i logika kolizija (double-booking prevention)**
 - [ ] **T6.4: Email potvrda rezervacije**
 - [ ] **T6.5: Grupne rezervacije — blokiranje soba, master racun, posebni cjenovnici**
@@ -305,3 +305,21 @@ Sljedece grupe se mogu raditi istovremeno:
   - DELETE /api/v2/bookings/{id}
   - RBAC: CanManageBookings / Admin,Manager za DELETE
 - **Backend**: `dotnet build` prolazi (0 errors), `dotnet test` prolazi (6/6)
+
+### 2026-05-16 — opencode (kimi-k2.6) — T6.2 COMPLETED
+- **Gantt kalendar**: Interaktivni horizontalni prikaz rezervacija za sve sobe
+  - `/bookings` stranica sa color-coded trakama po statusu (Confirmed=zeleno, Pending=zuto, CheckedIn=plavo, Cancelled=crveno/isprekidano)
+  - 31 dan prikaza sa horizontalnim skrolom, header sa mjesecima i danima, fiksne oznake soba
+  - Sinhronizovano skrolovanje: header (horizontalno) i sobe (vertikalno) putem CSS transforma
+  - Nedodijeljene rezervacije prikazane u posebnoj sekciji na vrhu
+  - Navigacija: prethodni/sljedeci mjesec, dugme "Danas"
+- **Drag & Drop**: Custom D&D sa pointer capture API
+  - Povlačenje trake horizontalno mijenja datume (ArrivalDate/DepartureDate)
+  - Dozvoljeno samo za status Confirmed/Pending
+  - Tooltip tokom povlačenja prikazuje ime gosta, datume i broj noći
+  - Optimistički update UI, silent revert na API grešku
+- **Komponente**: GanttCalendar, GanttBar, useDragAndDrop hook
+- **Tipovi**: types/bookings.ts (BookingDto, GanttBooking, GanttRoom, STATUS_COLORS/LABELS)
+- **API servis**: lib/bookings/booking-service.ts (getBookings, getBooking, updateStatus, updateBooking)
+- **Zavisnosti**: @dnd-kit/core, @dnd-kit/utilities, react-window (instalirani, planirani za buduću virtuelizaciju)
+- **Build**: `npm run build` prolazi, `npm run lint` prolazi, `dotnet build` prolazi

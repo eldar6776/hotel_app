@@ -9,6 +9,8 @@ export const roomService = {
     if (filters?.roomTypeId) params.append('roomTypeId', filters.roomTypeId)
     if (filters?.floor) params.append('floor', String(filters.floor))
     if (filters?.search) params.append('search', filters.search)
+    if (filters?.page) params.append('page', String(filters.page))
+    if (filters?.pageSize) params.append('pageSize', String(filters.pageSize))
     const response = await apiClient.get(`/v2/rooms?${params}`)
     return response.data
   },

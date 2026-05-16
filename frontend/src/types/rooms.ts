@@ -81,6 +81,8 @@ export interface RoomFilters {
   roomTypeId?: string
   floor?: number
   search?: string
+  page?: number
+  pageSize?: number
 }
 
 export interface RoomStatusChange {
