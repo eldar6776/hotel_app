@@ -65,7 +65,7 @@
 - [x] **T7.1: Check-in workflow API (room assignment, RFID, dokumenti)** - [COMPLETED 2026-05-16 - opencode]
 - [x] **T7.2: Check-out workflow sa obracunom (late check-out, payment)** - [COMPLETED 2026-05-16 - opencode]
 - [x] **T7.3: Folio sistem — dodavanje troskova tokom boravka** - [COMPLETED 2026-05-16 - opencode]
-- [ ] **T7.4: Frontend — Recepcijski ekran (arrivals, departures, quick actions)**
+- [-] **T7.4: Frontend — Recepcijski ekran (arrivals, departures, quick actions)** - [IN_PROGRESS] - 2026-05-16 - opencode
 - [x] **T7.5: Night audit proces (automatsko generisanje nocenja)** - [COMPLETED 2026-05-16 - opencode]
 
 ### Faza 8: Gosti i CRM
