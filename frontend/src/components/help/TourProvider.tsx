@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback, createContext, useContext } from 'react'
+import { useState, useCallback, createContext, useContext, useEffect } from 'react'
 import { Joyride, type Step, type EventData, STATUS } from 'react-joyride'
 
 const TourStarter = createContext<() => void>(() => {})
@@ -9,8 +9,7 @@ export const useTour = () => useContext(TourStarter)
 const defaultSteps: Step[] = [
   {
     target: '[data-help-id="sidebar-dashboard"]',
-    content:
-      'Ovo je vas dashboard. Ovdje vidite osnovne KPI podatke o stanju hotela.',
+    content: 'Ovo je vas dashboard. Ovdje vidite osnovne KPI podatke o stanju hotela.',
     placement: 'right',
     title: 'Dobrodosli u HotelPRO!',
   },
@@ -28,15 +27,13 @@ const defaultSteps: Step[] = [
   },
   {
     target: '#navbar-search',
-    content:
-      'Brza pretraga: pritisnite Ctrl+K ili kliknite ovdje za pretragu gostiju, rezervacija i soba.',
+    content: 'Brza pretraga: pritisnite Ctrl+K ili kliknite ovdje za pretragu gostiju, rezervacija i soba.',
     placement: 'bottom',
     title: 'Pretraga',
   },
   {
     target: '[data-help-id="dashboard-kpi"]',
-    content:
-      'Ovdje su kljucni pokazatelji — popunjenost, ADR, RevPAR, check-in/out brojevi.',
+    content: 'Ovdje su kljucni pokazatelji — popunjenost, ADR, RevPAR, check-in/out brojevi.',
     placement: 'top',
     title: 'KPI pokazatelji',
   },
@@ -45,10 +42,11 @@ const defaultSteps: Step[] = [
 export function TourProvider({ children }: { children: React.ReactNode }) {
   const [run, setRun] = useState(false)
   const [steps] = useState<Step[]>(defaultSteps)
+  const [mounted, setMounted] = useState(false)
 
-  const startTour = useCallback(() => {
-    setRun(true)
-  }, [])
+  useEffect(() => { setMounted(true) }, [])
+
+  const startTour = useCallback(() => { setRun(true) }, [])
 
   const handleEvent = (data: EventData) => {
     if (data.status === STATUS.FINISHED || data.status === STATUS.SKIPPED) {
@@ -59,24 +57,26 @@ export function TourProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <>
-      <Joyride
-        steps={steps}
-        run={run}
-        continuous
-        onEvent={handleEvent}
-        locale={{
-          back: 'Nazad',
-          close: 'Zatvori',
-          last: 'Zavrsi',
-          next: 'Dalje',
-          skip: 'Preskoci',
-        }}
-        options={{
-          primaryColor: 'hsl(214 90% 42%)',
-          zIndex: 100,
-          showProgress: true,
-        }}
-      />
+      {mounted && (
+        <Joyride
+          steps={steps}
+          run={run}
+          continuous
+          onEvent={handleEvent}
+          locale={{
+            back: 'Nazad',
+            close: 'Zatvori',
+            last: 'Zavrsi',
+            next: 'Dalje',
+            skip: 'Preskoci',
+          }}
+          options={{
+            primaryColor: 'hsl(214 90% 42%)',
+            zIndex: 100,
+            showProgress: true,
+          }}
+        />
+      )}
       <TourStarter.Provider value={startTour}>
         {children}
       </TourStarter.Provider>

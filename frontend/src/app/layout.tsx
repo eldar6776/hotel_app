@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import Script from 'next/script'
 import { Inter } from 'next/font/google'
 import './globals.css'
 import { ThemeProvider } from '@/components/providers/ThemeProvider'
@@ -26,11 +27,9 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <head>
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `try{const t=localStorage.getItem('theme');if(t)document.documentElement.classList.toggle('dark',t==='dark');else if(window.matchMedia('(prefers-color-scheme:dark)').matches)document.documentElement.classList.add('dark')}catch(e){}`,
-          }}
-        />
+        <Script id="theme-init" strategy="beforeInteractive">
+          {`try{const t=localStorage.getItem('theme');if(t)document.documentElement.classList.toggle('dark',t==='dark');else if(window.matchMedia('(prefers-color-scheme:dark)').matches)document.documentElement.classList.add('dark')}catch(e){}`}
+        </Script>
       </head>
       <body className="min-h-full flex flex-col font-sans">
         <ThemeProvider>{children}</ThemeProvider>
