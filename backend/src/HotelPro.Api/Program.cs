@@ -118,6 +118,10 @@ builder.Services.AddTransient<HotelPro.Infrastructure.Services.ISmtpClient, Hote
 builder.Services.AddScoped<HotelPro.Core.Services.IEmailService, HotelPro.Infrastructure.Services.EmailService>();
 builder.Services.AddScoped<HotelPro.Core.Interfaces.IBookingGroupRepository, HotelPro.Infrastructure.Repositories.BookingGroupRepository>();
 builder.Services.AddScoped<HotelPro.Core.Services.IBookingGroupService, HotelPro.Infrastructure.Services.BookingGroupService>();
+builder.Services.AddScoped<HotelPro.Core.Services.IFolioService, HotelPro.Infrastructure.Services.FolioService>();
+builder.Services.AddScoped<HotelPro.Core.Services.ICheckInService, HotelPro.Infrastructure.Services.CheckInService>();
+builder.Services.AddScoped<HotelPro.Core.Services.ICheckOutService, HotelPro.Infrastructure.Services.CheckOutService>();
+builder.Services.AddScoped<HotelPro.Core.Services.INightAuditService, HotelPro.Infrastructure.Services.NightAuditService>();
 
 builder.Services.AddSignalR();
 

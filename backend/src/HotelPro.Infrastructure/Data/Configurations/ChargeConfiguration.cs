@@ -11,6 +11,7 @@ public class ChargeConfiguration : IEntityTypeConfiguration<Charge>
         builder.ToTable("charges");
         builder.HasKey(x => x.Id);
         builder.Property(x => x.Description).HasMaxLength(500).IsRequired();
+        builder.Property(x => x.ChargeType).HasConversion<string>().HasMaxLength(20).IsRequired();
         builder.Property(x => x.Quantity).HasColumnType("decimal(18,2)").IsRequired();
         builder.Property(x => x.UnitPrice).HasColumnType("decimal(18,2)").IsRequired();
         builder.Property(x => x.TotalPrice).HasColumnType("decimal(18,2)").IsRequired();

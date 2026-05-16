@@ -66,6 +66,7 @@ public class HotelProDbContext : DbContext
     public DbSet<LegacyIdMapping> LegacyIdMappings => Set<LegacyIdMapping>();
     public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
     public DbSet<EmailLog> EmailLogs => Set<EmailLog>();
+    public DbSet<NightAuditLog> NightAuditLogs => Set<NightAuditLog>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -137,6 +138,7 @@ public class HotelProDbContext : DbContext
         modelBuilder.ApplyConfiguration(new RefreshTokenConfiguration());
         modelBuilder.ApplyConfiguration(new HotelConfiguration());
         modelBuilder.ApplyConfiguration(new EmailLogConfiguration());
+        modelBuilder.ApplyConfiguration(new NightAuditLogConfiguration());
 
         foreach (var entityType in modelBuilder.Model.GetEntityTypes())
         {

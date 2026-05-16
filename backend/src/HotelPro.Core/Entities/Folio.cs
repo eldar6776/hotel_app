@@ -13,6 +13,7 @@ public class Folio
     public decimal Balance { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime? ClosedAt { get; set; }
+    public DateTime? UpdatedAt { get; set; }
     public string? Notes { get; set; }
 
     public Booking? Booking { get; set; }

@@ -19,10 +19,13 @@ public class PaymentConfiguration : IEntityTypeConfiguration<Payment>
             .HasForeignKey(x => x.FolioId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        builder.HasOne(x => x.PaymentMethod)
+        builder.HasOne(x => x.PaymentMethodEntity)
             .WithMany()
             .HasForeignKey(x => x.PaymentMethodId)
             .OnDelete(DeleteBehavior.Restrict);
+
+        builder.Property(x => x.PaymentMethod).HasMaxLength(50).IsRequired();
+        builder.Property(x => x.Status).HasConversion<string>().HasMaxLength(20).IsRequired();
 
         builder.HasOne(x => x.ProcessedBy)
             .WithMany()

@@ -2,6 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using HotelPro.Core.Enums;
+using HotelPro.Core.Services;
 using HotelPro.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 
@@ -54,75 +55,20 @@ public class NightAuditJob : ScheduledJobBase
     protected override async Task ExecuteJobAsync(CancellationToken ct)
     {
         using var scope = _scopeFactory.CreateScope();
-        var db = scope.ServiceProvider.GetRequiredService<HotelProDbContext>();
+        var auditService = scope.ServiceProvider.GetRequiredService<INightAuditService>();
         var logger = scope.ServiceProvider.GetRequiredService<ILogger<NightAuditJob>>();
 
         var today = DateTime.UtcNow.Date;
-        var checkedInBookings = await db.Bookings
-            .Include(b => b.BookingRooms)
-            .Where(b => b.Status == BookingStatus.CheckedIn && b.DepartureDate > today)
-            .ToListAsync(ct);
+        var result = await auditService.RunAuditAsync(today);
 
-        logger.LogInformation("[{JobName}] Processing {Count} active bookings for night audit", JobName, checkedInBookings.Count);
-
-        int stayNightsCreated = 0;
-        int chargesCreated = 0;
-
-        foreach (var booking in checkedInBookings)
+        if (result.Success)
         {
-            var folio = await db.Folios
-                .FirstOrDefaultAsync(f => f.BookingId == booking.Id && f.Status == FolioStatus.Open, ct);
-
-            if (folio == null) continue;
-
-            var existingStayNight = await db.StayNights
-                .AnyAsync(s => s.FolioId == folio.Id && s.Date == today, ct);
-
-            if (existingStayNight) continue;
-
-            var isComplementary = booking.Type == BookingType.Complementary;
-
-            foreach (var bookingRoom in booking.BookingRooms)
-            {
-                var stayNight = new HotelPro.Core.Entities.StayNight
-                {
-                    Id = Guid.NewGuid(),
-                    FolioId = folio.Id,
-                    Date = today,
-                    RoomPrice = bookingRoom.PricePerNight,
-                    IsComp = isComplementary,
-                    Notes = $"Night audit auto-charge for room {bookingRoom.RoomId}"
-                };
-                db.StayNights.Add(stayNight);
-                stayNightsCreated++;
-
-                if (!stayNight.IsComp)
-                {
-                    var charge = new HotelPro.Core.Entities.Charge
-                    {
-                        Id = Guid.NewGuid(),
-                        FolioId = folio.Id,
-                        Description = $"Night audit - room charge ({today:yyyy-MM-dd})",
-                        Quantity = 1,
-                        UnitPrice = bookingRoom.PricePerNight,
-                        TotalPrice = bookingRoom.PricePerNight,
-                        VatAmount = 0,
-                        ChargeDate = today,
-                        IsTaxable = true
-                    };
-                    db.Charges.Add(charge);
-                    chargesCreated++;
-
-                    folio.Balance += bookingRoom.PricePerNight;
-                }
-            }
+            logger.LogInformation("[{JobName}] Completed: {Processed} bookings, {Charges} charges, {NoShows} no-shows",
+                JobName, result.BookingsProcessed, result.TotalStayCharges, result.NoShowsDetected);
         }
-
-        if (stayNightsCreated > 0 || chargesCreated > 0)
+        else
         {
-            await db.SaveChangesAsync(ct);
-            logger.LogInformation("[{JobName}] Created {StayNights} stay night records and {Charges} charges",
-                JobName, stayNightsCreated, chargesCreated);
+            logger.LogWarning("[{JobName}] Failed or skipped: {Error}", JobName, result.ErrorMessage);
         }
     }
 }

@@ -154,3 +154,16 @@ public enum GroupStatus
     Released,
     Closed
 }
+
+public enum ChargeType
+{
+    StayNight,
+    Restaurant,
+    Bar,
+    Minibar,
+    Phone,
+    Laundry,
+    Parking,
+    Service,
+    Other
+}
