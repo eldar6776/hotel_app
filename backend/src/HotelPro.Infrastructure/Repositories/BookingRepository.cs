@@ -129,4 +129,79 @@ public class BookingRepository : IBookingRepository
 
         return query;
     }
+
+    public async Task<int> CountConflictingBookingsAsync(
+        Guid roomTypeId,
+        DateTime arrival,
+        DateTime departure,
+        Guid? excludeBookingId = null)
+    {
+        var query = _dbContext.BookingRooms
+            .IgnoreQueryFilters()
+            .Include(br => br.Booking)
+            .Where(br =>
+                br.RoomTypeId == roomTypeId &&
+                br.Status != BookingRoomStatus.Released &&
+                br.Booking.Status != BookingStatus.Cancelled &&
+                br.Booking.ArrivalDate < departure &&
+                br.Booking.DepartureDate > arrival);
+
+        if (excludeBookingId.HasValue)
+        {
+            query = query.Where(br => br.BookingId != excludeBookingId.Value);
+        }
+
+        return await query.CountAsync();
+    }
+
+    public async Task<List<BookingRoom>> GetConflictingBookingsAsync(
+        Guid roomTypeId,
+        DateTime arrival,
+        DateTime departure,
+        Guid? excludeBookingId = null)
+    {
+        var query = _dbContext.BookingRooms
+            .IgnoreQueryFilters()
+            .Include(br => br.Booking)
+            .Where(br =>
+                br.RoomTypeId == roomTypeId &&
+                br.Status != BookingRoomStatus.Released &&
+                br.Booking.Status != BookingStatus.Cancelled &&
+                br.Booking.ArrivalDate < departure &&
+                br.Booking.DepartureDate > arrival);
+
+        if (excludeBookingId.HasValue)
+        {
+            query = query.Where(br => br.BookingId != excludeBookingId.Value);
+        }
+
+        return await query.ToListAsync();
+    }
+
+    public async Task AcquireRoomTypeLockAsync(
+        Guid roomTypeId,
+        DateTime arrival,
+        DateTime departure,
+        CancellationToken ct = default)
+    {
+        var sql = """
+            SELECT br."Id"
+            FROM "booking_rooms" br
+            INNER JOIN "bookings" b ON br."BookingId" = b."Id"
+            WHERE br."RoomTypeId" = {0}
+              AND br."Status" NOT IN ('Released')
+              AND b."Status" != 'Cancelled'
+              AND b."ArrivalDate" < {1}
+              AND b."DepartureDate" > {2}
+            FOR UPDATE NOWAIT
+            """;
+
+        await _dbContext.Database.ExecuteSqlRawAsync(sql, roomTypeId, departure, arrival, ct);
+    }
+
+    public async Task AddBookingInTransactionAsync(Booking booking, CancellationToken ct = default)
+    {
+        _dbContext.Bookings.Add(booking);
+        await _dbContext.SaveChangesAsync(ct);
+    }
 }

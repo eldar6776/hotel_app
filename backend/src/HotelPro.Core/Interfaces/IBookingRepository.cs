@@ -25,4 +25,20 @@ public interface IBookingRepository
     Task UpdateAsync(Booking booking);
     Task DeleteAsync(Booking booking);
     Task<bool> ExistsAsync(Guid id);
+    Task<int> CountConflictingBookingsAsync(
+        Guid roomTypeId,
+        DateTime arrival,
+        DateTime departure,
+        Guid? excludeBookingId = null);
+    Task<List<BookingRoom>> GetConflictingBookingsAsync(
+        Guid roomTypeId,
+        DateTime arrival,
+        DateTime departure,
+        Guid? excludeBookingId = null);
+    Task AcquireRoomTypeLockAsync(
+        Guid roomTypeId,
+        DateTime arrival,
+        DateTime departure,
+        CancellationToken ct = default);
+    Task AddBookingInTransactionAsync(Booking booking, CancellationToken ct = default);
 }

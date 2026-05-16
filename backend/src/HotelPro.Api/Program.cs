@@ -112,6 +112,7 @@ builder.Services.AddScoped<HotelPro.Core.Services.IRoomService, HotelPro.Infrast
 builder.Services.AddScoped<HotelPro.Core.Services.IRoomStatusBroadcaster, HotelPro.Api.Hubs.SignalRBroadcaster>();
 builder.Services.AddScoped<HotelPro.Core.Interfaces.IBookingRepository, HotelPro.Infrastructure.Repositories.BookingRepository>();
 builder.Services.AddScoped<HotelPro.Core.Services.IBookingService, HotelPro.Infrastructure.Services.BookingService>();
+builder.Services.AddScoped<HotelPro.Core.Services.IBookingAvailabilityService, HotelPro.Infrastructure.Services.BookingAvailabilityService>();
 
 builder.Services.AddSignalR();
 

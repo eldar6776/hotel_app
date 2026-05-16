@@ -57,9 +57,8 @@
 ### Faza 6: Rezervacije (Booking Engine)
 - [x] **T6.1: CRUD API za rezervacije (pojedinacne i grupne)** - [COMPLETED 2026-05-16 - opencode (kimi-k2.6)]
 - [x] **T6.2: Frontend — interaktivni Drag & Drop Gantt kalendar** - [COMPLETED 2026-05-16 - opencode (kimi-k2.6)]
-- [-] **T6.3: Provjera dostupnosti i logika kolizija (double-booking prevention)** - [IN_PROGRESS] - 2026-05-16 - opencode (kimi-k2.6)
-- [ ] **T6.3: Provjera dostupnosti i logika kolizija (double-booking prevention)**
-- [ ] **T6.4: Email potvrda rezervacije**
+- [x] **T6.3: Provjera dostupnosti i logika kolizija (double-booking prevention)** - [COMPLETED 2026-05-16 - opencode (kimi-k2.6)]
+- [-] **T6.4: Email potvrda rezervacije** - [IN_PROGRESS] - 2026-05-16 - opencode
 - [ ] **T6.5: Grupne rezervacije — blokiranje soba, master racun, posebni cjenovnici**
 
 ### Faza 7: Recepcija (Check-in / Check-out)
@@ -324,3 +323,25 @@ Sljedece grupe se mogu raditi istovremeno:
 - **API servis**: lib/bookings/booking-service.ts (getBookings, getBooking, updateStatus, updateBooking)
 - **Zavisnosti**: @dnd-kit/core, @dnd-kit/utilities, react-window (instalirani, planirani za buduću virtuelizaciju)
 - **Build**: `npm run build` prolazi, `npm run lint` prolazi, `dotnet build` prolazi
+
+### 2026-05-16 — opencode (kimi-k2.6) — T6.3 COMPLETED (verifikovano do kraja)
+- **Availability Engine**: `IBookingAvailabilityService` (CheckAvailability, LockRooms, ReleaseRoomLock)
+  - AvailabilityRequest/Result/LockRequest/LockResult/DateRange DTO-ovi
+  - Double-booking prevention: broji BookingRoom u periodu [Arrival, Departure) gde status != Cancelled/Released
+  - Conflict detection: `Arrival < existingDeparture && Departure > existingArrival`
+  - ExcludeBookingId za update scenario (ignorisati sopstvenu rezervaciju)
+- **PostgreSQL Row-Level Locking**: `SELECT ... FOR UPDATE` u repozitoriju
+  - `AcquireRoomTypeLockAsync` sa raw SQL: `SELECT ... FROM booking_rooms ... FOR UPDATE NOWAIT`
+  - `SET LOCAL lock_timeout = '5s'` pre lock acquisition
+  - Serializable isolation level transakcija za ceo booking flow
+  - PostgresException handling: 55P03 (locked) → 409 Conflict, 57014 (timeout) → 409 Conflict
+  - InMemory fallback za testove (`_dbContext.Database.IsRelational()` provera)
+- **Overbooking konfiguracija**: `AllowOverbooking` feature flag (default=false)
+  - `IFeatureFlagService.IsEnabledAsync("AllowOverbooking")` provera u CheckAvailability
+  - Kada je omogućen, preskače double-booking proveru
+- **API Endpointi**:
+  - `GET /api/v2/availability` — read-only provjera (roomTypeId, arrival, departure, quantity, excludeBookingId)
+  - `POST /api/v2/availability/check-and-lock` — transakciona provjera + lock (409 Conflict + opis greške)
+  - `DELETE /api/v2/availability/lock/{lockId}` — release lock
+- **Testovi**: 11 unit testova za availability (no conflicts, all booked, cancelled excluded, excludeBookingId, lock success/failure, overlapping dates, released booking, overbooking enabled, sequential locks, lock timeout)
+- **Backend**: `dotnet build` 0 errors, `dotnet test` 17/17 passed, `npm run lint` clean
