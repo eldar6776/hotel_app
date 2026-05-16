@@ -147,3 +147,10 @@ public enum AccessAction
     AccessDenied,
     PinVerified
 }
+
+public enum GroupStatus
+{
+    Active,
+    Released,
+    Closed
+}

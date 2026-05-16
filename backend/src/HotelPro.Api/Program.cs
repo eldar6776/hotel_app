@@ -116,6 +116,8 @@ builder.Services.AddScoped<HotelPro.Core.Services.IBookingAvailabilityService, H
 builder.Services.Configure<HotelPro.Core.Services.EmailConfiguration>(builder.Configuration.GetSection(HotelPro.Core.Services.EmailConfiguration.SectionName));
 builder.Services.AddTransient<HotelPro.Infrastructure.Services.ISmtpClient, HotelPro.Infrastructure.Services.MailKitSmtpClient>();
 builder.Services.AddScoped<HotelPro.Core.Services.IEmailService, HotelPro.Infrastructure.Services.EmailService>();
+builder.Services.AddScoped<HotelPro.Core.Interfaces.IBookingGroupRepository, HotelPro.Infrastructure.Repositories.BookingGroupRepository>();
+builder.Services.AddScoped<HotelPro.Core.Services.IBookingGroupService, HotelPro.Infrastructure.Services.BookingGroupService>();
 
 builder.Services.AddSignalR();
 
@@ -186,6 +188,7 @@ builder.Services.AddHostedService<BackupTriggerJob>();
 builder.Services.AddHostedService<IoTDeviceCheckJob>();
 builder.Services.AddHostedService<DndExpiryJob>();
 builder.Services.AddHostedService<SessionCleanupJob>();
+builder.Services.AddHostedService<HotelPro.Infrastructure.BackgroundJobs.GroupReleaseJob>();
 
 var app = builder.Build();
 

@@ -34,9 +34,11 @@ public class HotelProDbContext : DbContext
     // Bookings
     public DbSet<Booking> Bookings => Set<Booking>();
     public DbSet<BookingRoom> BookingRooms => Set<BookingRoom>();
+    public DbSet<BookingGroup> BookingGroups => Set<BookingGroup>();
     public DbSet<GroupBooking> GroupBookings => Set<GroupBooking>();
     public DbSet<BookingHistory> BookingHistories => Set<BookingHistory>();
     public DbSet<RoomAssignment> RoomAssignments => Set<RoomAssignment>();
+    public DbSet<MasterBill> MasterBills => Set<MasterBill>();
 
     // Finance
     public DbSet<PaymentMethod> PaymentMethods => Set<PaymentMethod>();
@@ -84,9 +86,11 @@ public class HotelProDbContext : DbContext
 
         modelBuilder.ApplyConfiguration(new BookingConfiguration());
         modelBuilder.ApplyConfiguration(new BookingRoomConfiguration());
+        modelBuilder.ApplyConfiguration(new BookingGroupConfiguration());
         modelBuilder.ApplyConfiguration(new GroupBookingConfiguration());
         modelBuilder.ApplyConfiguration(new BookingHistoryConfiguration());
         modelBuilder.ApplyConfiguration(new RoomAssignmentConfiguration());
+        modelBuilder.ApplyConfiguration(new MasterBillConfiguration());
 
         modelBuilder.ApplyConfiguration(new PaymentMethodConfiguration());
         modelBuilder.ApplyConfiguration(new ServiceCatalogConfiguration());

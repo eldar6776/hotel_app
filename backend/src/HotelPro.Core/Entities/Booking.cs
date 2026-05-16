@@ -27,6 +27,7 @@ public class Booking : IHaveHotelId
     public DateTime UpdatedAt { get; set; }
 
     public Guest Guest { get; set; } = null!;
+    public BookingGroup? Group { get; set; }
     public ICollection<BookingRoom> BookingRooms { get; set; } = new List<BookingRoom>();
     public ICollection<BookingHistory> Histories { get; set; } = new List<BookingHistory>();
 }
