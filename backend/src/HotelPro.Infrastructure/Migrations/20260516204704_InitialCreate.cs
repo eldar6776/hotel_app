@@ -12,6 +12,25 @@ namespace HotelPro.Infrastructure.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
+                name: "AdvancePayments",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    BookingId = table.Column<Guid>(type: "uuid", nullable: false),
+                    Amount = table.Column<decimal>(type: "numeric", nullable: false),
+                    PaymentDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    PaymentMethod = table.Column<string>(type: "text", nullable: false),
+                    Reference = table.Column<string>(type: "text", nullable: true),
+                    AppliedToInvoiceId = table.Column<Guid>(type: "uuid", nullable: true),
+                    IsRefunded = table.Column<bool>(type: "boolean", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AdvancePayments", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "amenities",
                 columns: table => new
                 {
@@ -83,6 +102,23 @@ namespace HotelPro.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "DayLocks",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    LockedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    LockedById = table.Column<Guid>(type: "uuid", nullable: true),
+                    LockedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UnlockedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    UnlockReason = table.Column<string>(type: "text", nullable: true),
+                    UnlockedById = table.Column<Guid>(type: "uuid", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_DayLocks", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "employees",
                 columns: table => new
                 {
@@ -103,6 +139,24 @@ namespace HotelPro.Infrastructure.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_employees", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ExchangeRates",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    CurrencyCode = table.Column<string>(type: "text", nullable: false),
+                    Rate = table.Column<decimal>(type: "numeric", nullable: false),
+                    IsLocalCurrency = table.Column<bool>(type: "boolean", nullable: false),
+                    ValidFrom = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    ValidTo = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    Source = table.Column<string>(type: "text", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ExchangeRates", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -149,6 +203,20 @@ namespace HotelPro.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "InvoiceSequences",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Prefix = table.Column<string>(type: "text", nullable: false),
+                    LastNumber = table.Column<int>(type: "integer", nullable: false),
+                    Year = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_InvoiceSequences", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "legacy_id_mapping",
                 columns: table => new
                 {
@@ -165,6 +233,23 @@ namespace HotelPro.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "night_audit_logs",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    AuditDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    RanAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    Status = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: false),
+                    BookingsProcessed = table.Column<int>(type: "integer", nullable: false),
+                    TotalStayCharges = table.Column<decimal>(type: "numeric", nullable: false),
+                    ErrorMessage = table.Column<string>(type: "text", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_night_audit_logs", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "payment_methods",
                 columns: table => new
                 {
@@ -176,6 +261,25 @@ namespace HotelPro.Infrastructure.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_payment_methods", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ProformaInvoices",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    BookingId = table.Column<Guid>(type: "uuid", nullable: false),
+                    ProformaNumber = table.Column<string>(type: "text", nullable: false),
+                    IssueDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    TotalAmount = table.Column<decimal>(type: "numeric", nullable: false),
+                    Status = table.Column<int>(type: "integer", nullable: false),
+                    ExpiryDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    ConvertedToInvoiceId = table.Column<Guid>(type: "uuid", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ProformaInvoices", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -229,12 +333,13 @@ namespace HotelPro.Infrastructure.Migrations
                     City = table.Column<string>(type: "text", nullable: true),
                     PostalCode = table.Column<string>(type: "text", nullable: true),
                     CountryId = table.Column<Guid>(type: "uuid", nullable: true),
-                    IdDocumentType = table.Column<string>(type: "text", nullable: true),
-                    IdDocumentNumber = table.Column<string>(type: "text", nullable: true),
-                    Nationality = table.Column<string>(type: "text", nullable: true),
+                    NationalityCountryId = table.Column<int>(type: "integer", nullable: true),
                     IsCompany = table.Column<bool>(type: "boolean", nullable: false),
                     CompanyName = table.Column<string>(type: "text", nullable: true),
                     VatNumber = table.Column<string>(type: "text", nullable: true),
+                    GdprConsentGiven = table.Column<bool>(type: "boolean", nullable: false),
+                    GdprConsentDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    GdprConsentVersion = table.Column<string>(type: "text", nullable: true),
                     Notes = table.Column<string>(type: "text", nullable: true),
                     IsActive = table.Column<bool>(type: "boolean", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
@@ -432,36 +537,31 @@ namespace HotelPro.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "bookings",
+                name: "booking_groups",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     HotelId = table.Column<Guid>(type: "uuid", nullable: false),
-                    GuestId = table.Column<Guid>(type: "uuid", nullable: false),
-                    GroupId = table.Column<Guid>(type: "uuid", nullable: true),
-                    Source = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: false),
-                    Type = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: false),
+                    Name = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
+                    ContactPersonId = table.Column<Guid>(type: "uuid", nullable: false),
+                    Arrival = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    Departure = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    BlockedRoomCount = table.Column<int>(type: "integer", nullable: false),
+                    ConfirmedRoomCount = table.Column<int>(type: "integer", nullable: false),
+                    RatePlanId = table.Column<Guid>(type: "uuid", nullable: true),
+                    DiscountPercent = table.Column<decimal>(type: "numeric(5,2)", nullable: false),
+                    ReleaseDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     Status = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: false),
-                    ArrivalDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    DepartureDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    AdultCount = table.Column<int>(type: "integer", nullable: false),
-                    ChildCount = table.Column<int>(type: "integer", nullable: false),
-                    TotalPrice = table.Column<decimal>(type: "numeric(18,2)", nullable: false),
-                    ExchangeRateTotal = table.Column<decimal>(type: "numeric(18,2)", nullable: false),
-                    Currency = table.Column<string>(type: "character varying(3)", maxLength: 3, nullable: false),
-                    Notes = table.Column<string>(type: "text", nullable: true),
-                    InternalNotes = table.Column<string>(type: "text", nullable: true),
-                    CancellationReason = table.Column<string>(type: "text", nullable: true),
-                    CancelledAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    UseMasterBill = table.Column<bool>(type: "boolean", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_bookings", x => x.Id);
+                    table.PrimaryKey("PK_booking_groups", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_bookings_guests_GuestId",
-                        column: x => x.GuestId,
+                        name: "FK_booking_groups_guests_ContactPersonId",
+                        column: x => x.ContactPersonId,
                         principalTable: "guests",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
@@ -473,14 +573,19 @@ namespace HotelPro.Infrastructure.Migrations
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     GuestId = table.Column<Guid>(type: "uuid", nullable: false),
-                    DocumentType = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: false),
+                    DocumentType = table.Column<int>(type: "integer", maxLength: 20, nullable: false),
                     DocumentNumber = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
                     IssuingCountry = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    MRZLine1 = table.Column<string>(type: "text", nullable: true),
+                    MRZLine2 = table.Column<string>(type: "text", nullable: true),
                     IssueDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     ExpiryDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     FileUrl = table.Column<string>(type: "text", nullable: true),
+                    FrontImagePath = table.Column<string>(type: "text", nullable: true),
+                    BackImagePath = table.Column<string>(type: "text", nullable: true),
                     IsVerified = table.Column<bool>(type: "boolean", nullable: false),
-                    Notes = table.Column<string>(type: "text", nullable: true)
+                    Notes = table.Column<string>(type: "text", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -554,6 +659,25 @@ namespace HotelPro.Infrastructure.Migrations
                         principalTable: "rooms",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "phone_extensions",
+                columns: table => new
+                {
+                    Extension = table.Column<string>(type: "character varying(10)", maxLength: 10, nullable: false),
+                    RoomId = table.Column<Guid>(type: "uuid", nullable: true),
+                    Description = table.Column<string>(type: "text", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_phone_extensions", x => x.Extension);
+                    table.ForeignKey(
+                        name: "FK_phone_extensions_rooms_RoomId",
+                        column: x => x.RoomId,
+                        principalTable: "rooms",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.SetNull);
                 });
 
             migrationBuilder.CreateTable(
@@ -653,6 +777,77 @@ namespace HotelPro.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "bookings",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    HotelId = table.Column<Guid>(type: "uuid", nullable: false),
+                    GuestId = table.Column<Guid>(type: "uuid", nullable: false),
+                    GroupId = table.Column<Guid>(type: "uuid", nullable: true),
+                    Source = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: false),
+                    Type = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: false),
+                    Status = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: false),
+                    ArrivalDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    DepartureDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    AdultCount = table.Column<int>(type: "integer", nullable: false),
+                    ChildCount = table.Column<int>(type: "integer", nullable: false),
+                    TotalPrice = table.Column<decimal>(type: "numeric(18,2)", nullable: false),
+                    ExchangeRateTotal = table.Column<decimal>(type: "numeric(18,2)", nullable: false),
+                    Currency = table.Column<string>(type: "character varying(3)", maxLength: 3, nullable: false),
+                    Notes = table.Column<string>(type: "text", nullable: true),
+                    InternalNotes = table.Column<string>(type: "text", nullable: true),
+                    CancellationReason = table.Column<string>(type: "text", nullable: true),
+                    CancelledAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_bookings", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_bookings_booking_groups_GroupId",
+                        column: x => x.GroupId,
+                        principalTable: "booking_groups",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.SetNull);
+                    table.ForeignKey(
+                        name: "FK_bookings_guests_GuestId",
+                        column: x => x.GuestId,
+                        principalTable: "guests",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "master_bills",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    GroupId = table.Column<Guid>(type: "uuid", nullable: false),
+                    PayerGuestId = table.Column<Guid>(type: "uuid", nullable: false),
+                    TotalStayCharges = table.Column<decimal>(type: "numeric(18,2)", nullable: false),
+                    IsClosed = table.Column<bool>(type: "boolean", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_master_bills", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_master_bills_booking_groups_GroupId",
+                        column: x => x.GroupId,
+                        principalTable: "booking_groups",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_master_bills_guests_PayerGuestId",
+                        column: x => x.PayerGuestId,
+                        principalTable: "guests",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "booking_histories",
                 columns: table => new
                 {
@@ -717,18 +912,51 @@ namespace HotelPro.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "email_logs",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    BookingId = table.Column<Guid>(type: "uuid", nullable: true),
+                    Recipient = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
+                    Subject = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: false),
+                    Body = table.Column<string>(type: "text", nullable: false),
+                    IsHtml = table.Column<bool>(type: "boolean", nullable: false),
+                    Status = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: false),
+                    ErrorMessage = table.Column<string>(type: "text", nullable: true),
+                    RetryCount = table.Column<int>(type: "integer", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    SentAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_email_logs", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_email_logs_bookings_BookingId",
+                        column: x => x.BookingId,
+                        principalTable: "bookings",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.SetNull);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "group_bookings",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    GroupName = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
+                    GroupId = table.Column<Guid>(type: "uuid", nullable: false),
                     BookingId = table.Column<Guid>(type: "uuid", nullable: false),
-                    MemberBookingId = table.Column<Guid>(type: "uuid", nullable: false),
+                    RoomTypeId = table.Column<Guid>(type: "uuid", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_group_bookings", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_group_bookings_booking_groups_GroupId",
+                        column: x => x.GroupId,
+                        principalTable: "booking_groups",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_group_bookings_bookings_BookingId",
                         column: x => x.BookingId,
@@ -736,11 +964,47 @@ namespace HotelPro.Infrastructure.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_group_bookings_bookings_MemberBookingId",
-                        column: x => x.MemberBookingId,
-                        principalTable: "bookings",
+                        name: "FK_group_bookings_room_types_RoomTypeId",
+                        column: x => x.RoomTypeId,
+                        principalTable: "room_types",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "GuestStayHistories",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    GuestId = table.Column<Guid>(type: "uuid", nullable: false),
+                    BookingId = table.Column<Guid>(type: "uuid", nullable: false),
+                    RoomId = table.Column<Guid>(type: "uuid", nullable: false),
+                    CheckedInAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    CheckedOutAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    RoomNumber = table.Column<string>(type: "text", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_GuestStayHistories", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_GuestStayHistories_bookings_BookingId",
+                        column: x => x.BookingId,
+                        principalTable: "bookings",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_GuestStayHistories_guests_GuestId",
+                        column: x => x.GuestId,
+                        principalTable: "guests",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_GuestStayHistories_rooms_RoomId",
+                        column: x => x.RoomId,
+                        principalTable: "rooms",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -756,6 +1020,7 @@ namespace HotelPro.Infrastructure.Migrations
                     Balance = table.Column<decimal>(type: "numeric(18,2)", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     ClosedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     Notes = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
@@ -788,6 +1053,7 @@ namespace HotelPro.Infrastructure.Migrations
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     FolioId = table.Column<Guid>(type: "uuid", nullable: false),
                     ServiceCatalogId = table.Column<Guid>(type: "uuid", nullable: true),
+                    ChargeType = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: false),
                     Description = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: false),
                     Quantity = table.Column<decimal>(type: "numeric(18,2)", nullable: false),
                     UnitPrice = table.Column<decimal>(type: "numeric(18,2)", nullable: false),
@@ -795,7 +1061,8 @@ namespace HotelPro.Infrastructure.Migrations
                     VatAmount = table.Column<decimal>(type: "numeric(18,2)", nullable: false),
                     ChargeDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     PostedById = table.Column<Guid>(type: "uuid", nullable: true),
-                    IsTaxable = table.Column<bool>(type: "boolean", nullable: false)
+                    IsTaxable = table.Column<bool>(type: "boolean", nullable: false),
+                    POSReference = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -883,7 +1150,9 @@ namespace HotelPro.Infrastructure.Migrations
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     FolioId = table.Column<Guid>(type: "uuid", nullable: false),
                     PaymentMethodId = table.Column<Guid>(type: "uuid", nullable: true),
+                    PaymentMethod = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
                     Amount = table.Column<decimal>(type: "numeric(18,2)", nullable: false),
+                    Status = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: false),
                     PaymentDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     Reference = table.Column<string>(type: "text", nullable: true),
                     ProcessedById = table.Column<Guid>(type: "uuid", nullable: true),
@@ -982,6 +1251,36 @@ namespace HotelPro.Infrastructure.Migrations
                 columns: new[] { "EntityName", "EntityId" });
 
             migrationBuilder.CreateIndex(
+                name: "IX_booking_groups_Arrival",
+                table: "booking_groups",
+                column: "Arrival");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_booking_groups_ContactPersonId",
+                table: "booking_groups",
+                column: "ContactPersonId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_booking_groups_Departure",
+                table: "booking_groups",
+                column: "Departure");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_booking_groups_HotelId",
+                table: "booking_groups",
+                column: "HotelId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_booking_groups_ReleaseDate",
+                table: "booking_groups",
+                column: "ReleaseDate");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_booking_groups_Status",
+                table: "booking_groups",
+                column: "Status");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_booking_histories_BookingId",
                 table: "booking_histories",
                 column: "BookingId");
@@ -1057,6 +1356,22 @@ namespace HotelPro.Infrastructure.Migrations
                 column: "ServiceCatalogId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_email_logs_BookingId",
+                table: "email_logs",
+                column: "BookingId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_email_logs_CreatedAt",
+                table: "email_logs",
+                column: "CreatedAt",
+                descending: new bool[0]);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_email_logs_Status",
+                table: "email_logs",
+                column: "Status");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_employees_Email",
                 table: "employees",
                 column: "Email",
@@ -1094,9 +1409,15 @@ namespace HotelPro.Infrastructure.Migrations
                 column: "BookingId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_group_bookings_MemberBookingId",
+                name: "IX_group_bookings_GroupId_BookingId",
                 table: "group_bookings",
-                column: "MemberBookingId");
+                columns: new[] { "GroupId", "BookingId" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_group_bookings_RoomTypeId",
+                table: "group_bookings",
+                column: "RoomTypeId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_guest_documents_GuestId",
@@ -1113,12 +1434,27 @@ namespace HotelPro.Infrastructure.Migrations
                 table: "guests",
                 column: "Email",
                 unique: true,
-                filter: "email IS NOT NULL");
+                filter: "\"Email\" IS NOT NULL");
 
             migrationBuilder.CreateIndex(
                 name: "IX_guests_LastName_FirstName",
                 table: "guests",
                 columns: new[] { "LastName", "FirstName" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_GuestStayHistories_BookingId",
+                table: "GuestStayHistories",
+                column: "BookingId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_GuestStayHistories_GuestId",
+                table: "GuestStayHistories",
+                column: "GuestId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_GuestStayHistories_RoomId",
+                table: "GuestStayHistories",
+                column: "RoomId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_hotels_Code",
@@ -1169,6 +1505,23 @@ namespace HotelPro.Infrastructure.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_master_bills_GroupId",
+                table: "master_bills",
+                column: "GroupId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_master_bills_PayerGuestId",
+                table: "master_bills",
+                column: "PayerGuestId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_night_audit_logs_AuditDate",
+                table: "night_audit_logs",
+                column: "AuditDate",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_outstanding_balances_FolioId",
                 table: "outstanding_balances",
                 column: "FolioId");
@@ -1197,6 +1550,11 @@ namespace HotelPro.Infrastructure.Migrations
                 name: "IX_payments_ProcessedById",
                 table: "payments",
                 column: "ProcessedById");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_phone_extensions_RoomId",
+                table: "phone_extensions",
+                column: "RoomId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_refresh_tokens_EmployeeId",
@@ -1288,6 +1646,9 @@ namespace HotelPro.Infrastructure.Migrations
                 name: "access_logs");
 
             migrationBuilder.DropTable(
+                name: "AdvancePayments");
+
+            migrationBuilder.DropTable(
                 name: "amenities");
 
             migrationBuilder.DropTable(
@@ -1298,6 +1659,15 @@ namespace HotelPro.Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "charges");
+
+            migrationBuilder.DropTable(
+                name: "DayLocks");
+
+            migrationBuilder.DropTable(
+                name: "email_logs");
+
+            migrationBuilder.DropTable(
+                name: "ExchangeRates");
 
             migrationBuilder.DropTable(
                 name: "expenses");
@@ -1312,6 +1682,9 @@ namespace HotelPro.Infrastructure.Migrations
                 name: "guest_documents");
 
             migrationBuilder.DropTable(
+                name: "GuestStayHistories");
+
+            migrationBuilder.DropTable(
                 name: "hotels");
 
             migrationBuilder.DropTable(
@@ -1321,13 +1694,28 @@ namespace HotelPro.Infrastructure.Migrations
                 name: "invoice_items");
 
             migrationBuilder.DropTable(
+                name: "InvoiceSequences");
+
+            migrationBuilder.DropTable(
                 name: "legacy_id_mapping");
+
+            migrationBuilder.DropTable(
+                name: "master_bills");
+
+            migrationBuilder.DropTable(
+                name: "night_audit_logs");
 
             migrationBuilder.DropTable(
                 name: "outstanding_balances");
 
             migrationBuilder.DropTable(
                 name: "payments");
+
+            migrationBuilder.DropTable(
+                name: "phone_extensions");
+
+            migrationBuilder.DropTable(
+                name: "ProformaInvoices");
 
             migrationBuilder.DropTable(
                 name: "refresh_tokens");
@@ -1381,13 +1769,16 @@ namespace HotelPro.Infrastructure.Migrations
                 name: "rooms");
 
             migrationBuilder.DropTable(
-                name: "guests");
+                name: "booking_groups");
 
             migrationBuilder.DropTable(
                 name: "buildings");
 
             migrationBuilder.DropTable(
                 name: "room_types");
+
+            migrationBuilder.DropTable(
+                name: "guests");
 
             migrationBuilder.DropTable(
                 name: "countries");

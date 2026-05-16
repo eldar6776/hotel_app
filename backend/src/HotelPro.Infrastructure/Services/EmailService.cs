@@ -2,6 +2,7 @@ using HotelPro.Core.Entities;
 using HotelPro.Core.Services;
 using HotelPro.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MimeKit;
@@ -13,18 +14,18 @@ public class EmailService : IEmailService
     private readonly HotelProDbContext _dbContext;
     private readonly EmailConfiguration _emailConfig;
     private readonly ILogger<EmailService> _logger;
-    private readonly Func<ISmtpClient> _smtpClientFactory;
+    private readonly IServiceProvider _serviceProvider;
 
     public EmailService(
         HotelProDbContext dbContext,
         IOptions<EmailConfiguration> emailConfig,
         ILogger<EmailService> logger,
-        Func<ISmtpClient> smtpClientFactory)
+        IServiceProvider serviceProvider)
     {
         _dbContext = dbContext;
         _emailConfig = emailConfig.Value;
         _logger = logger;
-        _smtpClientFactory = smtpClientFactory;
+        _serviceProvider = serviceProvider;
     }
 
     public async Task<EmailSendResult> SendConfirmationAsync(Guid bookingId)
@@ -152,7 +153,7 @@ public class EmailService : IEmailService
 
         message.Body = bodyBuilder.ToMessageBody();
 
-        using var client = _smtpClientFactory();
+        using var client = _serviceProvider.GetRequiredService<ISmtpClient>();
         await client.ConnectAsync(_emailConfig.SmtpHost, _emailConfig.SmtpPort, _emailConfig.UseTls);
 
         if (!string.IsNullOrEmpty(_emailConfig.SmtpUsername))

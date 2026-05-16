@@ -1560,6 +1560,25 @@ namespace HotelPro.Infrastructure.Migrations
                     b.ToTable("payment_methods", (string)null);
                 });
 
+            modelBuilder.Entity("HotelPro.Core.Entities.PhoneExtension", b =>
+                {
+                    b.Property<string>("Extension")
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text");
+
+                    b.Property<Guid?>("RoomId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Extension");
+
+                    b.HasIndex("RoomId");
+
+                    b.ToTable("phone_extensions", (string)null);
+                });
+
             modelBuilder.Entity("HotelPro.Core.Entities.ProformaInvoice", b =>
                 {
                     b.Property<Guid>("Id")
@@ -2381,6 +2400,16 @@ namespace HotelPro.Infrastructure.Migrations
                     b.Navigation("PaymentMethodEntity");
 
                     b.Navigation("ProcessedBy");
+                });
+
+            modelBuilder.Entity("HotelPro.Core.Entities.PhoneExtension", b =>
+                {
+                    b.HasOne("HotelPro.Core.Entities.Room", "Room")
+                        .WithMany()
+                        .HasForeignKey("RoomId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("Room");
                 });
 
             modelBuilder.Entity("HotelPro.Core.Entities.RefreshToken", b =>

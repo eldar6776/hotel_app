@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace HotelPro.Infrastructure.Migrations
 {
     [DbContext(typeof(HotelProDbContext))]
-    [Migration("20260516194204_AddGuestGdprAndDocuments")]
-    partial class AddGuestGdprAndDocuments
+    [Migration("20260516204704_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -60,6 +60,42 @@ namespace HotelPro.Infrastructure.Migrations
                     b.HasIndex("Timestamp");
 
                     b.ToTable("access_logs", (string)null);
+                });
+
+            modelBuilder.Entity("HotelPro.Core.Entities.AdvancePayment", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("numeric");
+
+                    b.Property<Guid?>("AppliedToInvoiceId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("BookingId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsRefunded")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime>("PaymentDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("PaymentMethod")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Reference")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("AdvancePayments");
                 });
 
             modelBuilder.Entity("HotelPro.Core.Entities.Amenity", b =>
@@ -643,6 +679,40 @@ namespace HotelPro.Infrastructure.Migrations
                     b.ToTable("employees", (string)null);
                 });
 
+            modelBuilder.Entity("HotelPro.Core.Entities.ExchangeRate", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("CurrencyCode")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsLocalCurrency")
+                        .HasColumnType("boolean");
+
+                    b.Property<decimal>("Rate")
+                        .HasColumnType("numeric");
+
+                    b.Property<string>("Source")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("ValidFrom")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("ValidTo")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ExchangeRates");
+                });
+
             modelBuilder.Entity("HotelPro.Core.Entities.Expense", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1218,6 +1288,27 @@ namespace HotelPro.Infrastructure.Migrations
                     b.ToTable("invoice_items", (string)null);
                 });
 
+            modelBuilder.Entity("HotelPro.Core.Entities.InvoiceSequence", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("LastNumber")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Prefix")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("Year")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("InvoiceSequences");
+                });
+
             modelBuilder.Entity("HotelPro.Core.Entities.LegacyIdMapping", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1470,6 +1561,61 @@ namespace HotelPro.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("payment_methods", (string)null);
+                });
+
+            modelBuilder.Entity("HotelPro.Core.Entities.PhoneExtension", b =>
+                {
+                    b.Property<string>("Extension")
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text");
+
+                    b.Property<Guid?>("RoomId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Extension");
+
+                    b.HasIndex("RoomId");
+
+                    b.ToTable("phone_extensions", (string)null);
+                });
+
+            modelBuilder.Entity("HotelPro.Core.Entities.ProformaInvoice", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("BookingId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("ConvertedToInvoiceId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("ExpiryDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("IssueDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("ProformaNumber")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.Property<decimal>("TotalAmount")
+                        .HasColumnType("numeric");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ProformaInvoices");
                 });
 
             modelBuilder.Entity("HotelPro.Core.Entities.RefreshToken", b =>
@@ -2257,6 +2403,16 @@ namespace HotelPro.Infrastructure.Migrations
                     b.Navigation("PaymentMethodEntity");
 
                     b.Navigation("ProcessedBy");
+                });
+
+            modelBuilder.Entity("HotelPro.Core.Entities.PhoneExtension", b =>
+                {
+                    b.HasOne("HotelPro.Core.Entities.Room", "Room")
+                        .WithMany()
+                        .HasForeignKey("RoomId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("Room");
                 });
 
             modelBuilder.Entity("HotelPro.Core.Entities.RefreshToken", b =>

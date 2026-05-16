@@ -41,7 +41,9 @@ public class EmailServiceTests
         });
 
         var logger = new Mock<ILogger<EmailService>>();
-        return new EmailService(context, emailConfig, logger.Object, () => fakeSmtp);
+        var sp = new Mock<IServiceProvider>();
+        sp.Setup(x => x.GetService(typeof(ISmtpClient))).Returns(fakeSmtp);
+        return new EmailService(context, emailConfig, logger.Object, sp.Object);
     }
 
     private async Task<Booking> SeedBookingWithGuestAsync(HotelProDbContext context, string? guestEmail = "guest@test.com")
