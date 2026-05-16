@@ -6,6 +6,7 @@ using HotelPro.Core.Services;
 using HotelPro.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Npgsql;
 
 namespace HotelPro.Infrastructure.Services;
 
@@ -16,19 +17,22 @@ public class BookingService : IBookingService
     private readonly ITenantService _tenantService;
     private readonly IEmailService _emailService;
     private readonly ILogger<BookingService> _logger;
+    private readonly IBookingAvailabilityService _availabilityService;
 
     public BookingService(
         IBookingRepository bookingRepository,
         HotelProDbContext dbContext,
         ITenantService tenantService,
         IEmailService emailService,
-        ILogger<BookingService> logger)
+        ILogger<BookingService> logger,
+        IBookingAvailabilityService availabilityService)
     {
         _bookingRepository = bookingRepository;
         _dbContext = dbContext;
         _tenantService = tenantService;
         _emailService = emailService;
         _logger = logger;
+        _availabilityService = availabilityService;
     }
 
     public async Task<PagedResult<BookingDto>> GetBookingsAsync(BookingFilter filter)
@@ -102,7 +106,69 @@ public class BookingService : IBookingService
         booking.TotalPrice = CalculateTotalPrice(booking);
         booking.ExchangeRateTotal = booking.TotalPrice;
 
-        await _bookingRepository.AddAsync(booking);
+        if (_dbContext.Database.IsRelational())
+        {
+            await using var transaction = await _dbContext.Database.BeginTransactionAsync(
+                System.Data.IsolationLevel.Serializable);
+
+            try
+            {
+                var lockTimeoutSql = "SET LOCAL lock_timeout = '5s'";
+                await _dbContext.Database.ExecuteSqlRawAsync(lockTimeoutSql);
+
+                foreach (var roomGroup in dto.Rooms.GroupBy(r => r.RoomTypeId))
+                {
+                    await _bookingRepository.AcquireRoomTypeLockAsync(
+                        roomGroup.Key, dto.ArrivalDate, dto.DepartureDate);
+
+                    var conflictingCount = await _bookingRepository.CountConflictingBookingsAsync(
+                        roomGroup.Key, dto.ArrivalDate, dto.DepartureDate, null);
+
+                    var totalRoomsOfType = await _dbContext.Rooms
+                        .CountAsync(r => r.RoomTypeId == roomGroup.Key);
+                    var requestedQuantity = roomGroup.Count();
+
+                    if (conflictingCount + requestedQuantity > totalRoomsOfType)
+                    {
+                        var allowOverbooking = await _dbContext.FeatureFlags
+                            .AnyAsync(f => f.FeatureName == "AllowOverbooking" && f.IsEnabled);
+
+                        if (!allowOverbooking)
+                        {
+                            await transaction.RollbackAsync();
+                            throw new InvalidOperationException(
+                                $"Nema dovoljno soba tipa {roomGroup.Key}. Dostupno: {totalRoomsOfType - conflictingCount}, Trazeno: {requestedQuantity}");
+                        }
+                    }
+                }
+
+                await _bookingRepository.AddAsync(booking);
+                await transaction.CommitAsync();
+            }
+            catch (PostgresException ex) when (ex.SqlState == "55P03")
+            {
+                throw new InvalidOperationException(
+                    "Soba je trenutno zakljucana od strane drugog korisnika. Pokusajte ponovo.");
+            }
+            catch (PostgresException ex) when (ex.SqlState == "57014")
+            {
+                throw new InvalidOperationException(
+                    "Vremensko ogranicenje za zakljucavanje sobe je isteklo (5s). Pokusajte ponovo.");
+            }
+            catch (InvalidOperationException)
+            {
+                throw;
+            }
+            catch
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
+        }
+        else
+        {
+            await _bookingRepository.AddAsync(booking);
+        }
 
         var result = await _bookingRepository.GetByIdWithRoomsAsync(booking.Id)
             ?? throw new InvalidOperationException($"Booking with ID {booking.Id} not found after creation.");
@@ -267,7 +333,6 @@ public class BookingService : IBookingService
             (BookingStatus.Confirmed, BookingStatus.CheckedIn) => true,
             (BookingStatus.Confirmed, BookingStatus.Cancelled) => true,
             (BookingStatus.CheckedIn, BookingStatus.CheckedOut) => true,
-            (BookingStatus.CheckedIn, BookingStatus.Cancelled) => true,
             _ => false
         };
     }

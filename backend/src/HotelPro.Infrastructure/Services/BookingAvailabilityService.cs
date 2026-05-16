@@ -137,6 +137,72 @@ public class BookingAvailabilityService : IBookingAvailabilityService
         return new LockResult(true, $"lock-{Guid.NewGuid():N}", null);
     }
 
+    public async Task<LockResult> ExecuteWithLockAsync(LockRequest request, Func<Task<BookingResult>> action)
+    {
+        if (_dbContext.Database.IsRelational())
+        {
+            return await ExecuteWithLockPostgresAsync(request, action);
+        }
+
+        var availability = await CheckAvailabilityAsync(new AvailabilityRequest(
+            request.RoomTypeId, request.Arrival, request.Departure, request.Quantity));
+        if (!availability.IsAvailable)
+            return new LockResult(false, null, $"Nema dovoljno soba. Dostupno: {availability.AvailableQuantity}, Trazeno: {request.Quantity}");
+
+        await action();
+        return new LockResult(true, $"lock-{Guid.NewGuid():N}", null);
+    }
+
+    private async Task<LockResult> ExecuteWithLockPostgresAsync(LockRequest request, Func<Task<BookingResult>> action)
+    {
+        await using var transaction = await _dbContext.Database.BeginTransactionAsync(
+            System.Data.IsolationLevel.Serializable);
+
+        try
+        {
+            var lockTimeoutSql = "SET LOCAL lock_timeout = '5s'";
+            await _dbContext.Database.ExecuteSqlRawAsync(lockTimeoutSql);
+
+            try
+            {
+                await _bookingRepository.AcquireRoomTypeLockAsync(
+                    request.RoomTypeId, request.Arrival, request.Departure);
+            }
+            catch (PostgresException ex) when (ex.SqlState == "55P03")
+            {
+                await transaction.RollbackAsync();
+                return new LockResult(false, null,
+                    "Soba je trenutno zakljucana od strane drugog korisnika. Pokusajte ponovo.");
+            }
+            catch (PostgresException ex) when (ex.SqlState == "57014")
+            {
+                await transaction.RollbackAsync();
+                return new LockResult(false, null,
+                    "Vremensko ogranicenje za zakljucavanje sobe je isteklo (5s). Pokusajte ponovo.");
+            }
+
+            var availability = await CheckAvailabilityAsync(new AvailabilityRequest(
+                request.RoomTypeId, request.Arrival, request.Departure, request.Quantity));
+
+            if (!availability.IsAvailable)
+            {
+                await transaction.RollbackAsync();
+                return new LockResult(false, null,
+                    $"Nema dovoljno soba. Dostupno: {availability.AvailableQuantity}, Trazeno: {request.Quantity}");
+            }
+
+            var bookingResult = await action();
+
+            await transaction.CommitAsync();
+            return new LockResult(true, $"lock-{Guid.NewGuid():N}", null);
+        }
+        catch
+        {
+            await transaction.RollbackAsync();
+            throw;
+        }
+    }
+
     public Task ReleaseRoomLockAsync(string lockId)
     {
         return Task.CompletedTask;

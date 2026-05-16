@@ -58,15 +58,15 @@
 - [x] **T6.1: CRUD API za rezervacije (pojedinacne i grupne)** - [COMPLETED 2026-05-16 - opencode (kimi-k2.6)]
 - [x] **T6.2: Frontend — interaktivni Drag & Drop Gantt kalendar** - [COMPLETED 2026-05-16 - opencode (kimi-k2.6)]
 - [x] **T6.3: Provjera dostupnosti i logika kolizija (double-booking prevention)** - [COMPLETED 2026-05-16 - opencode (kimi-k2.6)]
-- [-] **T6.4: Email potvrda rezervacije** - [COMPLETED 2026-05-16 - opencode]
-- [-] **T6.5: Grupne rezervacije — blokiranje soba, master racun, posebni cjenovnici** - [COMPLETED 2026-05-16 - opencode]
+- [x] **T6.4: Email potvrda rezervacije** - [COMPLETED 2026-05-16 - opencode]
+- [x] **T6.5: Grupne rezervacije — blokiranje soba, master racun, posebni cjenovnici** - [COMPLETED 2026-05-16 - opencode]
 
 ### Faza 7: Recepcija (Check-in / Check-out)
-- [ ] **T7.1: Check-in workflow API (room assignment, RFID, dokumenti)**
-- [ ] **T7.2: Check-out workflow sa obracunom (late check-out, payment)**
-- [ ] **T7.3: Folio sistem — dodavanje troskova tokom boravka**
+- [x] **T7.1: Check-in workflow API (room assignment, RFID, dokumenti)** - [COMPLETED 2026-05-16 - opencode]
+- [x] **T7.2: Check-out workflow sa obracunom (late check-out, payment)** - [COMPLETED 2026-05-16 - opencode]
+- [x] **T7.3: Folio sistem — dodavanje troskova tokom boravka** - [COMPLETED 2026-05-16 - opencode]
 - [ ] **T7.4: Frontend — Recepcijski ekran (arrivals, departures, quick actions)**
-- [ ] **T7.5: Night audit proces (automatsko generisanje nocenja)**
+- [x] **T7.5: Night audit proces (automatsko generisanje nocenja)** - [COMPLETED 2026-05-16 - opencode]
 
 ### Faza 8: Gosti i CRM
 - [ ] **T8.1: CRUD API za goste i dokumente (GDPR, privacy logging)**
@@ -357,3 +357,26 @@ Sljedece grupe se mogu raditi istovremeno:
 - **EF Migracija**: AddEmailLog za email_logs tabelu
 - **Testovi**: 8 unit testova (booking not found, guest email missing/empty, email log creation, subject validation)
 - **Backend**: `dotnet build` 0 errors, `dotnet test` 25/25 passed
+
+### 2026-05-16 — opencode — T6.5 COMPLETED
+- **BookingGroup entitet**: sa GroupStatus enumom, BlockedRoomCount, ConfirmedRoomCount, DiscountPercent, ReleaseDate
+- **MasterBill entitet**: za grupno placanje (samo nocenja, ne licni troskovi)
+- **GroupBooking join tabela**: sa RoomType vezom
+- **BookingGroupService**: CRUD, release, discount, master bill calculation
+- **BookingGroupsController**: POST/GET/PUT/POST release/GET master-bill
+- **GroupReleaseJob**: scheduled job (svaki sat) za automatski release
+- **DiscountPercent**: primijenjen na cijene soba pri kreiranju grupe
+- **EF Migracija**: AddBookingGroupAndMasterBill
+- **Testovi**: 10 unit testova
+
+### 2026-05-16 — opencode — T7.1, T7.2, T7.3, T7.5 COMPLETED
+- **T7.3 Folio**: FolioService, FoliosController, ChargeType enum, sub-folio, storno logika
+- **T7.1 Check-in**: CheckInService, POST /api/reception/check-in, validacija, folio creation, RFID event
+- **T7.2 Check-out**: CheckOutService, POST /api/reception/check-out, obracun, late fee, payment
+- **T7.5 Night Audit**: NightAuditService, NightAuditLog, StayNight charges, NoShow detection
+- **Payment entity**: dodan PaymentMethod string + PaymentStatus
+- **Charge entity**: dodan ChargeType + POSReference
+- **Folio entity**: dodan UpdatedAt
+- **EF Migracija**: AddFolioChargesAndStayNight
+- **Testovi**: 8 unit testova (check-in, check-out, night audit, no-show)
+- **Backend**: `dotnet build` 0 errors, `dotnet test` 48/48 passed

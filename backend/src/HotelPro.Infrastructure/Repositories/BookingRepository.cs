@@ -18,13 +18,14 @@ public class BookingRepository : IBookingRepository
     public async Task<Booking?> GetByIdAsync(Guid id)
     {
         return await _dbContext.Bookings
-            .AsNoTracking()
+            .IgnoreQueryFilters()
             .FirstOrDefaultAsync(b => b.Id == id);
     }
 
     public async Task<Booking?> GetByIdWithRoomsAsync(Guid id)
     {
         return await _dbContext.Bookings
+            .IgnoreQueryFilters()
             .Include(b => b.BookingRooms)
             .ThenInclude(br => br.RoomType)
             .Include(b => b.BookingRooms)
@@ -43,6 +44,7 @@ public class BookingRepository : IBookingRepository
         int pageSize = 20)
     {
         var query = _dbContext.Bookings
+            .IgnoreQueryFilters()
             .Include(b => b.BookingRooms)
             .ThenInclude(br => br.RoomType)
             .Include(b => b.BookingRooms)
@@ -66,7 +68,7 @@ public class BookingRepository : IBookingRepository
         Guid? guestId = null,
         Guid? roomId = null)
     {
-        var query = _dbContext.Bookings.AsQueryable();
+        var query = _dbContext.Bookings.IgnoreQueryFilters().AsQueryable();
         query = ApplyFilters(query, status, fromDate, toDate, guestId, roomId);
         return await query.CountAsync();
     }
@@ -193,7 +195,7 @@ public class BookingRepository : IBookingRepository
               AND b."Status" != 'Cancelled'
               AND b."ArrivalDate" < {1}
               AND b."DepartureDate" > {2}
-            FOR UPDATE NOWAIT
+            FOR UPDATE
             """;
 
         await _dbContext.Database.ExecuteSqlRawAsync(sql, roomTypeId, departure, arrival, ct);
