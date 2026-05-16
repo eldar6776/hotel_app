@@ -83,11 +83,11 @@
 - [x] **T9.5: POS integracija — automatsko knjizenje troskova restorana/bara na folio** - [COMPLETED 2026-05-16 - opencode]
 
 ### Faza 10: Izvjestavanje i Dashboard
-- [ ] **T10.1: Dnevni izvjestaj popunjenosti (ADR, RevPAR)**
-- [ ] **T10.2: Finansijski izvjestaji (revenue by channel, turnover)**
-- [ ] **T10.3: Knjiga stranih drzavljana (turisticka evidencija, TZ plugin)**
-- [ ] **T10.4: Statisticke vizualizacije (Chart.js, trendovi)**
-- [ ] **T10.5: Automatsko slanje izvjestaja emailom (scheduled, PDF)**
+- [x] **T10.1: Dnevni izvjestaj popunjenosti (ADR, RevPAR)** - [COMPLETED 2026-05-16 - opencode]
+- [x] **T10.2: Finansijski izvjestaji (revenue by channel, turnover)** - [COMPLETED 2026-05-16 - opencode]
+- [x] **T10.3: Knjiga stranih drzavljana (turisticka evidencija, TZ plugin)** - [COMPLETED 2026-05-16 - opencode]
+- [x] **T10.4: Statisticke vizualizacije (Chart.js, trendovi)** - [COMPLETED 2026-05-16 - opencode]
+- [x] **T10.5: Automatsko slanje izvjestaja emailom (scheduled, PDF)** - [COMPLETED 2026-05-16 - opencode]
 
 ### Faza 11: Housekeeping
 - [ ] **T11.1: API za upravljanje statusom soba (ciscenje, inspekcija)**
