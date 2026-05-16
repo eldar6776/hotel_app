@@ -57,6 +57,7 @@
 ### Faza 6: Rezervacije (Booking Engine)
 - [x] **T6.1: CRUD API za rezervacije (pojedinacne i grupne)** - [COMPLETED 2026-05-16 - opencode (kimi-k2.6)]
 - [x] **T6.2: Frontend — interaktivni Drag & Drop Gantt kalendar** - [COMPLETED 2026-05-16 - opencode (kimi-k2.6)]
+- [-] **T6.3: Provjera dostupnosti i logika kolizija (double-booking prevention)** - [IN_PROGRESS] - 2026-05-16 - opencode (kimi-k2.6)
 - [ ] **T6.3: Provjera dostupnosti i logika kolizija (double-booking prevention)**
 - [ ] **T6.4: Email potvrda rezervacije**
 - [ ] **T6.5: Grupne rezervacije — blokiranje soba, master racun, posebni cjenovnici**
