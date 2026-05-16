@@ -59,7 +59,7 @@
 - [x] **T6.2: Frontend — interaktivni Drag & Drop Gantt kalendar** - [COMPLETED 2026-05-16 - opencode (kimi-k2.6)]
 - [x] **T6.3: Provjera dostupnosti i logika kolizija (double-booking prevention)** - [COMPLETED 2026-05-16 - opencode (kimi-k2.6)]
 - [-] **T6.4: Email potvrda rezervacije** - [COMPLETED 2026-05-16 - opencode]
-- [ ] **T6.5: Grupne rezervacije — blokiranje soba, master racun, posebni cjenovnici**
+- [-] **T6.5: Grupne rezervacije — blokiranje soba, master racun, posebni cjenovnici** - [IN_PROGRESS] - 2026-05-16 - opencode
 
 ### Faza 7: Recepcija (Check-in / Check-out)
 - [ ] **T7.1: Check-in workflow API (room assignment, RFID, dokumenti)**
