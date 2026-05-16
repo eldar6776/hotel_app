@@ -99,7 +99,7 @@ public class FoliosController : ControllerBase
 
     [HttpPost("charges/{chargeId:guid}/storno")]
     [Authorize(Policy = "CanManageBookings")]
-    public async Task<ActionResult<FolioChargeDto>> StornoCharge(Guid chargeId, [FromBody] StornoRequest request)
+    public async Task<ActionResult<FolioChargeDto>> StornoCharge(Guid chargeId, [FromBody] InvoiceStornoRequest request)
     {
         try
         {
@@ -136,4 +136,4 @@ public class FoliosController : ControllerBase
     }
 }
 
-public record StornoRequest(string Reason);
+public record InvoiceStornoRequest(string Reason, string? Description);

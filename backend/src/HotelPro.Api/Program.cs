@@ -123,6 +123,10 @@ builder.Services.AddScoped<HotelPro.Core.Services.ICheckInService, HotelPro.Infr
 builder.Services.AddScoped<HotelPro.Core.Services.ICheckOutService, HotelPro.Infrastructure.Services.CheckOutService>();
 builder.Services.AddScoped<HotelPro.Core.Services.INightAuditService, HotelPro.Infrastructure.Services.NightAuditService>();
 builder.Services.AddScoped<HotelPro.Core.Services.IGuestService, HotelPro.Infrastructure.Services.GuestService>();
+builder.Services.AddScoped<HotelPro.Core.Services.IInvoiceGenerator, HotelPro.Infrastructure.Services.InvoiceGenerator>();
+builder.Services.AddScoped<HotelPro.Core.Services.IProformaService, HotelPro.Infrastructure.Services.ProformaService>();
+builder.Services.AddScoped<HotelPro.Core.Services.IAdvancePaymentService, HotelPro.Infrastructure.Services.AdvancePaymentService>();
+builder.Services.AddScoped<HotelPro.Core.Services.IExchangeRateService, HotelPro.Infrastructure.Services.ExchangeRateService>();
 
 builder.Services.AddSignalR();
 

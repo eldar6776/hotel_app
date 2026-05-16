@@ -69,18 +69,18 @@
 - [x] **T7.5: Night audit proces (automatsko generisanje nocenja)** - [COMPLETED 2026-05-16 - opencode]
 
 ### Faza 8: Gosti i CRM
-- [-] **T8.1: CRUD API za goste i dokumente (GDPR, privacy logging)** - [IN_PROGRESS] - 2026-05-16 - opencode
-- [ ] **T8.2: Pretraga i filtriranje gostiju (multi-criteria, auto-suggest)**
-- [ ] **T8.3: Istorija boravka i preferencije gosta (unified profile)**
-- [ ] **T8.4: Frontend — Profil gosta (history, preferences, active stay)**
-- [ ] **T8.5: OCR MRZ parser za dokumente (pasos, licna karta)**
+- [x] **T8.1: CRUD API za goste i dokumente (GDPR, privacy logging)** - [COMPLETED 2026-05-16 - opencode]
+- [x] **T8.2: Pretraga i filtriranje gostiju (multi-criteria, auto-suggest)** - [COMPLETED 2026-05-16 - opencode]
+- [x] **T8.3: Istorija boravka i preferencije gosta (unified profile)** - [COMPLETED 2026-05-16 - opencode]
+- [x] **T8.4: Frontend — Profil gosta (history, preferences, active stay)** - [COMPLETED 2026-05-16 - opencode]
+- [x] **T8.5: OCR MRZ parser za dokumente (pasos, licna karta)** - [COMPLETED 2026-05-16 - opencode]
 
 ### Faza 9: Naplata i Fakturisanje
-- [ ] **T9.1: Generisanje racuna (QuestPDF, multi-VAT, invoice sequence)**
-- [ ] **T9.2: Predracuni i avansne uplate**
-- [ ] **T9.3: Storno i korekcija racuna (fiscal reversal, reprint)**
-- [ ] **T9.4: Integracija sa kursnom listom (valute, multi-currency invoices)**
-- [ ] **T9.5: POS integracija — automatsko knjizenje troskova restorana/bara na folio**
+- [x] **T9.1: Generisanje racuna (QuestPDF, multi-VAT, invoice sequence)** - [COMPLETED 2026-05-16 - opencode]
+- [x] **T9.2: Predracuni i avansne uplate** - [COMPLETED 2026-05-16 - opencode]
+- [x] **T9.3: Storno i korekcija racuna (fiscal reversal, reprint)** - [COMPLETED 2026-05-16 - opencode]
+- [x] **T9.4: Integracija sa kursnom listom (valute, multi-currency invoices)** - [COMPLETED 2026-05-16 - opencode]
+- [x] **T9.5: POS integracija — automatsko knjizenje troskova restorana/bara na folio** - [COMPLETED 2026-05-16 - opencode]
 
 ### Faza 10: Izvjestavanje i Dashboard
 - [ ] **T10.1: Dnevni izvjestaj popunjenosti (ADR, RevPAR)**

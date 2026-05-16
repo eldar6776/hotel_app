@@ -69,6 +69,10 @@ public class HotelProDbContext : DbContext
     public DbSet<NightAuditLog> NightAuditLogs => Set<NightAuditLog>();
     public DbSet<GuestStayHistory> GuestStayHistories => Set<GuestStayHistory>();
     public DbSet<DayLock> DayLocks => Set<DayLock>();
+    public DbSet<InvoiceSequence> InvoiceSequences => Set<InvoiceSequence>();
+    public DbSet<ProformaInvoice> ProformaInvoices => Set<ProformaInvoice>();
+    public DbSet<AdvancePayment> AdvancePayments => Set<AdvancePayment>();
+    public DbSet<ExchangeRate> ExchangeRates => Set<ExchangeRate>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
