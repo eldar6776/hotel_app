@@ -47,6 +47,34 @@ public class GuestsController : ControllerBase
         return Ok(result);
     }
 
+    [HttpGet("search/advanced")]
+    [Authorize(Policy = "CanManageBookings")]
+    public async Task<ActionResult<PagedResult<GuestDto>>> AdvancedSearch(
+        [FromQuery] string? firstName,
+        [FromQuery] string? lastName,
+        [FromQuery] string? phone,
+        [FromQuery] string? email,
+        [FromQuery] string? documentNumber,
+        [FromQuery] Guid? countryId,
+        [FromQuery] DateTime? fromDate,
+        [FromQuery] DateTime? toDate,
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 20)
+    {
+        var filter = new AdvancedGuestFilter(firstName, lastName, phone, email, documentNumber, countryId, fromDate, toDate, page, pageSize);
+        var result = await _guestService.AdvancedSearchAsync(filter);
+        return Ok(result);
+    }
+
+    [HttpGet("{id:guid}/profile")]
+    [Authorize(Policy = "CanManageBookings")]
+    public async Task<ActionResult<GuestProfileDto>> GetGuestProfile(Guid id)
+    {
+        var profile = await _guestService.GetGuestProfileAsync(id);
+        if (profile == null) return NotFound();
+        return Ok(profile);
+    }
+
     [HttpGet("{id:guid}")]
     [Authorize(Policy = "CanManageBookings")]
     public async Task<ActionResult<GuestDto>> GetGuest(Guid id)

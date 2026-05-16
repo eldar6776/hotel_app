@@ -96,3 +96,42 @@ public record GuestFilter(
     int Page = 1,
     int PageSize = 20
 );
+
+public record AdvancedGuestFilter(
+    string? FirstName,
+    string? LastName,
+    string? Phone,
+    string? Email,
+    string? DocumentNumber,
+    Guid? CountryId,
+    DateTime? FromDate,
+    DateTime? ToDate,
+    int Page = 1,
+    int PageSize = 20
+);
+
+public record GuestProfileDto(
+    GuestDto Guest,
+    List<GuestStaySummaryDto> StayHistory,
+    List<GuestBookingSummaryDto> BookingHistory,
+    int TotalStays,
+    decimal TotalSpent
+);
+
+public record GuestStaySummaryDto(
+    Guid BookingId,
+    DateTime CheckedInAt,
+    DateTime? CheckedOutAt,
+    string RoomNumber,
+    int Nights
+);
+
+public record GuestBookingSummaryDto(
+    Guid BookingId,
+    DateTime Arrival,
+    DateTime Departure,
+    string Status,
+    int Nights,
+    decimal TotalPrice,
+    string RoomTypeName
+);

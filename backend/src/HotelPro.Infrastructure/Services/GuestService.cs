@@ -166,6 +166,103 @@ public class GuestService : IGuestService
             .ToListAsync();
     }
 
+    public async Task<GuestProfileDto?> GetGuestProfileAsync(Guid id)
+    {
+        var guest = await _dbContext.Guests
+            .Include(g => g.Country)
+            .Include(g => g.Documents)
+            .FirstOrDefaultAsync(g => g.Id == id && g.IsActive);
+
+        if (guest == null) return null;
+
+        var stayHistory = await _dbContext.Set<GuestStayHistory>()
+            .IgnoreQueryFilters()
+            .Where(s => s.GuestId == id)
+            .OrderByDescending(s => s.CheckedInAt)
+            .Select(s => new GuestStaySummaryDto(
+                s.BookingId,
+                s.CheckedInAt,
+                s.CheckedOutAt,
+                s.RoomNumber,
+                s.CheckedOutAt.HasValue
+                    ? (s.CheckedOutAt.Value - s.CheckedInAt).Days
+                    : (int)(DateTime.UtcNow - s.CheckedInAt).TotalDays))
+            .ToListAsync();
+
+        var bookingHistory = await _dbContext.Bookings
+            .IgnoreQueryFilters()
+            .Include(b => b.BookingRooms)
+            .ThenInclude(br => br.RoomType)
+            .Where(b => b.GuestId == id)
+            .OrderByDescending(b => b.ArrivalDate)
+            .Take(50)
+            .Select(b => new GuestBookingSummaryDto(
+                b.Id,
+                b.ArrivalDate,
+                b.DepartureDate,
+                b.Status.ToString(),
+                Math.Max(1, (b.DepartureDate - b.ArrivalDate).Days),
+                b.TotalPrice,
+                b.BookingRooms.FirstOrDefault()!.RoomType!.Name))
+            .ToListAsync();
+
+        var totalSpent = bookingHistory.Where(b => b.Status != "Cancelled").Sum(b => b.TotalPrice);
+
+        await LogPrivacyAccessAsync(guest.Id);
+
+        return new GuestProfileDto(
+            MapToDto(guest),
+            stayHistory,
+            bookingHistory,
+            stayHistory.Count,
+            totalSpent
+        );
+    }
+
+    public async Task<PagedResult<GuestDto>> AdvancedSearchAsync(AdvancedGuestFilter filter)
+    {
+        var query = _dbContext.Guests
+            .Include(g => g.Country)
+            .Include(g => g.Documents)
+            .Where(g => g.IsActive)
+            .AsQueryable();
+
+        if (!string.IsNullOrWhiteSpace(filter.FirstName))
+            query = query.Where(g => g.FirstName.ToLower().Contains(filter.FirstName.ToLower()));
+
+        if (!string.IsNullOrWhiteSpace(filter.LastName))
+            query = query.Where(g => g.LastName.ToLower().Contains(filter.LastName.ToLower()));
+
+        if (!string.IsNullOrWhiteSpace(filter.Phone))
+            query = query.Where(g => g.Phone != null && g.Phone.Contains(filter.Phone));
+
+        if (!string.IsNullOrWhiteSpace(filter.Email))
+            query = query.Where(g => g.Email != null && g.Email.ToLower().Contains(filter.Email.ToLower()));
+
+        if (!string.IsNullOrWhiteSpace(filter.DocumentNumber))
+            query = query.Where(g => g.Documents.Any(d => d.DocumentNumber.Contains(filter.DocumentNumber)));
+
+        if (filter.CountryId.HasValue)
+            query = query.Where(g => g.CountryId == filter.CountryId);
+
+        if (filter.FromDate.HasValue)
+            query = query.Where(g => g.CreatedAt >= filter.FromDate);
+
+        if (filter.ToDate.HasValue)
+            query = query.Where(g => g.CreatedAt <= filter.ToDate);
+
+        var totalCount = await query.CountAsync();
+
+        var items = await query
+            .OrderByDescending(g => g.CreatedAt)
+            .Skip((filter.Page - 1) * filter.PageSize)
+            .Take(filter.PageSize)
+            .ToListAsync();
+
+        var dtos = items.Select(MapToDto).ToList();
+        return new PagedResult<GuestDto>(dtos, totalCount, filter.Page, filter.PageSize);
+    }
+
     private async Task LogPrivacyAccessAsync(Guid guestId)
     {
         var log = new AuditLog
