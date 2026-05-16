@@ -5,6 +5,7 @@ using HotelPro.Core.Interfaces;
 using HotelPro.Core.Services;
 using HotelPro.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace HotelPro.Infrastructure.Services;
 
@@ -13,12 +14,21 @@ public class BookingService : IBookingService
     private readonly IBookingRepository _bookingRepository;
     private readonly HotelProDbContext _dbContext;
     private readonly ITenantService _tenantService;
+    private readonly IEmailService _emailService;
+    private readonly ILogger<BookingService> _logger;
 
-    public BookingService(IBookingRepository bookingRepository, HotelProDbContext dbContext, ITenantService tenantService)
+    public BookingService(
+        IBookingRepository bookingRepository,
+        HotelProDbContext dbContext,
+        ITenantService tenantService,
+        IEmailService emailService,
+        ILogger<BookingService> logger)
     {
         _bookingRepository = bookingRepository;
         _dbContext = dbContext;
         _tenantService = tenantService;
+        _emailService = emailService;
+        _logger = logger;
     }
 
     public async Task<PagedResult<BookingDto>> GetBookingsAsync(BookingFilter filter)
@@ -96,6 +106,18 @@ public class BookingService : IBookingService
 
         var result = await _bookingRepository.GetByIdWithRoomsAsync(booking.Id)
             ?? throw new InvalidOperationException($"Booking with ID {booking.Id} not found after creation.");
+
+        _ = Task.Run(async () =>
+        {
+            try
+            {
+                await _emailService.SendConfirmationAsync(booking.Id);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to send confirmation email for booking {BookingId}", booking.Id);
+            }
+        });
 
         return MapToDto(result);
     }
@@ -217,6 +239,35 @@ public class BookingService : IBookingService
         }
 
         await _bookingRepository.UpdateAsync(booking);
+
+        if (newStatus == BookingStatus.Confirmed)
+        {
+            _ = Task.Run(async () =>
+            {
+                try
+                {
+                    await _emailService.SendConfirmationAsync(id);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Failed to send confirmation email for booking {BookingId}", id);
+                }
+            });
+        }
+        else if (newStatus == BookingStatus.Cancelled)
+        {
+            _ = Task.Run(async () =>
+            {
+                try
+                {
+                    await _emailService.SendCancellationAsync(id);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Failed to send cancellation email for booking {BookingId}", id);
+                }
+            });
+        }
     }
 
     private static bool IsValidStatusTransition(BookingStatus from, BookingStatus to)

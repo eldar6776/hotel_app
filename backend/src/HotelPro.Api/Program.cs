@@ -113,6 +113,8 @@ builder.Services.AddScoped<HotelPro.Core.Services.IRoomStatusBroadcaster, HotelP
 builder.Services.AddScoped<HotelPro.Core.Interfaces.IBookingRepository, HotelPro.Infrastructure.Repositories.BookingRepository>();
 builder.Services.AddScoped<HotelPro.Core.Services.IBookingService, HotelPro.Infrastructure.Services.BookingService>();
 builder.Services.AddScoped<HotelPro.Core.Services.IBookingAvailabilityService, HotelPro.Infrastructure.Services.BookingAvailabilityService>();
+builder.Services.Configure<HotelPro.Core.Services.EmailConfiguration>(builder.Configuration.GetSection(HotelPro.Core.Services.EmailConfiguration.SectionName));
+builder.Services.AddScoped<HotelPro.Core.Services.IEmailService, HotelPro.Infrastructure.Services.EmailService>();
 
 builder.Services.AddSignalR();
 

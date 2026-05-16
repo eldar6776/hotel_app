@@ -14,10 +14,12 @@ namespace HotelPro.Api.Controllers;
 public class BookingsController : ControllerBase
 {
     private readonly IBookingService _bookingService;
+    private readonly IEmailService _emailService;
 
-    public BookingsController(IBookingService bookingService)
+    public BookingsController(IBookingService bookingService, IEmailService emailService)
     {
         _bookingService = bookingService;
+        _emailService = emailService;
     }
 
     [HttpGet]
@@ -124,5 +126,27 @@ public class BookingsController : ControllerBase
         {
             return BadRequest(new { error = ex.Message });
         }
+    }
+
+    [HttpPost("{id:guid}/email/confirmation")]
+    [Authorize(Policy = "CanManageBookings")]
+    public async Task<ActionResult> SendConfirmationEmail(Guid id)
+    {
+        var result = await _emailService.SendConfirmationAsync(id);
+        if (!result.Success)
+            return BadRequest(new { error = result.ErrorMessage });
+
+        return Ok(new { message = "Confirmation email sent." });
+    }
+
+    [HttpPost("{id:guid}/email/cancellation")]
+    [Authorize(Policy = "CanManageBookings")]
+    public async Task<ActionResult> SendCancellationEmail(Guid id)
+    {
+        var result = await _emailService.SendCancellationAsync(id);
+        if (!result.Success)
+            return BadRequest(new { error = result.ErrorMessage });
+
+        return Ok(new { message = "Cancellation email sent." });
     }
 }

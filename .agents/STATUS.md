@@ -58,7 +58,7 @@
 - [x] **T6.1: CRUD API za rezervacije (pojedinacne i grupne)** - [COMPLETED 2026-05-16 - opencode (kimi-k2.6)]
 - [x] **T6.2: Frontend — interaktivni Drag & Drop Gantt kalendar** - [COMPLETED 2026-05-16 - opencode (kimi-k2.6)]
 - [x] **T6.3: Provjera dostupnosti i logika kolizija (double-booking prevention)** - [COMPLETED 2026-05-16 - opencode (kimi-k2.6)]
-- [-] **T6.4: Email potvrda rezervacije** - [IN_PROGRESS] - 2026-05-16 - opencode
+- [-] **T6.4: Email potvrda rezervacije** - [COMPLETED 2026-05-16 - opencode]
 - [ ] **T6.5: Grupne rezervacije — blokiranje soba, master racun, posebni cjenovnici**
 
 ### Faza 7: Recepcija (Check-in / Check-out)
@@ -345,3 +345,15 @@ Sljedece grupe se mogu raditi istovremeno:
   - `DELETE /api/v2/availability/lock/{lockId}` — release lock
 - **Testovi**: 11 unit testova za availability (no conflicts, all booked, cancelled excluded, excludeBookingId, lock success/failure, overlapping dates, released booking, overbooking enabled, sequential locks, lock timeout)
 - **Backend**: `dotnet build` 0 errors, `dotnet test` 17/17 passed, `npm run lint` clean
+
+### 2026-05-16 — opencode — T6.4 COMPLETED
+- **EmailLog entitet**: EmailLog sa poljima (BookingId, Recipient, Subject, Body, IsHtml, Status, ErrorMessage, RetryCount, CreatedAt, SentAt)
+- **EmailConfiguration**: SMTP postavke iz appsettings.json (SmtpHost, SmtpPort, SmtpUsername, SmtpPassword, FromAddress, FromName, UseTls, MaxRetries, RetryDelaySeconds)
+- **IEmailService + EmailService**: SendConfirmationAsync, SendCancellationAsync sa MailKit SMTP klijentom
+- **HTML Templatei**: BookingConfirmation.html i BookingCancellation.html sa placeholderima ({{GuestName}}, {{HotelName}}, {{RoomType}}, {{Arrival}}, {{Departure}}, {{Nights}}, {{TotalPrice}}, {{BookingNumber}}, {{Status}})
+- **Automatsko slanje**: Fire-and-forget iz BookingService.CreateBookingAsync i UpdateBookingStatusAsync (Confirmed/Cancelled)
+- **Retry mehanizam**: Konfigurabilan broj pokusaja i razmak, logovanje u EmailLog tabelu
+- **API Endpointi**: POST /api/v2/bookings/{id}/email/confirmation, POST /api/v2/bookings/{id}/email/cancellation
+- **EF Migracija**: AddEmailLog za email_logs tabelu
+- **Testovi**: 8 unit testova (booking not found, guest email missing/empty, email log creation, subject validation)
+- **Backend**: `dotnet build` 0 errors, `dotnet test` 25/25 passed

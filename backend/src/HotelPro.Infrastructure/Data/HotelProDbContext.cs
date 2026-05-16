@@ -63,6 +63,7 @@ public class HotelProDbContext : DbContext
     public DbSet<FeatureFlag> FeatureFlags => Set<FeatureFlag>();
     public DbSet<LegacyIdMapping> LegacyIdMappings => Set<LegacyIdMapping>();
     public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
+    public DbSet<EmailLog> EmailLogs => Set<EmailLog>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -131,6 +132,7 @@ public class HotelProDbContext : DbContext
 
         modelBuilder.ApplyConfiguration(new RefreshTokenConfiguration());
         modelBuilder.ApplyConfiguration(new HotelConfiguration());
+        modelBuilder.ApplyConfiguration(new EmailLogConfiguration());
 
         foreach (var entityType in modelBuilder.Model.GetEntityTypes())
         {
