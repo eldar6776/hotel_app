@@ -98,22 +98,24 @@ export interface GanttRoom {
   bookings: GanttBooking[]
 }
 
-export const STATUS_COLORS: Record<BookingStatus, string> = {
+export const STATUS_COLORS: Record<BookingStatus, string> & Record<string, string> = {
   Pending: '#FFC107',
   Confirmed: '#4CAF50',
   CheckedIn: '#2196F3',
   CheckedOut: '#607D8B',
   Cancelled: '#F44336',
   NoShow: '#9E9E9E',
+  Blocked: '#9C27B0',
 }
 
-export const STATUS_LABELS: Record<BookingStatus, string> = {
+export const STATUS_LABELS: Record<BookingStatus, string> & Record<string, string> = {
   Pending: 'Na cekanju',
   Confirmed: 'Potvrdjena',
   CheckedIn: 'Prijavljen',
   CheckedOut: 'Odjavljen',
   Cancelled: 'Otkazana',
   NoShow: 'Nije se pojavio',
+  Blocked: 'Blokirana',
 }
 
 export const SOURCE_LABELS: Record<BookingSource, string> = {

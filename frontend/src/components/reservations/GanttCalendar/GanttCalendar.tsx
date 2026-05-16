@@ -7,7 +7,7 @@ import { useDragAndDrop } from './useDragAndDrop'
 import { bookingService } from '@/lib/bookings/booking-service'
 import { roomService } from '@/lib/rooms/room-service'
 import type { RoomDto } from '@/types/rooms'
-import type { BookingDto, GanttRoom, GanttBooking, BookingStatus } from '@/types/bookings'
+import type { BookingDto, GanttRoom, GanttBooking } from '@/types/bookings'
 import { STATUS_COLORS, STATUS_LABELS } from '@/types/bookings'
 
 const COLUMN_WIDTH = 80
@@ -377,7 +377,16 @@ export function GanttCalendar() {
               )}
 
               {/* Drag preview tooltip */}
-              {dragState?.booking && offset && (
+              {dragState?.booking && offset && (() => {
+                const daysDiff = Math.round(offset.x / COLUMN_WIDTH)
+                const oldArrival = new Date(dragState.booking.arrivalDate)
+                const oldDeparture = new Date(dragState.booking.departureDate)
+                const newArrival = new Date(oldArrival)
+                newArrival.setDate(newArrival.getDate() + daysDiff)
+                const newDeparture = new Date(oldDeparture)
+                newDeparture.setDate(newDeparture.getDate() + daysDiff)
+                const newNights = Math.round((newDeparture.getTime() - newArrival.getTime()) / 86400000)
+                return (
                 <div
                   className="absolute z-50 bg-surface border border-border rounded-lg shadow-lg px-3 py-2 text-xs text-text pointer-events-none"
                   style={{
@@ -387,11 +396,12 @@ export function GanttCalendar() {
                 >
                   <div className="font-medium">{dragState.booking.guestName}</div>
                   <div className="text-text-secondary">
-                    {dragState.booking.arrivalDate} → {dragState.booking.departureDate}
+                    {newArrival.toISOString().split('T')[0]} → {newDeparture.toISOString().split('T')[0]}
                   </div>
-                  <div className="text-text-secondary">{dragState.booking.nights} noci</div>
+                  <div className="text-text-secondary">{newNights} noci</div>
                 </div>
-              )}
+                )
+              })()}
             </div>
           </div>
         </div>
@@ -400,7 +410,7 @@ export function GanttCalendar() {
       {/* Status legend */}
       <div className="mt-3 flex items-center gap-3 flex-wrap px-1">
         <span className="text-[11px] text-text-secondary mr-1">Status:</span>
-        {(['Confirmed', 'Pending', 'CheckedIn', 'Cancelled'] as BookingStatus[]).map((status) => (
+        {(['Confirmed', 'Pending', 'CheckedIn', 'Blocked', 'Cancelled'] as string[]).map((status) => (
           <span key={status} className="inline-flex items-center gap-1.5 text-[11px] text-text-secondary">
             <span className="inline-block w-3 h-3 rounded-sm" style={{ backgroundColor: STATUS_COLORS[status] }} />
             {STATUS_LABELS[status]}
