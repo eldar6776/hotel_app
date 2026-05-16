@@ -5,6 +5,7 @@ using HotelPro.Core.Services;
 using HotelPro.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 
 namespace HotelPro.Infrastructure.Services;
 
@@ -70,9 +71,26 @@ public class CheckOutService : ICheckOutService
         }
 
         decimal discountAmount = 0;
-        if (request.ApplyDiscounts && booking.Type == BookingType.Group)
+        if (request.ApplyDiscounts)
         {
-            discountAmount = stayCharges * 0.1m;
+            if (booking.Type == BookingType.Group)
+            {
+                discountAmount = stayCharges * 0.1m;
+            }
+            else if (booking.Type == BookingType.Corporate)
+            {
+                discountAmount = stayCharges * 0.05m;
+            }
+
+            var previousStays = await _dbContext.GuestStayHistories
+                .IgnoreQueryFilters()
+                .CountAsync(sh => sh.GuestId == booking.GuestId && sh.CheckedOutAt != null);
+
+            if (previousStays >= 5)
+            {
+                var loyaltyDiscount = stayCharges * 0.03m;
+                discountAmount += loyaltyDiscount;
+            }
         }
 
         var totalAmount = stayCharges + folioCharges + lateCheckoutFee - discountAmount;
@@ -83,6 +101,15 @@ public class CheckOutService : ICheckOutService
         if (room != null)
         {
             room.Status = RoomStatus.Dirty;
+        }
+
+        var stayHistory = await _dbContext.GuestStayHistories
+            .IgnoreQueryFilters()
+            .FirstOrDefaultAsync(sh => sh.BookingId == booking.Id && sh.CheckedOutAt == null);
+
+        if (stayHistory != null)
+        {
+            stayHistory.CheckedOutAt = DateTime.UtcNow;
         }
 
         foreach (var br in booking.BookingRooms)
@@ -101,21 +128,30 @@ public class CheckOutService : ICheckOutService
             FolioId = folios.FirstOrDefault()?.Id ?? Guid.Empty,
             Amount = totalAmount,
             PaymentMethod = request.PaymentMethod,
+            Status = request.PaymentMethod == "Invoice" ? PaymentStatus.Unpaid : PaymentStatus.Paid,
             PaymentDate = DateTime.UtcNow,
             Reference = request.PaymentReference,
             Notes = $"Check-out payment for booking {booking.Id}"
         };
 
-        if (request.PaymentMethod == "Invoice")
-        {
-            payment.Status = PaymentStatus.Unpaid;
-        }
-        else
-        {
-            payment.Status = PaymentStatus.Paid;
-        }
-
         _dbContext.Payments.Add(payment);
+
+        var invoice = new Invoice
+        {
+            Id = Guid.NewGuid(),
+            InvoiceNumber = $"INV-{Guid.NewGuid().ToString().Substring(0, 8).ToUpper()}",
+            FolioId = folios.FirstOrDefault()?.Id ?? Guid.Empty,
+            GuestId = booking.GuestId,
+            IssueDate = DateTime.UtcNow,
+            DueDate = DateTime.UtcNow.AddDays(14),
+            TotalNet = totalAmount,
+            TotalVat = 0,
+            TotalGross = totalAmount,
+            Status = request.PaymentMethod == "Invoice" ? InvoiceStatus.Sent : InvoiceStatus.Paid,
+            CreatedAt = DateTime.UtcNow,
+        };
+        _dbContext.Invoices.Add(invoice);
+
         await _dbContext.SaveChangesAsync();
 
         _logger.LogInformation("Check-out completed for booking {BookingId}, total: {Total}", booking.Id, totalAmount);

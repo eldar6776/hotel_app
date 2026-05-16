@@ -97,6 +97,18 @@ public class CheckInService : ICheckInService
                 booking.Id, room.RoomNumber, request.RfidCardCode);
         }
 
+        var stayHistory = new GuestStayHistory
+        {
+            Id = Guid.NewGuid(),
+            GuestId = booking.GuestId,
+            BookingId = booking.Id,
+            RoomId = room.Id,
+            CheckedInAt = DateTime.UtcNow,
+            RoomNumber = room.RoomNumber,
+            CreatedAt = DateTime.UtcNow
+        };
+        _dbContext.GuestStayHistories.Add(stayHistory);
+
         await _dbContext.SaveChangesAsync();
 
         _logger.LogInformation("Check-in completed for booking {BookingId}, room {RoomNumber}", booking.Id, room.RoomNumber);

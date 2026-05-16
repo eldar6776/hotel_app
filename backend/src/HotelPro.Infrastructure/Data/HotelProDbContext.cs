@@ -67,6 +67,8 @@ public class HotelProDbContext : DbContext
     public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
     public DbSet<EmailLog> EmailLogs => Set<EmailLog>();
     public DbSet<NightAuditLog> NightAuditLogs => Set<NightAuditLog>();
+    public DbSet<GuestStayHistory> GuestStayHistories => Set<GuestStayHistory>();
+    public DbSet<DayLock> DayLocks => Set<DayLock>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

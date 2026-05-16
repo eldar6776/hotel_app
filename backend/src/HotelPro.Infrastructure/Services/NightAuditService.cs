@@ -120,6 +120,20 @@ public class NightAuditService : INightAuditService
             log.TotalStayCharges = totalCharges;
             log.Status = NightAuditStatus.Success;
 
+            var existingLock = await _dbContext.Set<DayLock>()
+                .FirstOrDefaultAsync(d => d.LockedDate == auditDateOnly);
+
+            if (existingLock == null)
+            {
+                var dayLock = new DayLock
+                {
+                    Id = Guid.NewGuid(),
+                    LockedDate = auditDateOnly,
+                    LockedAt = DateTime.UtcNow,
+                };
+                _dbContext.Set<DayLock>().Add(dayLock);
+            }
+
             _dbContext.Set<NightAuditLog>().Add(log);
             await _dbContext.SaveChangesAsync();
 

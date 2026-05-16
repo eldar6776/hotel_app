@@ -1,6 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using HotelPro.Core.Entities;
 using HotelPro.Core.Enums;
 using HotelPro.Core.Services;
 using HotelPro.Infrastructure.Data;
@@ -41,36 +42,104 @@ public class NoShowDetectionJob : ScheduledJobBase
     }
 }
 
-public class NightAuditJob : ScheduledJobBase
+public class NightAuditJob : IHostedService, IDisposable
 {
     private readonly IServiceScopeFactory _scopeFactory;
-    protected override string JobName => "NightAudit";
-    protected override TimeSpan Interval => TimeSpan.FromDays(1);
+    private readonly ILogger<NightAuditJob> _logger;
+    private Timer? _timer;
 
-    public NightAuditJob(ILogger<NightAuditJob> logger, IServiceScopeFactory scopeFactory) : base(logger)
+    public NightAuditJob(ILogger<NightAuditJob> logger, IServiceScopeFactory scopeFactory)
     {
+        _logger = logger;
         _scopeFactory = scopeFactory;
     }
 
-    protected override async Task ExecuteJobAsync(CancellationToken ct)
+    public Task StartAsync(CancellationToken ct)
     {
-        using var scope = _scopeFactory.CreateScope();
-        var auditService = scope.ServiceProvider.GetRequiredService<INightAuditService>();
-        var logger = scope.ServiceProvider.GetRequiredService<ILogger<NightAuditJob>>();
+        _logger.LogInformation("[NightAudit] Starting night audit job");
 
-        var today = DateTime.UtcNow.Date;
-        var result = await auditService.RunAuditAsync(today);
+        var now = DateTime.UtcNow;
+        var nextMidnight = now.Date.AddDays(1);
+        var delay = nextMidnight - now;
 
-        if (result.Success)
+        _timer = new Timer(async _ => await ExecuteSafeAsync(ct), null, delay, TimeSpan.FromDays(1));
+
+        _ = Task.Run(async () =>
         {
-            logger.LogInformation("[{JobName}] Completed: {Processed} bookings, {Charges} charges, {NoShows} no-shows",
-                JobName, result.BookingsProcessed, result.TotalStayCharges, result.NoShowsDetected);
+            await Task.Delay(TimeSpan.FromSeconds(5), ct);
+            await RunCatchUpAsync(ct);
+        }, ct);
+
+        return Task.CompletedTask;
+    }
+
+    private async Task RunCatchUpAsync(CancellationToken ct)
+    {
+        try
+        {
+            using var scope = _scopeFactory.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<HotelProDbContext>();
+            var auditService = scope.ServiceProvider.GetRequiredService<INightAuditService>();
+
+            var lastAudit = await db.Set<NightAuditLog>()
+                .OrderByDescending(n => n.AuditDate)
+                .Select(n => n.AuditDate)
+                .FirstOrDefaultAsync(ct);
+
+            if (lastAudit == default)
+            {
+                lastAudit = DateTime.UtcNow.Date.AddDays(-1);
+            }
+
+            var currentDate = DateTime.UtcNow.Date;
+
+            while (lastAudit < currentDate)
+            {
+                lastAudit = lastAudit.AddDays(1);
+                _logger.LogInformation("[NightAudit] Catch-up: running audit for {Date}", lastAudit);
+                await auditService.RunAuditAsync(lastAudit);
+            }
         }
-        else
+        catch (Exception ex)
         {
-            logger.LogWarning("[{JobName}] Failed or skipped: {Error}", JobName, result.ErrorMessage);
+            _logger.LogError(ex, "[NightAudit] Catch-up failed");
         }
     }
+
+    private async Task ExecuteSafeAsync(CancellationToken ct)
+    {
+        try
+        {
+            using var scope = _scopeFactory.CreateScope();
+            var auditService = scope.ServiceProvider.GetRequiredService<INightAuditService>();
+            var logger = scope.ServiceProvider.GetRequiredService<ILogger<NightAuditJob>>();
+
+            var today = DateTime.UtcNow.Date;
+            var result = await auditService.RunAuditAsync(today);
+
+            if (result.Success)
+            {
+                logger.LogInformation("[NightAudit] Completed: {Processed} bookings, {Charges} charges, {NoShows} no-shows",
+                    result.BookingsProcessed, result.TotalStayCharges, result.NoShowsDetected);
+            }
+            else
+            {
+                logger.LogWarning("[NightAudit] Failed or skipped: {Error}", result.ErrorMessage);
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "[NightAudit] Error");
+        }
+    }
+
+    public Task StopAsync(CancellationToken ct)
+    {
+        _timer?.Change(Timeout.Infinite, 0);
+        return Task.CompletedTask;
+    }
+
+    public void Dispose() => _timer?.Dispose();
 }
 
 public class DailyReportJob : ScheduledJobBase
