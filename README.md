@@ -1,117 +1,91 @@
-# Hotel App
+# HotelPRO
 
-Modernizacija legacy hotelskog informacionog sistema u savremenu web/cloud platformu za upravljanje hotelskim poslovanjem.
+Moderni Property Management System (PMS) za hotele — .NET 8 + Next.js 16 + PostgreSQL 18.
 
-## Status projekta
+**Status:** ✅ v1.0 — Faze 1-18 kompletirane
 
-> **Faza:** planiranje i analiza  
-> Ovaj repozitorij trenutno sadrži analizu postojećeg sistema, prijedloge arhitekture, funkcionalne zahtjeve i plan proširenja.  
-> Implementacija nove aplikacije još nije započeta ili nije objavljena u ovom repozitoriju.
+---
 
-## Cilj projekta
+## Brzi start
 
-Cilj projekta je transformacija postojećeg legacy hotelskog softvera u moderni **Property Management System (PMS)** koji će podržavati:
+### Automatski (preporučeno)
+Klikni **`start.bat`** — pokreće backend i frontend.
 
-- upravljanje sobama i kapacitetima
-- evidenciju gostiju i partnera
-- rezervacije i grupne rezervacije
-- recepcijske procese i folio sistem
-- naplatu i fiskalizaciju
-- housekeeping i održavanje
-- izvještavanje
-- integracije sa eksternim servisima i hardverom
+### Ručno
 
-## Vizija budućeg sistema
+**1. Backend** (port 5149)
+```powershell
+cd backend\src\HotelPro.Api
+$env:HOTEL_DB_CONN="Host=localhost;Port=5432;Database=hotelpro;Username=postgres;Password=mihrivode"
+$env:HOTEL_JWT_SECRET="hotelpro-dev-secret-mihrivode-2026"
+dotnet run
+```
+Swagger: http://localhost:5149/swagger
 
-Planirana nova verzija sistema treba biti:
+**2. Frontend** (port 3000)
+```powershell
+cd frontend
+npm run dev
+```
+Frontend: http://localhost:3000
 
-- web-orijentisana i cloud-ready
-- modularna i proširiva
-- prilagođena radu na desktopu, tabletu i mobilnim uređajima
-- spremna za integracije sa:
-  - channel manager platformama
-  - payment gateway servisima
-  - OCR skenerima dokumenata
-  - sistemima elektronskih brava / kartica
-  - turističkim i zakonskim prijavama gostiju
+### Demo login
 
-## Postojeća dokumentacija
+| Korisnik | Email | Lozinka |
+|----------|-------|---------|
+| Admin | admin@hotelpro.local | admin123 |
+| Recepcija | reception@hotelpro.local | reception123 |
+| Menadžer | manager@hotelpro.local | manager123 |
 
-Projektna dokumentacija se nalazi u direktoriju `docs/`:
+### Skripte
 
-- `docs/analiza_hotelskog_sistema.md` — analiza legacy sistema i prijedlozi za modernizaciju
-- `docs/dobre_prakse_hotelski_softver.md` — pregled dobrih praksi i standardnih funkcionalnosti modernih PMS sistema
-- `docs/integracije_prosirenja.md` — prijedlozi integracija i proširenja
-- `docs/otvorena_pitanja.md` — otvorena pitanja za dalju razradu
+| Fajl | Opis |
+|------|------|
+| `start.bat` | Pokreće backend + frontend |
+| `stop.bat` | Gasi sve procese |
+| `reset-db.bat` | Resetuje bazu + migracije + seed |
 
-## Planirani funkcionalni moduli
+---
 
-Prema dosadašnjoj analizi, novi sistem bi trebao obuhvatiti sljedeće cjeline:
+## Tehnologije
 
-### Core moduli
-- upravljanje sobama, tipovima soba i sadržajima
-- upravljanje gostima i dokumentima
-- rezervacije i raspored smještaja
-- check-in / check-out procesi
-- folio i naplata troškova
-- fiskalizacija
-- izvještaji i operativna statistika
+| Sloj | Tehnologija |
+|------|-------------|
+| Backend | .NET 8, ASP.NET Core, EF Core |
+| Frontend | Next.js 16, React 19, Tailwind CSS |
+| Baza | PostgreSQL 18 |
+| Auth | JWT + RBAC (Admin, Manager, Reception, Housekeeping) |
+| Real-time | SignalR WebSocket |
+| Email | MailKit SMTP |
+| PDF | QuestPDF |
+| Testovi | xUnit + InMemory EF Core (57 testova) |
 
-### Operativni moduli
-- housekeeping
-- održavanje / work orders
-- grupne rezervacije i eventi
-- POS integracija (restoran / bar)
-- loyalty program
-- analytics i forecasting
+## Faze
 
-### Integracije i proširenja
-- OCR skeniranje pasoša i ličnih karata
-- turističke prijave gostiju
-- channel manager integracije
-- payment gateway integracije
-- smart room funkcionalnosti
-- plugin arhitektura za prilagodbu po hotelu
+| # | Faza | Status |
+|---|------|--------|
+| 0 | Planiranje | ✅ |
+| 1 | Infrastruktura / DevOps | ✅ |
+| 2 | Backend Foundation | ✅ |
+| 3 | Auth | ✅ |
+| 4 | Frontend Foundation | ✅ |
+| 5 | Upravljanje Sobama | ✅ |
+| 6 | Rezervacije | ✅ |
+| 7 | Recepcija | ✅ |
+| 8 | Gosti i CRM | ✅ |
+| 9 | Naplata | ✅ |
+| 10 | Izvještavanje | ✅ |
+| 11 | Housekeeping | ✅ |
+| 12 | Hardware Bridge | ✅ |
+| 13 | Channel Manager | ✅ |
+| 14 | IoT | ✅ |
+| 15 | Revenue | ✅ |
+| 16 | Guest Self-Service | ✅ |
+| 17 | Payment Gateway | ✅ |
+| 18 | Stabilizacija | ✅ |
 
-## Predložena arhitektura
+## Verifikacija
 
-U dokumentaciji se kao ciljna arhitektura navodi prelazak sa legacy desktop pristupa na modernu arhitekturu, npr:
-
-- **Frontend:** React / Next.js
-- **Backend:** .NET Core ili Node.js
-- **Baza podataka:** relacijska baza (zavisno od finalne odluke)
-- **Integracije:** REST API, plugin sistem, event-driven tokovi gdje je potrebno
-
-> Napomena: Tehnološki stack još nije finalno zaključen i podložan je promjenama tokom faze planiranja.
-
-## Trenutno stanje repozitorija
-
-Repozitorij je trenutno primarno namijenjen za:
-
-- analizu legacy sistema
-- planiranje nove arhitekture
-- definisanje funkcionalnih zahtjeva
-- pripremu implementacionih faza
-
-Trenutno ne predstavlja završenu niti produkcionu aplikaciju.
-
-## Naredni koraci
-
-Predloženi naredni koraci:
-
-1. finalizovati scope MVP verzije
-2. zaključiti tehnološki stack
-3. definisati domenski model i module
-4. pripremiti tehničku specifikaciju po fazama
-5. očistiti repozitorij od suvišnih binarnih/privremenih fajlova
-6. započeti implementaciju osnovnih modula
-
-## Napomene
-
-- Legacy aplikacija se tretira kao referentni izvor poslovne logike i funkcionalnih tokova.
-- Dio dokumentacije već pokriva napredne funkcionalnosti koje mogu biti implementirane postepeno.
-- Otvorena pitanja i nedorečene stavke evidentirane su u `docs/otvorena_pitanja.md`.
-
-## Autor / vlasništvo
-
-Repozitorij: `eldar6776/hotel_app`
+- `dotnet build` — 0 errors
+- `dotnet test` — 57/57 passed
+- `npm run lint` — clean
