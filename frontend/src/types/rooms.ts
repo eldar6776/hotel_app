@@ -1,5 +1,23 @@
 export type RoomStatus = 'Free' | 'Occupied' | 'Reserved' | 'Dirty' | 'OutOfOrder' | 'OutOfService'
 
+export const ROOM_STATUS_COLORS: Record<RoomStatus, string> = {
+  Free: 'bg-emerald-500 text-white',
+  Occupied: 'bg-blue-500 text-white',
+  Reserved: 'bg-amber-500 text-white',
+  Dirty: 'bg-orange-500 text-white',
+  OutOfOrder: 'bg-red-500 text-white',
+  OutOfService: 'bg-gray-500 text-white',
+}
+
+export const ROOM_STATUS_LABELS: Record<RoomStatus, string> = {
+  Free: 'Slobodna',
+  Occupied: 'Zauzeta',
+  Reserved: 'Rezervirana',
+  Dirty: 'Prljava',
+  OutOfOrder: 'Van funkcije',
+  OutOfService: 'Van servisa',
+}
+
 export interface RoomDto {
   id: string
   roomNumber: string

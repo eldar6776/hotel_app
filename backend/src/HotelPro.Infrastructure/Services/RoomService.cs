@@ -110,6 +110,12 @@ public class RoomService : IRoomService
 
     public async Task<RoomDto> CreateRoomAsync(CreateRoomDto dto)
     {
+        if (dto.Floor < 0)
+            throw new InvalidOperationException("Floor cannot be negative.");
+
+        if (dto.BasePrice.HasValue && dto.BasePrice.Value <= 0)
+            throw new InvalidOperationException("Base price must be greater than zero.");
+
         var buildingExists = await _dbContext.Buildings.AnyAsync(b => b.Id == dto.BuildingId && b.IsActive);
         if (!buildingExists)
             throw new InvalidOperationException($"Building with ID {dto.BuildingId} not found.");
@@ -183,13 +189,18 @@ public class RoomService : IRoomService
         }
 
         if (dto.Floor.HasValue)
+        {
+            if (dto.Floor.Value < 0)
+                throw new InvalidOperationException("Floor cannot be negative.");
             room.Floor = dto.Floor.Value;
-
-        if (dto.Status.HasValue)
-            room.Status = dto.Status.Value;
+        }
 
         if (dto.BasePrice.HasValue)
+        {
+            if (dto.BasePrice.Value <= 0)
+                throw new InvalidOperationException("Base price must be greater than zero.");
             room.BasePrice = dto.BasePrice.Value;
+        }
 
         room.Notes = dto.Notes ?? room.Notes;
 

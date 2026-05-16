@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Asp.Versioning;
 using HotelPro.Core.DTOs;
 using HotelPro.Core.Entities;
@@ -62,6 +63,24 @@ public class RoomOutOfOrderController : ControllerBase
         if (room.Status == RoomStatus.Occupied)
             return BadRequest(new { error = "Cannot set an occupied room out of order." });
 
+        if (dto.EndDate.HasValue)
+        {
+            var overlappingBookings = await _dbContext.BookingRooms
+                .IgnoreQueryFilters()
+                .Where(br => br.RoomId == roomId
+                    && br.Status != BookingRoomStatus.Released
+                    && br.Booking.Status != BookingStatus.Cancelled
+                    && br.Booking.ArrivalDate < dto.EndDate.Value
+                    && br.Booking.DepartureDate > dto.StartDate)
+                .AnyAsync();
+
+            if (overlappingBookings)
+                return BadRequest(new { error = "Room has active reservations during this period." });
+        }
+
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value
+            ?? User.FindFirst("sub")?.Value;
+
         var ooo = new RoomOutOfOrder
         {
             Id = Guid.NewGuid(),
@@ -71,6 +90,7 @@ public class RoomOutOfOrderController : ControllerBase
             StartDate = dto.StartDate,
             EndDate = dto.EndDate,
             Status = "Active",
+            CreatedById = userId != null ? Guid.Parse(userId) : Guid.Empty,
             CreatedAt = DateTime.UtcNow
         };
 
@@ -124,6 +144,11 @@ public class RoomOutOfOrderController : ControllerBase
         ooo.Status = "Resolved";
         ooo.ResolvedAt = DateTime.UtcNow;
         ooo.ResolutionNotes = dto.ResolutionNotes;
+
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value
+            ?? User.FindFirst("sub")?.Value;
+        if (userId != null && Guid.TryParse(userId, out var uid))
+            ooo.ResolvedById = uid;
 
         var room = await _dbContext.Rooms.FindAsync(roomId);
         if (room != null && room.Status == RoomStatus.OutOfOrder)

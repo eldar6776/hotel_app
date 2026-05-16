@@ -1,8 +1,10 @@
 'use client'
 
-import { useEffect, useState, useCallback, useRef } from 'react'
-import type { RoomDto, RoomStatus, BuildingDto, RoomStatusChange } from '@/types/rooms'
+import { useEffect, useState, useCallback } from 'react'
+import type { RoomDto, RoomStatus, BuildingDto } from '@/types/rooms'
+import { ROOM_STATUS_LABELS } from '@/types/rooms'
 import { roomService } from '@/lib/rooms/room-service'
+import { roomHubService } from '@/lib/signalr/room-hub'
 import { RoomCard } from '@/components/rooms/RoomCard'
 import { RoomDetail } from '@/components/rooms/RoomDetail'
 import { FilterBar } from '@/components/rooms/FilterBar'
@@ -19,7 +21,6 @@ export default function RoomsPage() {
   const [search, setSearch] = useState('')
   const [isLoading, setIsLoading] = useState(true)
   const [toast, setToast] = useState<{ message: string; roomId: string } | null>(null)
-  const connectionRef = useRef<import('@microsoft/signalr').HubConnection | null>(null)
 
   const loadRooms = useCallback(async () => {
     setIsLoading(true)
@@ -59,38 +60,25 @@ export default function RoomsPage() {
     if (!token || typeof window === 'undefined') return
 
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'
-    let cancelled = false
 
-    import('@microsoft/signalr').then((signalR) => {
-      if (cancelled) return
+    roomHubService.connect(apiUrl, token).catch(() => {})
 
-      const connection = new signalR.HubConnectionBuilder()
-        .withUrl(`${apiUrl}/hubs/room-status`, {
-          accessTokenFactory: () => token,
-        })
-        .withAutomaticReconnect([0, 2000, 5000, 10000, 30000])
-        .build()
-
-      connection.on('RoomStatusChanged', (data: RoomStatusChange) => {
-        setRooms((prev) =>
-          prev.map((room) =>
-            room.id === data.roomId ? { ...room, status: data.newStatus } : room
-          )
+    const unsub = roomHubService.onStatusChange((data) => {
+      setRooms((prev) =>
+        prev.map((room) =>
+          room.id === data.roomId ? { ...room, status: data.newStatus as RoomStatus } : room
         )
-        setToast({ message: `Soba ${data.roomNumber}: ${data.oldStatus} -> ${data.newStatus}`, roomId: data.roomId })
-        setTimeout(() => setToast(null), 5000)
+      )
+      setToast({
+        message: `Soba ${data.roomNumber}: ${ROOM_STATUS_LABELS[data.oldStatus as keyof typeof ROOM_STATUS_LABELS] || data.oldStatus} → ${ROOM_STATUS_LABELS[data.newStatus as keyof typeof ROOM_STATUS_LABELS] || data.newStatus}`,
+        roomId: data.roomId,
       })
-
-      connection.start().catch(() => {})
-      connectionRef.current = connection
+      setTimeout(() => setToast(null), 5000)
     })
 
     return () => {
-      cancelled = true
-      if (connectionRef.current) {
-        connectionRef.current.stop()
-        connectionRef.current = null
-      }
+      unsub()
+      roomHubService.disconnect()
     }
   }, [])
 
@@ -173,13 +161,13 @@ export default function RoomsPage() {
       </div>
 
       {isLoading ? (
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
           {Array.from({ length: 8 }).map((_, i) => (
             <div key={i} className="h-36 animate-pulse rounded-xl bg-surface-tertiary"></div>
           ))}
         </div>
       ) : viewMode === 'grid' ? (
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
           {rooms.map((room) => (
             <RoomCard key={room.id} room={room} onClick={handleRoomClick} />
           ))}

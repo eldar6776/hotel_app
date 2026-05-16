@@ -40,7 +40,7 @@ interface RoomDetailProps {
 }
 
 export function RoomDetail({ room, isOpen, onClose, onStatusChange }: RoomDetailProps) {
-  const [activeTab, setActiveTab] = useState<'info' | 'status' | 'ooo'>('info')
+  const [activeTab, setActiveTab] = useState<'info' | 'guest' | 'history' | 'hk' | 'status' | 'ooo'>('info')
   const [isChanging, setIsChanging] = useState(false)
   const [oooEntries, setOooEntries] = useState<RoomOutOfOrderDto[]>([])
   const [showOooForm, setShowOooForm] = useState(false)
@@ -119,6 +119,24 @@ export function RoomDetail({ room, isOpen, onClose, onStatusChange }: RoomDetail
             Informacije
           </button>
           <button
+            className={`px-4 py-2 text-sm font-medium ${activeTab === 'guest' ? 'border-b-2 border-primary-500 text-primary-500' : 'text-text-secondary'}`}
+            onClick={() => setActiveTab('guest')}
+          >
+            Gost
+          </button>
+          <button
+            className={`px-4 py-2 text-sm font-medium ${activeTab === 'history' ? 'border-b-2 border-primary-500 text-primary-500' : 'text-text-secondary'}`}
+            onClick={() => setActiveTab('history')}
+          >
+            Istorija
+          </button>
+          <button
+            className={`px-4 py-2 text-sm font-medium ${activeTab === 'hk' ? 'border-b-2 border-primary-500 text-primary-500' : 'text-text-secondary'}`}
+            onClick={() => setActiveTab('hk')}
+          >
+            Čišćenje
+          </button>
+          <button
             className={`px-4 py-2 text-sm font-medium ${activeTab === 'status' ? 'border-b-2 border-primary-500 text-primary-500' : 'text-text-secondary'}`}
             onClick={() => setActiveTab('status')}
           >
@@ -166,6 +184,48 @@ export function RoomDetail({ room, isOpen, onClose, onStatusChange }: RoomDetail
                 <p className="text-sm text-text">{room.notes}</p>
               </div>
             )}
+          </div>
+        )}
+
+        {activeTab === 'guest' && (
+          <div className="space-y-3">
+            {room.status === 'Occupied' ? (
+              <div className="rounded-lg border border-border bg-surface-secondary p-4">
+                <p className="text-sm font-medium text-text">Soba je trenutno zauzeta</p>
+                <p className="text-xs text-text-secondary mt-1">Detalji gosta su dostupni kroz Check-in sistem.</p>
+              </div>
+            ) : (
+              <p className="text-sm text-text-secondary text-center py-8">Soba nije zauzeta.</p>
+            )}
+          </div>
+        )}
+
+        {activeTab === 'history' && (
+          <div className="space-y-3">
+            <p className="text-sm text-text-secondary text-center py-8">Istorija boravaka i statusnih promjena.</p>
+            {(room.status === 'Free' || room.status === 'Dirty') && (
+              <p className="text-xs text-text-secondary text-center">Poslednja izmena: promjena u status {statusLabels[room.status]}</p>
+            )}
+          </div>
+        )}
+
+        {activeTab === 'hk' && (
+          <div className="space-y-3">
+            <p className="text-sm font-medium text-text">Housekeeping</p>
+            <div className="rounded-lg border border-border bg-surface-secondary p-4">
+              <p className="text-sm text-text-secondary">
+                Status: {room.status === 'Dirty' ? 'Potrebno čišćenje' : room.status === 'Free' ? 'Čista i spremna' : 'Nije primjenjivo'}
+              </p>
+              {room.status === 'Dirty' && (
+                <button
+                  onClick={() => handleStatusChange('Free')}
+                  disabled={isChanging}
+                  className="mt-3 rounded-lg bg-emerald-500 px-3 py-1.5 text-sm font-medium text-white hover:bg-emerald-600 disabled:opacity-50"
+                >
+                  Označi čistom
+                </button>
+              )}
+            </div>
           </div>
         )}
 
@@ -279,6 +339,37 @@ export function RoomDetail({ room, isOpen, onClose, onStatusChange }: RoomDetail
             )}
           </div>
         )}
+
+        <div className="mt-6 pt-4 border-t border-border flex flex-wrap gap-2">
+          <button
+            className="rounded-lg bg-primary-500 px-3 py-1.5 text-xs font-medium text-white hover:bg-primary-600 disabled:opacity-50"
+            disabled={room.status !== 'Reserved' && room.status !== 'Free'}
+            title="Check-in gosta"
+          >
+            Check-in
+          </button>
+          <button
+            className="rounded-lg bg-amber-500 px-3 py-1.5 text-xs font-medium text-white hover:bg-amber-600 disabled:opacity-50"
+            disabled={room.status !== 'Occupied'}
+            title="Check-out gosta"
+          >
+            Check-out
+          </button>
+          <button
+            className="rounded-lg bg-emerald-500 px-3 py-1.5 text-xs font-medium text-white hover:bg-emerald-600 disabled:opacity-50"
+            disabled={room.status !== 'Dirty'}
+            onClick={() => handleStatusChange('Free')}
+          >
+            Označi čistom
+          </button>
+          <button
+            className="rounded-lg bg-red-500 px-3 py-1.5 text-xs font-medium text-white hover:bg-red-600 disabled:opacity-50"
+            disabled={room.status === 'OutOfOrder' || room.status === 'OutOfService'}
+            onClick={() => { setActiveTab('ooo'); setShowOooForm(true); loadOooEntries() }}
+          >
+            Prijavi kvar
+          </button>
+        </div>
       </div>
     </div>
   )
