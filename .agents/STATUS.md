@@ -90,7 +90,7 @@
 - [x] **T10.5: Automatsko slanje izvjestaja emailom (scheduled, PDF)** - [COMPLETED 2026-05-16 - opencode]
 
 ### Faza 11: Housekeeping
-- [ ] **T11.1: API za upravljanje statusom soba (ciscenje, inspekcija)**
+- [-] **T11.1: API za upravljanje statusom soba (ciscenje, inspekcija)** - [IN_PROGRESS] - 2026-05-16 - opencode
 - [ ] **T11.2: Mobilno-prilagodjen UI za sobarice (PWA, offline support)**
 - [ ] **T11.3: Notifikacije prema recepciji o zavrsenom ciscenju**
 - [ ] **T11.4: Work Orders — prijava i pracenje kvarova sa prioritetima**
