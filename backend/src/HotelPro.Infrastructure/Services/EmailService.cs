@@ -1,7 +1,6 @@
 using HotelPro.Core.Entities;
 using HotelPro.Core.Services;
 using HotelPro.Infrastructure.Data;
-using MailKit.Net.Smtp;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -14,15 +13,18 @@ public class EmailService : IEmailService
     private readonly HotelProDbContext _dbContext;
     private readonly EmailConfiguration _emailConfig;
     private readonly ILogger<EmailService> _logger;
+    private readonly Func<ISmtpClient> _smtpClientFactory;
 
     public EmailService(
         HotelProDbContext dbContext,
         IOptions<EmailConfiguration> emailConfig,
-        ILogger<EmailService> logger)
+        ILogger<EmailService> logger,
+        Func<ISmtpClient> smtpClientFactory)
     {
         _dbContext = dbContext;
         _emailConfig = emailConfig.Value;
         _logger = logger;
+        _smtpClientFactory = smtpClientFactory;
     }
 
     public async Task<EmailSendResult> SendConfirmationAsync(Guid bookingId)
@@ -128,7 +130,7 @@ public class EmailService : IEmailService
         }
 
         emailLog.Status = EmailStatus.Failed;
-        emailLog.ErrorMessage = $"Failed after {_emailConfig.MaxRetries} attempts.";
+        emailLog.ErrorMessage ??= $"Failed after {_emailConfig.MaxRetries} attempts.";
         await _dbContext.SaveChangesAsync();
 
         _logger.LogError("Email failed after {MaxRetries} attempts for {Recipient}", _emailConfig.MaxRetries, emailLog.Recipient);
@@ -150,7 +152,7 @@ public class EmailService : IEmailService
 
         message.Body = bodyBuilder.ToMessageBody();
 
-        using var client = new SmtpClient();
+        using var client = _smtpClientFactory();
         await client.ConnectAsync(_emailConfig.SmtpHost, _emailConfig.SmtpPort, _emailConfig.UseTls);
 
         if (!string.IsNullOrEmpty(_emailConfig.SmtpUsername))

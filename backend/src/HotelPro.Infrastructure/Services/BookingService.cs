@@ -107,18 +107,6 @@ public class BookingService : IBookingService
         var result = await _bookingRepository.GetByIdWithRoomsAsync(booking.Id)
             ?? throw new InvalidOperationException($"Booking with ID {booking.Id} not found after creation.");
 
-        _ = Task.Run(async () =>
-        {
-            try
-            {
-                await _emailService.SendConfirmationAsync(booking.Id);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Failed to send confirmation email for booking {BookingId}", booking.Id);
-            }
-        });
-
         return MapToDto(result);
     }
 

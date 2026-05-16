@@ -23,23 +23,25 @@ public class EmailServiceTests
             .Options;
     }
 
-    private EmailService CreateService(HotelProDbContext context)
+    private EmailService CreateService(HotelProDbContext context, FakeSmtpClient? fakeSmtp = null)
     {
+        fakeSmtp ??= new FakeSmtpClient();
+
         var emailConfig = Options.Create(new EmailConfiguration
         {
             SmtpHost = "smtp.test.local",
             SmtpPort = 25,
-            SmtpUsername = "",
-            SmtpPassword = "",
+            SmtpUsername = "testuser",
+            SmtpPassword = "testpass",
             FromAddress = "test@hotelpro.com",
             FromName = "HotelPRO Test",
-            UseTls = false,
+            UseTls = true,
             MaxRetries = 1,
             RetryDelaySeconds = 0
         });
 
         var logger = new Mock<ILogger<EmailService>>();
-        return new EmailService(context, emailConfig, logger.Object);
+        return new EmailService(context, emailConfig, logger.Object, () => fakeSmtp);
     }
 
     private async Task<Booking> SeedBookingWithGuestAsync(HotelProDbContext context, string? guestEmail = "guest@test.com")
@@ -182,7 +184,7 @@ public class EmailServiceTests
         Assert.Equal("guest@test.com", emailLog.Recipient);
         Assert.True(emailLog.IsHtml);
         Assert.Contains("John Doe", emailLog.Body);
-        Assert.Equal(EmailStatus.Failed, emailLog.Status);
+        Assert.Equal(EmailStatus.Sent, emailLog.Status);
         Assert.Equal(1, emailLog.RetryCount);
     }
 
@@ -238,5 +240,118 @@ public class EmailServiceTests
         var emailLog = await context.EmailLogs.IgnoreQueryFilters().FirstAsync(e => e.BookingId == booking.Id);
 
         Assert.Contains("otkazivanju", emailLog.Subject.ToLower());
+    }
+
+    [Fact]
+    public async Task SendConfirmationAsync_SmtpMock_ConnectsAndSendsSuccessfully()
+    {
+        var options = CreateInMemoryOptions();
+        await using var context = new HotelProDbContext(options);
+        await SeedBookingWithGuestAsync(context, guestEmail: "guest@test.com");
+
+        var fakeSmtp = new FakeSmtpClient();
+        var service = CreateService(context, fakeSmtp);
+
+        var booking = await context.Bookings.IgnoreQueryFilters().FirstAsync();
+        var result = await service.SendConfirmationAsync(booking.Id);
+
+        Assert.True(result.Success);
+        Assert.True(fakeSmtp.Connected);
+        Assert.True(fakeSmtp.Authenticated);
+        Assert.True(fakeSmtp.SendCalled);
+        Assert.True(fakeSmtp.Disconnected);
+        Assert.NotNull(fakeSmtp.LastMessage);
+        Assert.Contains("guest@test.com", fakeSmtp.LastMessage!.To.First().ToString());
+    }
+
+    [Fact]
+    public async Task SendConfirmationAsync_SmtpMock_EmailLogStatusIsSent()
+    {
+        var options = CreateInMemoryOptions();
+        await using var context = new HotelProDbContext(options);
+        await SeedBookingWithGuestAsync(context, guestEmail: "guest@test.com");
+
+        var fakeSmtp = new FakeSmtpClient();
+        var service = CreateService(context, fakeSmtp);
+
+        var booking = await context.Bookings.IgnoreQueryFilters().FirstAsync();
+        await service.SendConfirmationAsync(booking.Id);
+
+        var emailLog = await context.EmailLogs.IgnoreQueryFilters().FirstAsync(e => e.BookingId == booking.Id);
+        Assert.Equal(EmailStatus.Sent, emailLog.Status);
+        Assert.NotNull(emailLog.SentAt);
+        Assert.Null(emailLog.ErrorMessage);
+    }
+
+    [Fact]
+    public async Task SendConfirmationAsync_SmtpMock_HandlesConnectFailure()
+    {
+        var options = CreateInMemoryOptions();
+        await using var context = new HotelProDbContext(options);
+        await SeedBookingWithGuestAsync(context, guestEmail: "guest@test.com");
+
+        var fakeSmtp = new FakeSmtpClient { ShouldThrowOnConnect = true, ThrowMessage = "Connection refused" };
+        var service = CreateService(context, fakeSmtp);
+
+        var booking = await context.Bookings.IgnoreQueryFilters().FirstAsync();
+        var result = await service.SendConfirmationAsync(booking.Id);
+
+        Assert.False(result.Success);
+        Assert.Contains("Connection refused", result.ErrorMessage);
+
+        var emailLog = await context.EmailLogs.IgnoreQueryFilters().FirstAsync(e => e.BookingId == booking.Id);
+        Assert.Equal(EmailStatus.Failed, emailLog.Status);
+    }
+
+    [Fact]
+    public async Task SendConfirmationAsync_SmtpMock_HandlesAuthFailure()
+    {
+        var options = CreateInMemoryOptions();
+        await using var context = new HotelProDbContext(options);
+        await SeedBookingWithGuestAsync(context, guestEmail: "guest@test.com");
+
+        var fakeSmtp = new FakeSmtpClient { ShouldThrowOnAuth = true, ThrowMessage = "Auth failed" };
+        var service = CreateService(context, fakeSmtp);
+
+        var booking = await context.Bookings.IgnoreQueryFilters().FirstAsync();
+        var result = await service.SendConfirmationAsync(booking.Id);
+
+        Assert.False(result.Success);
+        Assert.Contains("Auth failed", result.ErrorMessage);
+    }
+
+    [Fact]
+    public async Task SendConfirmationAsync_SmtpMock_HandlesSendFailure()
+    {
+        var options = CreateInMemoryOptions();
+        await using var context = new HotelProDbContext(options);
+        await SeedBookingWithGuestAsync(context, guestEmail: "guest@test.com");
+
+        var fakeSmtp = new FakeSmtpClient { ShouldThrowOnSend = true, ThrowMessage = "Mailbox not found" };
+        var service = CreateService(context, fakeSmtp);
+
+        var booking = await context.Bookings.IgnoreQueryFilters().FirstAsync();
+        var result = await service.SendConfirmationAsync(booking.Id);
+
+        Assert.False(result.Success);
+        Assert.Contains("Mailbox not found", result.ErrorMessage);
+    }
+
+    [Fact]
+    public async Task SendCancellationAsync_SmtpMock_SendsCorrectSubject()
+    {
+        var options = CreateInMemoryOptions();
+        await using var context = new HotelProDbContext(options);
+        await SeedBookingWithGuestAsync(context, guestEmail: "guest@test.com");
+
+        var fakeSmtp = new FakeSmtpClient();
+        var service = CreateService(context, fakeSmtp);
+
+        var booking = await context.Bookings.IgnoreQueryFilters().FirstAsync();
+        var result = await service.SendCancellationAsync(booking.Id);
+
+        Assert.True(result.Success);
+        Assert.NotNull(fakeSmtp.LastMessage);
+        Assert.Contains("otkazivanju", fakeSmtp.LastMessage!.Subject.ToLower());
     }
 }
