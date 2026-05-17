@@ -118,3 +118,57 @@ Must not happen:
 - `relgostsoba` must not be marked `odjavljen = 1`.
 - `posjetafolio` must not be closed solely because payment happened.
 
+## SCENARIO-ROOM-STATUS-001: Room status derives from active stay and OOO override
+
+Legacy reference:
+
+- SQL function `fnSobaStatus(SoID, datumP, datumK, tod)`
+- Room overview procedure that selects `fnSobaStatus(sobe.ID, datumP, datumK, CURRENT_TIMESTAMP()) AS status`
+
+Initial database state:
+
+- Room A has no active `relgostsoba` rows.
+- Room B has active `relgostsoba` where `rezervacija = 0`, `odjavljen = 0`, and `tod < checkOutDate`.
+- Room C has active `relgostsoba` where `rezervacija = 0`, `odjavljen = 0`, and `tod >= checkOutDate`.
+- Room D has `sobe.ooo = 1`.
+
+User action:
+
+- Room overview asks for derived room status.
+
+Expected result:
+
+- Room A status is `0`.
+- Room B status is `1`.
+- Room C status is `2`.
+- Room D status is `5`, overriding occupancy/reservation status.
+
+Must not happen:
+
+- New system must not derive room status only from reservation date ranges.
+- Status `4` must not be treated as confirmed until legacy runtime behavior or caller usage proves its meaning.
+
+## SCENARIO-EXPENSE-TRANSFER-001: Only open expenses can move to another room
+
+Legacy reference:
+
+- SQL procedure `unesiPojedinacne(noviSID, ID, stariSID)`
+
+Initial database state:
+
+- Expense X has `SID = oldRoom`, `ID = expenseId`, `zaklj = 0`.
+- Expense Y has `SID = oldRoom`, `ID = lockedExpenseId`, `zaklj = 1`.
+
+User action:
+
+- User transfers individual expense X from old room to new room.
+
+Expected database changes:
+
+- Expense X is updated to `SID = newRoom`.
+- Expense Y remains unchanged if transfer is attempted, because it is locked.
+
+Must not happen:
+
+- Locked/billed expenses must not be moved.
+- Transfer must not affect other open expenses unless their exact `ID` is selected.

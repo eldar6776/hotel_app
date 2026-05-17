@@ -25,9 +25,11 @@ Date: 2026-05-17
 | SQLWRITE-016 | `frmPlacanje.vb` | `dodajPlacanje` / group variant | INSERT | `placanje` | header fields including `broj`, `relgostsobaID`, `iznos`, `nacin`, `PID` | none | Stores payment header. | RULE-PAYMENT-001 | SCENARIO-PAYMENT-001 | P0 |
 | SQLWRITE-017 | `frmPlacanje.vb` | report generation | INSERT | `printracuni` | invoice snapshot header fields | none | Stores printable invoice header snapshot. | RULE-INVOICE-001 | SCENARIO-PAYMENT-001 | P0 |
 | SQLWRITE-018 | `frmPlacanje.vb` | fiscal update | UPDATE | `printracuni` | `fisrac`, `fisvr`, `fisIZN` | `BrojRacuna = id` | Attaches fiscal device result to invoice snapshot. | RULE-FISCAL-001 | SCENARIO-FISCAL-001 | P0 |
+| SQLWRITE-019 | SQL dump | `addPlacanjeSlozeno` | INSERT | `placanjeslozeno` | `rbr`, `nacin`, `iznos` | none | Persists split/compound payment method line for payment number. | RULE-PAYMENT-001 | SCENARIO-PAYMENT-001 | P0 |
+| SQLWRITE-020 | SQL dump | `addTroskovi` | INSERT | `troskovi` | `GSID`, `SID`, `TID`, `vrijeme`, `kolicina`, `iznos`, `radnikID` | none | Creates open expense charge. | RULE-EXPENSE-001 | SCENARIO-EXPENSE-001 | P0 |
+| SQLWRITE-021 | SQL dump | `unesiPojedinacne` | UPDATE | `troskovi` | `SID = noviSID` | `SID = stariSID AND zaklj = 0 AND ID = ID` | Moves an unlocked individual expense to another room. | RULE-EXPENSE-002 | SCENARIO-ROOM-TRANSFER-001 | P0 |
 
 ## Pending
 
 - Complete all `INSERT/UPDATE/DELETE` writes from `frmRacun.vb`, `frmRacuni.vb`, reservation forms, `frmGosti.vb`, `frmTroskovi*.vb`, and SQL procedures.
 - Classify migration/config writes separately from business writes.
-

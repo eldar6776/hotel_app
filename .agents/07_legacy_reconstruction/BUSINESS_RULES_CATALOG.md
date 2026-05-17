@@ -19,6 +19,25 @@ Database effects:
 
 Open questions: numeric meaning of all `clean` values must be completed from housekeeping screens and reports.
 
+## RULE-ROOM-002
+
+Name: Room status is derived from active stays/reservation placeholders and OOO override.
+
+Legacy reference: SQL dump, function `fnSobaStatus(SoID, datumP, datumK, tod)`; room overview procedure calls it when listing rooms.
+
+Rule: if no active `relgostsoba` exists for room, status is `0`. If active non-reservation stay exists and `tod < checkOutDate`, status is `1`; if `tod >= checkOutDate`, status is `2`. Reservation placeholder rows (`rezervacija = 1`) produce `6` when `rezervP = 0` and `3` when `rezervP = 1`. If `sobe.ooo = 1`, status is overridden to `5`.
+
+Database effects:
+
+| Operation | Table | Columns | Condition |
+|---|---|---|---|
+| SELECT | `relgostsoba` | `sobaID`, `odjavljen`, `rezervacija`, `rezervP`, `checkOutDate` | status derivation |
+| SELECT | `sobe` | `ooo` | OOO override |
+
+Open questions:
+
+- Function contains a branch that can set `stat1 = 4`, but the local logic appears internally inconsistent. Treat status `4` as `UNKNOWN/POSSIBLE_BUG` until runtime behavior or more callers clarify it.
+
 ## RULE-STAY-001
 
 Name: Check-in creates a guest-room stay assignment.
@@ -133,3 +152,18 @@ Rule: after fiscal device interaction, the invoice row is updated with fiscal re
 
 Open questions: Tring/NSC/HCP/Mikroelektronika device-specific success/failure transitions need deeper review.
 
+## RULE-EXPENSE-002
+
+Name: Open individual expenses can be moved to another room before locking.
+
+Legacy reference: SQL dump procedure `unesiPojedinacne(noviSID, ID, stariSID)`.
+
+Rule: an expense row can be moved from old room to new room only when `troskovi.zaklj = 0` and the specific `troskovi.ID` matches. Locked expenses are not moved by this procedure.
+
+Database effects:
+
+| Operation | Table | Columns | Condition |
+|---|---|---|---|
+| UPDATE | `troskovi` | `SID = noviSID` | `SID = stariSID AND zaklj = 0 AND ID = ID` |
+
+Modern mapping: ExpenseLedger transfer operation, gated by open/unlocked state.

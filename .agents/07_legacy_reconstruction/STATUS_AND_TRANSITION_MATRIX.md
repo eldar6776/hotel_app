@@ -8,8 +8,16 @@ Date: 2026-05-17
 | Source Value | Label | Meaning | Set By | Read By | Transition Rule | Status |
 |---|---|---|---|---|---|---|
 | `sobe.clean = 0` | dirty/not clean | room requires cleaning after checkout | `Data.PrljavaSoba`, `frmPlacanje.vb` | room views/housekeeping pending | successful checkout/payment-triggered checkout | CONFIRMED |
-| `sobe.ooo` | out of order flag | room unavailable for normal selection | OOO procedure / UI pending | `frmPrijava1.vb` room selection filters `ooo=0`; SQL `fnSobaStatus` output includes `ooo` | UNKNOWN | PARTIAL |
-| `fnSobaStatus(...)` | derived room status | computed by SQL function | SQL function pending read | SQL procedure around room overview | UNKNOWN | UNKNOWN |
+| `sobe.clean = 1` | clean | room is clean/available from housekeeping perspective | default schema value, housekeeping path pending | room views/housekeeping pending | inverse of checkout dirty marker, full lifecycle pending | PARTIAL |
+| `sobe.ooo = 0` | not OOO | room may be selected in check-in room list | default schema value / OOO UI pending | `frmPrijava1.vb` room selection filters `ooo=0` | room is eligible for selection unless other status blocks it | CONFIRMED |
+| `sobe.ooo = 1` | out of order | room is unavailable/overrides computed occupancy status | OOO procedure/UI pending | `fnSobaStatus`, room overview procedures | `fnSobaStatus` returns `5` if `ooo = 1` | CONFIRMED |
+| `fnSobaStatus = 0` | empty/free | no active `relgostsoba` rows for room | SQL function `fnSobaStatus` | room overview procedure | `COUNT(active stays) = 0` | CONFIRMED |
+| `fnSobaStatus = 1` | occupied before checkout date | active non-reservation stay and `tod < checkOutDate` | SQL function `fnSobaStatus` | room overview procedure | active stay exists, planned checkout not reached | CONFIRMED |
+| `fnSobaStatus = 2` | overdue/departure due | active non-reservation stay and `tod >= checkOutDate` | SQL function `fnSobaStatus` | room overview procedure | active stay exists, planned checkout reached/passed | CONFIRMED |
+| `fnSobaStatus = 3` | reservation placeholder | active `relgostsoba` with `rezervacija = 1` and `rezervP = 1` | SQL function `fnSobaStatus` | room overview procedure | reservation placeholder present | CONFIRMED |
+| `fnSobaStatus = 4` | UNKNOWN / possible unreachable mixed state | intended mixed reservation/occupancy state, but function sets `stat12 = 0` in the branch where it checks `stat12 = 1` | SQL function `fnSobaStatus` | room overview procedure | condition appears internally inconsistent; do not implement as certain enum yet | UNKNOWN |
+| `fnSobaStatus = 5` | OOO | out of order overrides other state | SQL function `fnSobaStatus` | room overview procedure | `sobe.ooo = 1` | CONFIRMED |
+| `fnSobaStatus = 6` | reservation unconfirmed/blocked placeholder | active `relgostsoba` with `rezervacija = 1` and `rezervP = 0` | SQL function `fnSobaStatus` | room overview procedure | reservation placeholder present | CONFIRMED |
 
 ## Stay / Guest-Room
 
@@ -58,4 +66,3 @@ Date: 2026-05-17
 | `placanjedetalji.storno = 0` | active payment detail | detail counts in totals | payment detail insert | `Data.pripremaRcuna`, reports | normal payment | PARTIAL |
 | `printracuni.storno` | invoice storno marker | invoice snapshot cancellation state | storno path pending | reports/export | UNKNOWN | UNKNOWN |
 | `printracuni.fisrac/fisvr/fisIZN` | fiscal receipt attached | fiscalized invoice has fiscal metadata | `frmPlacanje.vb` fiscal update | reports/print | fiscal device success | PARTIAL |
-

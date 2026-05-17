@@ -9,9 +9,9 @@ This model is derived from initial legacy evidence. It must stay open until book
 
 Responsibility: physical sellable room plus operational flags.
 
-Legacy sources: `sobe`, `sobavrsta`, `zgrade`, `Data.PrljavaSoba`, SQL room procedures.
+Legacy sources: `sobe`, `sobavrsta`, `zgrade`, `Data.PrljavaSoba`, SQL room procedures, SQL function `fnSobaStatus`.
 
-Key states: clean/dirty, OOO, derived occupancy/status.
+Key states: clean/dirty, OOO, derived occupancy/status values `0`, `1`, `2`, `3`, `5`, `6`; value `4` is `UNKNOWN/POSSIBLE_BUG` until proven.
 
 Invariant: room operational state cannot be derived only from bookings; active `relgostsoba`, `nocenja`, `sobe.clean`, `sobe.ooo` all contribute.
 
@@ -59,11 +59,11 @@ Invariant: do not replace with computed nights from dates without explicit user 
 
 Responsibility: non-night charges attached mainly to room/stay before billing.
 
-Legacy sources: `troskovi`, `troskovivrste`, `Data.gettroskovi`, `frmPlacanje`.
+Legacy sources: `troskovi`, `troskovivrste`, `Data.gettroskovi`, `frmPlacanje`, SQL procedure `unesiPojedinacne`.
 
 Key states: open (`zaklj = 0`), locked (`zaklj = 1`), partial (`Djelimicno = 1`).
 
-Invariant: locked expense rows represent billed/closed state and may carry invoice number `Brrac`.
+Invariant: locked expense rows represent billed/closed state and may carry invoice number `Brrac`. Open expenses may be transferred between rooms; locked expenses must not be moved by the legacy transfer procedure.
 
 ## PaymentLedger
 
@@ -94,4 +94,3 @@ Legacy sources: `frmPlacanje.vb` methods for Tring/NSC/HCP/Mikroelektronika and 
 Key states: UNKNOWN until device methods are fully read.
 
 Invariant: fiscal result is persisted back to invoice snapshot.
-

@@ -109,10 +109,52 @@ Validation command: pending.
 
 Rollback note: use checkpoint commit `693d1d1` if requested.
 
+## TASK-PMS-006: Legacy room status read model
+
+Legacy references:
+
+- SQL function `fnSobaStatus`
+- `sobe.ooo`
+- active `relgostsoba` rows
+
+Affected domain concept: Room / RoomOperationalState.
+
+Expected behavior: produce legacy-compatible room status values for free, occupied, overdue/departure due, reservation placeholder and OOO states; keep status `4` as unknown until proven.
+
+Acceptance scenario: `SCENARIO-ROOM-STATUS-001`.
+
+Files/modules to touch: new room status read model/tests only.
+
+Files/modules not to touch: booking/check-in mutation services.
+
+Validation command: pending.
+
+Rollback note: use checkpoint commit `4f78d25` for output-document checkpoint if requested.
+
+## TASK-PMS-007: Transfer only unlocked expenses
+
+Legacy references:
+
+- SQL procedure `unesiPojedinacne`
+- table `troskovi`
+
+Affected domain concept: ExpenseLedger.
+
+Expected behavior: allow transfer of a selected expense to another room only when `zaklj = 0`; locked expenses remain unchanged.
+
+Acceptance scenario: `SCENARIO-EXPENSE-TRANSFER-001`.
+
+Files/modules to touch: new ExpenseLedger transfer service/tests only.
+
+Files/modules not to touch: invoice/storno code until extraction completes.
+
+Validation command: pending.
+
+Rollback note: use checkpoint commit `4f78d25` for output-document checkpoint if requested.
+
 ## Not Ready Tasks
 
 - Booking confirmation/storno tasks: reservation lifecycle not fully extracted.
 - Invoice snapshot tasks: enough evidence for model, not enough for line/tax details.
 - Fiscal tasks: device-specific transitions not fully extracted.
 - Storno invoice tasks: paths not yet read.
-

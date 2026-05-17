@@ -9,15 +9,16 @@ Primary schema source: `legacy_code/novaBazaJHotel 20150602 0848.sql`
 
 | Table | Source Line | Business Role | Key Columns | Status/Flag Columns | Financial Columns | Date Columns | Read By | Written By | Candidate Concept | Risk |
 |---|---:|---|---|---|---|---|---|---|---|---|
-| `sobe` | 8087 | physical room and room operational state | `ID`, `naziv`, `vrsta`, `lokal`, `zgradaID` | `ooo`, `clean`, `idkon` | none seen | none seen | `ModuleKod.vb`, `frmPrijava1.vb`, SQL procedures | `Data.PrljavaSoba`, `frmPlacanje`, OOO procedures | Room + RoomOperationalState | P0 |
+| `sobe` | 8087 | physical room and room operational state | `ID`, `naziv`, `vrsta`, `lokal`, `zgradaID`, `sprat` | `ooo`, `clean`, `idkon` | none seen | none seen | `ModuleKod.vb`, `frmPrijava1.vb`, SQL procedures, `fnSobaStatus` | `Data.PrljavaSoba`, `frmPlacanje`, OOO procedures | Room + RoomOperationalState | P0 |
 | `relgostsoba` | 7482 | stay/guest-room assignment | `id`, `gostID`, `sobaID`, `PID`, `tarifaID`, `grupaID` | `odjavljen`, `rezervacija`, `rezervP`, `print1`, `print2`, `pl` | `popust`, `ostaliTroskovi` | `checkInDate`, `checkOutDate` | `Data.vb`, `frmPrijava1.vb`, `frmPlacanje.vb`, `frmGosti.vb` | `addRelGostSoba`, `Data.OdjavaSobe` | Stay / RoomAssignment | P0 |
 | `posjetafolio` | 7092 | folio/visit lifecycle envelope | `ID`, `SID` | `zakljucen` | none seen | `vrijemeD`, `vrijemeO` | `frmPrijava1.vb`, `Data.vb` | `addFolio`, `Data.OdjavaSobe` | FolioSession | P0 |
 | `nocenja` | 5898 | materialized night ledger | `id`, `RID`, `SID`, `PID` | `PrijavaOdjava` | `Tarifa`, `popust` | `DatumP`, `DatumOdj` | `Data.vb`, `frmPlacanje.vb`, reports/procedures | `Unesinocenja`, `Data.OdjavaSobe`, `frmPlacanje.vb` | NightLedger | P0 |
 | `troskovi` | 8231 | expense ledger/open charges | `ID`, `GSID`, `SID`, `TID`, `Brrac` | `zaklj`, `Djelimicno` | `kolicina`, `iznos` | `vrijeme` | `Data.vb`, `frmPlacanje.vb`, reports | `frmPlacanje.vb`, `Data.OdjavaSobe`, transfer procedures | ExpenseLedger | P0 |
-| `placanje` | 6922 | payment header | `ID`, `broj`, `relgostsobaID`, `PID`, `nacin` | `storno` | `iznos`, `popust`, `uplaceno` | `datum`, `datumOD`, `datumDO` | `frmPlacanje.vb`, reports/procedures | `frmPlacanje.vb` | PaymentLedgerHeader | P0 |
-| `placanjedetalji` | 6982 | payment line/detail ledger | `ID`, `brojID`, `art`, `PID` | `storno`, `ranijeUplate` | `kolicina`, `cijena`, `iznos`, `brojNocenja` | none seen | `Data.vb`, `frmPlacanje.vb` | `frmPlacanje.vb` | PaymentLedgerLine | P0 |
-| `printracuni` | 7230 | invoice print snapshot/header | `BrojRacuna`, `Ime`, `DrugoIme`, `BrojSobe`, `TipPlacanja` | `storno`, `knj` | `fisizn` | `PeriodOd`, `PeriodDo`, `datr`, `dat` | reports/export | `frmPlacanje.vb`, storno paths pending | InvoiceSnapshotHeader | P0 |
-| `printracunidetalji` | 7315 | invoice print snapshot/detail | `BrojRacuna`, `Trosak`, `Nacin` | none confirmed | `Kol`, `CijBezPdv`, `UkupnoBezPdv`, `Pdv`, `IznosPdv`, `Ukupno` | none seen | reports/export | `frmPlacanje.vb` | InvoiceSnapshotLine | P0 |
+| `placanje` | 6922 | payment header, including fiscal/storno metadata | `ID`, `broj`, `relgostsobaID`, `PID`, `nacin`, `placanjeID`, `folio`, `idgost`, `posjeta`, `firma` | `storno`, `predracun`, `tip`, `fiskal`, `fiskalrek` | `iznos`, `popust`, `uplaceno`, `pdv`, `ctax` | `datum`, `datumOD`, `datumDO` | `frmPlacanje.vb`, reports/procedures | `frmPlacanje.vb` | PaymentLedgerHeader | P0 |
+| `placanjedetalji` | 6982 | payment line/detail ledger with room/stay denormalization | `ID`, `brojID`, `art`, `PID`, `rid`, `sid`, `gid`, `soba`, `sobavr`, `sobavrid` | `storno`, `ranijeUplate` | `kolicina`, `cijena`, `iznos`, `brojNocenja`, `popust`, `pdv` | `periodod`, `perioddo` | `Data.vb`, `frmPlacanje.vb` | `frmPlacanje.vb` | PaymentLedgerLine | P0 |
+| `printracuni` | 7230 | invoice print snapshot/header | `BrojRacuna`, `Ime`, `DrugoIme`, `BrojSobe`, `TipPlacanja`, `racin` | `storno` | `fisizn` | `PeriodOd`, `PeriodDo`, `datr` | reports/export | `frmPlacanje.vb`, storno paths pending | InvoiceSnapshotHeader | P0 |
+| `printracunidetalji` | 7315 | invoice print snapshot/detail | `id`, `BrojRacuna`, `Trosak`, `Nacin`, `trosakId` | none confirmed | `Kol`, `CijBezPdv`, `UkupnoBezPdv`, `Pdv`, `IznosPdv`, `Ukupno`, `Popust` | none seen | reports/export | `frmPlacanje.vb` | InvoiceSnapshotLine | P0 |
+| `printracunifooter` | 7349 | invoice footer snapshot | `id`, `BrojRacuna`, `nap`, `pri` | none confirmed | `Avansno`, `Nocenja` | none seen | print/report paths | `frmPlacanje.vb` | InvoiceSnapshotFooter | P0 |
 | `rezervacije` | 7651 | booking/reservation | `ID`, `GID`, `sobaVrstaID`, `blokID`, `izvorID`, `tipID` | `prijava`, `potvrda`, `stornirana` | `tarifa` | `checkInDate`, `checkOutDate` | `frmPrijava1.vb`, procedures | reservation forms pending | Booking | P0 |
 | `rezervacijasobe` | 7581 | assigned reservation rooms | `id`, `rezid`, `sid`, `gid`, `tid` | UNKNOWN | `tarifa` | `checkInDate`, `checkOutDate` | `frmPrijava1.vb` | reservation forms pending | BookingRoomAssignment | P0 |
 | `rezervacijegrupe` | 7775 | reservation group/block | `ID`, `naziv` | UNKNOWN | UNKNOWN | UNKNOWN | `frmPrijava1.vb`, reservation procedures | group forms pending | BookingGroup | P0 |
@@ -33,10 +34,11 @@ Primary schema source: `legacy_code/novaBazaJHotel 20150602 0848.sql`
 | `troskovi.SID -> sobe.ID` | `Data.vb`, `frmPlacanje.vb` | open expenses are room-scoped until locked/invoiced |
 | `placanje.broj -> placanjedetalji.brojID` | `frmPlacanje.vb` inserts payment header and detail with same account/invoice number | payment ledger header/detail |
 | `printracuni.BrojRacuna -> printracunidetalji.BrojRacuna` | report/export SQL joins | invoice snapshot header/detail |
+| `printracuni.BrojRacuna -> printracunifooter.BrojRacuna` | schema and `frmPlacanje.vb` insert into `printracunifooter` | invoice snapshot header/footer |
+| `fnSobaStatus(sobe.ID, ...)` reads `relgostsoba` and `sobe.ooo` | SQL dump function lines around `fnSobaStatus` | room status is derived from active stays/reservation placeholders plus OOO override |
 
 ## UNKNOWN
 
 - Explicit foreign keys are not confirmed in the dump; relationships appear implicit.
 - Full column definitions for all P0 tables need extraction into this map.
 - Storno behavior must be proven from `frmRacun.vb`, `frmRacuni.vb`, `frmPlacanje.vb`, and report files.
-
