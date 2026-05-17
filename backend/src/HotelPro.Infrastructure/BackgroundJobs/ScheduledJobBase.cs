@@ -17,27 +17,36 @@ public abstract class ScheduledJobBase : IHostedService, IDisposable
         _logger = logger;
     }
 
-    public Task StartAsync(CancellationToken ct)
+    public Task StartAsync(CancellationToken cancellationToken)
     {
         _logger.LogInformation("[{JobName}] Starting scheduled job with interval {Interval}", JobName, Interval);
-        _timer = new Timer(async _ => await ExecuteJobSafeAsync(ct), null, TimeSpan.Zero, Interval);
+        _timer = new Timer(async _ => await ExecuteJobSafeAsync(), null, TimeSpan.Zero, Interval);
         return Task.CompletedTask;
     }
 
-    public Task StopAsync(CancellationToken ct)
+    public Task StopAsync(CancellationToken cancellationToken)
     {
         _logger.LogInformation("[{JobName}] Stopping scheduled job", JobName);
         _timer?.Change(Timeout.Infinite, 0);
         return Task.CompletedTask;
     }
 
-    private async Task ExecuteJobSafeAsync(CancellationToken ct)
+    private async Task ExecuteJobSafeAsync()
     {
         try
         {
             _logger.LogInformation("[{JobName}] Starting execution", JobName);
-            await ExecuteJobAsync(ct);
+            using var cts = new CancellationTokenSource(Interval);
+            await ExecuteJobAsync(cts.Token);
             _logger.LogInformation("[{JobName}] Completed successfully", JobName);
+        }
+        catch (OperationCanceledException)
+        {
+            _logger.LogInformation("[{JobName}] Cancelled (timeout or shutdown)", JobName);
+        }
+        catch (ObjectDisposedException)
+        {
+            _logger.LogInformation("[{JobName}] Host disposed", JobName);
         }
         catch (Exception ex)
         {

@@ -47,6 +47,7 @@ public class NightAuditJob : IHostedService, IDisposable
     private readonly IServiceScopeFactory _scopeFactory;
     private readonly ILogger<NightAuditJob> _logger;
     private Timer? _timer;
+    private CancellationTokenSource? _catchUpCts;
 
     public NightAuditJob(ILogger<NightAuditJob> logger, IServiceScopeFactory scopeFactory)
     {
@@ -62,13 +63,21 @@ public class NightAuditJob : IHostedService, IDisposable
         var nextMidnight = now.Date.AddDays(1);
         var delay = nextMidnight - now;
 
-        _timer = new Timer(async _ => await ExecuteSafeAsync(ct), null, delay, TimeSpan.FromDays(1));
+        _timer = new Timer(async _ => await ExecuteSafeAsync(CancellationToken.None), null, delay, TimeSpan.FromDays(1));
 
+        _catchUpCts = new CancellationTokenSource();
+        var catchUpToken = _catchUpCts.Token;
         _ = Task.Run(async () =>
         {
-            await Task.Delay(TimeSpan.FromSeconds(5), ct);
-            await RunCatchUpAsync(ct);
-        }, ct);
+            try
+            {
+                await Task.Delay(TimeSpan.FromSeconds(5), catchUpToken);
+                await RunCatchUpAsync(catchUpToken);
+            }
+            catch (OperationCanceledException)
+            {
+            }
+        }, CancellationToken.None);
 
         return Task.CompletedTask;
     }
@@ -99,6 +108,14 @@ public class NightAuditJob : IHostedService, IDisposable
                 _logger.LogInformation("[NightAudit] Catch-up: running audit for {Date}", lastAudit);
                 await auditService.RunAuditAsync(lastAudit);
             }
+        }
+        catch (OperationCanceledException)
+        {
+            _logger.LogInformation("[NightAudit] Cancelled (shutdown)");
+        }
+        catch (ObjectDisposedException)
+        {
+            _logger.LogInformation("[NightAudit] Host disposed during catch-up");
         }
         catch (Exception ex)
         {
@@ -135,11 +152,16 @@ public class NightAuditJob : IHostedService, IDisposable
 
     public Task StopAsync(CancellationToken ct)
     {
+        _catchUpCts?.Cancel();
         _timer?.Change(Timeout.Infinite, 0);
         return Task.CompletedTask;
     }
 
-    public void Dispose() => _timer?.Dispose();
+    public void Dispose()
+    {
+        _catchUpCts?.Dispose();
+        _timer?.Dispose();
+    }
 }
 
 public class DailyReportJob : ScheduledJobBase
