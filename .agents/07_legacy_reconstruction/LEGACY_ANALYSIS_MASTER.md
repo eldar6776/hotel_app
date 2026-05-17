@@ -1,4 +1,4 @@
-﻿# LEGACY ANALYSIS MASTER
+# LEGACY ANALYSIS MASTER
 
 Status: SINGLE_SOURCE_OF_WORK
 Created: 2026-05-17
@@ -7,9 +7,23 @@ Manifest source: `LEGACY_SOURCE_MANIFEST.md`
 
 ## 0. Purpose
 
-This is the only working document for legacy reconstruction. Cheap agents must work from this file and write results back into the assigned `SRC-####` section. Do not create side documents. Do not use previous draft documents as proof. The old files under `docs/` are archived context only, not analysis output.
+This is the only working document for legacy reconstruction. Small parallel agents must work from this file and write results back into the assigned `SRC-####` section. Do not create side documents. Do not use previous draft documents as proof. The former `docs/` folder was consolidated here and removed so agents have one source of instructions.
 
 Goal: every source/analyzable file from the manifest must be reviewed 100%, one file at a time, until all business logic, SQL, status values, reports, configuration effects, and unknowns are extracted with file/line evidence.
+
+## 0.0 Quick Start For Parallel Agents
+
+Use `AGENT_PROMPT.md` as the only prompt given to small agents.
+
+Parallel work rule:
+
+1. Each agent must claim exactly one `SRC-####`.
+2. Claim means changing that item in the Work Queue from `NOT_STARTED` to `CLAIMED` and filling `Assigned Agent`.
+3. The agent must also change the matching `### SRC-####` section status from `NOT_STARTED` to `CLAIMED`, with `Agent:` and `Started:`.
+4. If the item is already `CLAIMED`, `PARTIAL`, `FULLY_REVIEWED`, `BLOCKED`, or `BINARY_REQUIRES_TOOLING`, the agent must skip it and choose another `NOT_STARTED` item.
+5. After claiming, the agent analyzes only that assigned source file and writes only that assigned result section.
+6. On completion, the agent changes the status to `FULLY_REVIEWED`, `PARTIAL`, or `BLOCKED` according to evidence.
+7. If two agents accidentally claim the same item, the later agent must stop and choose a different `NOT_STARTED` item.
 
 ## 0.1 Docs Archive Review And Decision
 
@@ -27,7 +41,7 @@ Important distinction:
 | `docs/01_AGENT_OPERATING_RULES.md` | YES | Caller rule, SQL classification, status extraction, ledger rule, UNKNOWN rule. | Consolidated into sections `1`, `4`, `5`. |
 | `docs/02_EXTRACTION_PROTOCOL.md` | YES | Extraction phases and required analysis dimensions. | Consolidated into sections `4`, `5`, `5.1`. |
 | `docs/03_REQUIRED_OUTPUTS.md` | YES | Defines what final evidence categories must exist. | Converted into master-only categories in sections `5`, `5.1`. |
-| `docs/04_MODEL_PROMPTS.md` | YES | Useful prompt language, but too broad for cheap agents. | Replaced by the strict one-file prompt in section `2`. |
+| `docs/04_MODEL_PROMPTS.md` | YES | Useful prompt language, but too broad for parallel file-level extraction. | Replaced by the strict one-file prompt in section `2`. |
 | `docs/05_HOW_TO_USE_CURRENT_PROJECT.md` | YES | Existing backend/frontend are not source of truth. | Consolidated into section `1`. |
 | `docs/06_REVIEW_CHECKLIST.md` | YES | Useful acceptance checklist. | Consolidated into sections `4`, `5.1`. |
 | `docs/AGENTS.md` | YES | Local proof rules and forbidden actions. | Consolidated into sections `1`, `4`, `5.1`. |
@@ -178,28 +192,22 @@ These seeds are useful only for prioritization and search terms. They are not ev
 14. Ledger records are business facts. If legacy materializes nights, expenses, payments, or invoices, do not reduce them to recalculation without explicit user decision.
 15. If uncertain, write `UNKNOWN` with: what is known, what is unknown, which file/function to read next, and risk if wrong.
 
-## 2. Exact Prompt To Give A Cheap Agent
+## 2. Exact Prompt To Give An Agent
 
-Copy this prompt and replace `SRC-####` with one queue item.
+Use `AGENT_PROMPT.md`. Copy the entire file into each agent. Do not shorten it.
 
-```text
-You are analyzing legacy VB.NET/MySQL HotelPRO source code.
+The prompt is intentionally strict. An agent is not allowed to say "done" unless it has:
 
-Work only on the assigned item: SRC-#### from LEGACY_ANALYSIS_MASTER.md.
-Do not analyze other files except when needed to prove callers/callees, and then cite them under Dependencies Checked.
+1. Claimed exactly one `SRC-####` in the Work Queue.
+2. Claimed the matching `### SRC-####` section.
+3. Read the assigned legacy file from first line to EOF.
+4. Replaced only its assigned section in this master document.
+5. Updated the Work Queue row and section status to the same final status.
+6. Reopened `LEGACY_ANALYSIS_MASTER.md` from disk and verified the write.
+7. Verified that no stale placeholders remain in a `FULLY_REVIEWED` or `PARTIAL` section.
+8. Used `legacy_code/path:line` evidence for every non-N/A conclusion.
 
-Required behavior:
-- Read the entire assigned file from first line to EOF. If it is large, process it in chunks and continue until complete.
-- Extract all classes/modules/forms, all functions/subs/properties/events, all event handlers, all SQL, all database tables/columns, all statuses/magic numbers/flags, all report fields/labels/config values that carry business meaning.
-- For every function, find callers and callees where possible. If not found, write ORPHAN_OR_UNKNOWN.
-- For every SQL statement classify it as READ, WRITE, LOCK, REPORT, MIGRATION, CONFIG, or UNKNOWN.
-- For every WRITE explain the business reason if proven, otherwise UNKNOWN.
-- Do not summarize vaguely. Use path:line evidence.
-- Do not mark FULLY_REVIEWED unless the whole checklist is complete.
-
-Output: replace the assigned SRC-#### section in LEGACY_ANALYSIS_MASTER.md using the exact section template already present there.
-If you cannot edit the file, return the completed section text only.
-```
+If any of those checks fail, the agent must not report completion. It must fix the master document or mark the item `BLOCKED`.
 
 ## 3. Review Status Values
 
@@ -327,7 +335,7 @@ Use this order by default: P0 first, then P1, then P2/UNKNOWN. Within the same p
 | SRC-0003 | `0FS_rr_tr.in` | Fiscal/device input template | 10 | P2/UNKNOWN | UNKNOWN | `NOT_STARTED` |  | [SRC-0003](#src-0003) |
 | SRC-0004 | `0rr.in` | Fiscal/device input template | 550 | P2/UNKNOWN | UNKNOWN | `NOT_STARTED` |  | [SRC-0004](#src-0004) |
 | SRC-0005 | `0trigger.in` | Fiscal/device input template | 10 | P2/UNKNOWN | UNKNOWN | `NOT_STARTED` |  | [SRC-0005](#src-0005) |
-| SRC-0006 | `app.config` | App/runtime config | 6863 | P0 | P0 infrastructure/database/shared | `NOT_STARTED` |  | [SRC-0006](#src-0006) |
+| SRC-0006 | `app.config` | App/runtime config | 6863 | P0 | P0 infrastructure/database/shared | `CLAIMED` | Gemini CLI | [SRC-0006](#src-0006) |
 | SRC-0007 | `ApplicationEvents.vb` | VB.NET source | 0 | P2/UNKNOWN | UNKNOWN | `NOT_STARTED` |  | [SRC-0007](#src-0007) |
 | SRC-0008 | `AssemblyInfo.vb` | VB.NET source | 1243 | P2/UNKNOWN | UNKNOWN | `NOT_STARTED` |  | [SRC-0008](#src-0008) |
 | SRC-0009 | `bazakasa.sql` | SQL schema/data/procedure | 3407 | P0 | P0 infrastructure/database/shared | `NOT_STARTED` |  | [SRC-0009](#src-0009) |
