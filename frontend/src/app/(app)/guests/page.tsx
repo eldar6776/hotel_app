@@ -18,7 +18,7 @@ export default function GuestsPage() {
   const loadGuests = useCallback(async (p?: number) => {
     setIsLoading(true)
     try {
-      const res = await apiClient.get('/v2/guests', {
+      const res = await apiClient.get('/guests', {
         params: { search: search || undefined, page: p || page, pageSize }
       })
       setGuests(res.data.items)

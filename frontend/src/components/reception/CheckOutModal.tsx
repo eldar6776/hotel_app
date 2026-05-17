@@ -44,8 +44,8 @@ export function CheckOutModal({ booking, onClose, onSuccess }: Props) {
 
   if (result) {
     return (
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={onClose}>
-        <div className="w-full max-w-md rounded-xl bg-surface p-6 shadow-xl" onClick={(e) => e.stopPropagation()}>
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm" onClick={onClose}>
+        <div className="w-full max-w-md rounded-xl bg-white dark:bg-gray-900 p-6 shadow-2xl border border-gray-200 dark:border-gray-700" onClick={(e) => e.stopPropagation()}>
           <h2 className="text-lg font-bold text-text mb-2">Check-out završen</h2>
           <div className="space-y-2 text-sm mb-4">
             <div className="flex justify-between"><span className="text-text-secondary">Noćenja:</span><span className="text-text">{result.stayCharges.toFixed(2)} €</span></div>
@@ -68,8 +68,8 @@ export function CheckOutModal({ booking, onClose, onSuccess }: Props) {
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={onClose}>
-      <div className="w-full max-w-md rounded-xl bg-surface p-6 shadow-xl" onClick={(e) => e.stopPropagation()}>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm" onClick={onClose}>
+      <div className="w-full max-w-md rounded-xl bg-white dark:bg-gray-900 p-6 shadow-2xl border border-gray-200 dark:border-gray-700" onClick={(e) => e.stopPropagation()}>
         <h2 className="text-lg font-bold text-text mb-2">Check-out: {booking.guestName}</h2>
         <p className="text-sm text-text-secondary mb-4">Soba {booking.rooms?.[0]?.roomNumber || 'N/A'} · {booking.nights}n</p>
 
@@ -77,7 +77,7 @@ export function CheckOutModal({ booking, onClose, onSuccess }: Props) {
           <select
             value={paymentMethod}
             onChange={(e) => setPaymentMethod(e.target.value)}
-            className="w-full rounded-lg border border-border bg-surface px-3 py-2 text-sm text-text"
+            className="w-full rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-3 py-2 text-sm text-text"
           >
             <option value="Cash">Gotovina</option>
             <option value="Card">Kartica</option>

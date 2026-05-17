@@ -657,8 +657,8 @@ namespace HotelPro.Infrastructure.Migrations
                         .HasColumnType("character varying(50)");
 
                     b.Property<string>("PinHash")
-                        .HasMaxLength(64)
-                        .HasColumnType("character varying(64)");
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
 
                     b.Property<string>("Role")
                         .IsRequired()

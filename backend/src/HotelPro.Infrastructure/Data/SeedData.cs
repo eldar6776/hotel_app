@@ -16,7 +16,7 @@ public static class SeedData
             {
                 Id = hotelId,
                 Name = "Grand Hotel Demo",
-                Code = "DEMO",
+                Code = "HVA",
                 Address = "Main Street 1",
                 City = "Zagreb",
                 Country = "Croatia",

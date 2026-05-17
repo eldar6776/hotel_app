@@ -70,7 +70,7 @@ public static class TestDataSeeder
                 bookings.Add(b);
                 db.Folios.Add(new Folio { Id = Guid.NewGuid(), FolioNumber = "F-" + Guid.NewGuid().ToString()[..12], BookingId = b.Id, GuestId = b.GuestId, Status = FolioStatus.Open, Balance = b.TotalPrice, CreatedAt = b.ArrivalDate }); }
 
-            for (int i = 8; i < 11; i++) { var rt = i % 2 == 0 ? rtD : rtX;
+            for (int i = 8; i < 10; i++) { var rt = i % 2 == 0 ? rtD : rtX;
                 bookings.Add(new Booking { Id = Guid.NewGuid(), GuestId = guests[i].Id, Source = BookingSource.HotelWebsite, Type = BookingType.Normal, Status = BookingStatus.Pending, ArrivalDate = today.AddDays(7), DepartureDate = today.AddDays(10), AdultCount = 1, Currency = "EUR", CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow, BookingRooms = new List<BookingRoom> { new() { Id = Guid.NewGuid(), RoomTypeId = rt.Id, RatePlanId = Guid.NewGuid(), PricePerNight = rt.DefaultPrice, Status = BookingRoomStatus.Blocked } } }); }
 
             db.Bookings.AddRange(bookings);

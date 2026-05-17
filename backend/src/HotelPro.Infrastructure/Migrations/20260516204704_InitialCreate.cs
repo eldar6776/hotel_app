@@ -128,7 +128,7 @@ namespace HotelPro.Infrastructure.Migrations
                     Email = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
                     Phone = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true),
                     Role = table.Column<string>(type: "character varying(30)", maxLength: 30, nullable: false),
-                    PinHash = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: true),
+                    PinHash = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
                     PasswordHash = table.Column<string>(type: "text", nullable: true),
                     IsActive = table.Column<bool>(type: "boolean", nullable: false),
                     CanLogin = table.Column<bool>(type: "boolean", nullable: false),
