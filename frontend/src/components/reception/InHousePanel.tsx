@@ -21,7 +21,7 @@ export function InHousePanel({ bookings, onCheckOut }: Props) {
             <p className="text-xs text-text-secondary">
               Soba {b.rooms?.[0]?.roomNumber || 'N/A'} · Do: {new Date(b.departureDate).toLocaleDateString()}
             </p>
-            <p className="text-xs text-text-muted">{b.nights}n boravka</p>
+            <p className="text-xs text-text-secondary">{b.nights}n boravka</p>
           </div>
           <button
             onClick={() => onCheckOut(b)}

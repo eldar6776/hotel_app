@@ -15,7 +15,7 @@ export function GuestCard({ guest, onClick }: { guest: GuestDto; onClick: () => 
           {guest.city && ` · ${guest.city}`}
         </p>
       </div>
-      <span className="text-xs text-text-muted">{guest.isCompany ? guest.companyName || 'Pravno lice' : 'Fizicko lice'}</span>
+      <span className="text-xs text-text-secondary">{guest.isCompany ? guest.companyName || 'Pravno lice' : 'Fizicko lice'}</span>
     </div>
   )
 }

@@ -133,7 +133,7 @@ export default function AmenitiesPage() {
               </div>
               {a.icon && <span className="text-2xl">{a.icon}</span>}
               <span className="font-medium text-text">{a.name}</span>
-              <span className="text-[10px] text-text-muted">#{idx}</span>
+              <span className="text-[10px] text-text-secondary">#{idx}</span>
             </div>
             <button onClick={(e) => { e.stopPropagation(); toggleActive(a.id, a.isActive) }} className={`rounded-full px-2 py-0.5 text-xs font-medium ${a.isActive ? 'bg-emerald-500 text-white' : 'bg-surface-tertiary text-text-secondary'}`}>
               {a.isActive ? 'Aktivan' : 'Neaktivan'}

@@ -22,7 +22,7 @@ export function ArrivalsPanel({ bookings, onCheckIn }: Props) {
             <p className="text-xs text-text-secondary">
               {b.rooms?.[0]?.roomTypeName || 'N/A'} · {b.nights}n · {b.totalPrice.toFixed(0)} {b.currency}
             </p>
-            <p className="text-xs text-text-muted">
+            <p className="text-xs text-text-secondary">
               {b.adultCount} odraslih{b.childCount > 0 ? ` · ${b.childCount} djece` : ''}
             </p>
           </div>
