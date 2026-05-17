@@ -8,6 +8,7 @@ public interface IFolioService
     Task<FolioDto> CreateSubFolioAsync(CreateSubFolioDto dto);
     Task<FolioDto?> GetFolioByBookingAsync(Guid bookingId);
     Task<List<FolioDto>> GetFoliosByBookingAsync(Guid bookingId);
+    Task<List<FolioDto>> GetOpenFoliosAsync();
     Task<FolioChargeDto> AddChargeAsync(Guid folioId, CreateFolioChargeDto dto);
     Task DeleteChargeAsync(Guid chargeId);
     Task<FolioChargeDto> StornoChargeAsync(Guid chargeId, string reason);

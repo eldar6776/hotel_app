@@ -15,6 +15,10 @@ import {
   ChevronLeft,
   ChevronRight,
   Hotel,
+  Building2,
+  Shield,
+  Mail,
+  Globe,
 } from 'lucide-react'
 
 const sidebarItems: SidebarItemData[] = [
@@ -29,6 +33,14 @@ const sidebarItems: SidebarItemData[] = [
   { href: '/settings', icon: Settings, label: 'Postavke', helpId: 'sidebar-settings' },
   { href: '/settings/tariffs', icon: Receipt, label: 'Tarife' },
   { href: '/settings/amenities', icon: Sparkles, label: 'Sadrzaji' },
+  { href: '/settings/buildings', icon: Building2, label: 'Zgrade' },
+  { href: '/settings/room-types', icon: DoorOpen, label: 'Tipovi soba' },
+  { href: '/settings/employees', icon: Users, label: 'Zaposleni' },
+  { href: '/settings/roles', icon: Shield, label: 'Uloge' },
+  { href: '/settings/security', icon: Shield, label: 'Sigurnost' },
+  { href: '/settings/email', icon: Mail, label: 'Email' },
+  { href: '/settings/language', icon: Globe, label: 'Jezik' },
+  { href: '/settings/features', icon: Sparkles, label: 'Feature flags' },
 ]
 
 export default function Sidebar() {

@@ -89,6 +89,25 @@ public class FolioService : IFolioService
         return dtos;
     }
 
+    public async Task<List<FolioDto>> GetOpenFoliosAsync()
+    {
+        var folios = await _dbContext.Folios
+            .IgnoreQueryFilters()
+            .Include(f => f.Guest)
+            .Include(f => f.Charges)
+            .Include(f => f.StayNights)
+            .Where(f => f.Status == FolioStatus.Open)
+            .OrderByDescending(f => f.CreatedAt)
+            .ToListAsync();
+
+        var dtos = new List<FolioDto>();
+        foreach (var f in folios)
+        {
+            dtos.Add(await MapToDtoAsync(f));
+        }
+        return dtos;
+    }
+
     public async Task<FolioChargeDto> AddChargeAsync(Guid folioId, CreateFolioChargeDto dto)
     {
         var folio = await _dbContext.Folios

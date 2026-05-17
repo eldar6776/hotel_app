@@ -19,6 +19,13 @@ public class FoliosController : ControllerBase
         _folioService = folioService;
     }
 
+    [HttpGet("open"), Authorize(Policy = "CanManageBookings")]
+    public async Task<ActionResult<List<FolioDto>>> GetOpenFolios()
+    {
+        var folios = await _folioService.GetOpenFoliosAsync();
+        return Ok(folios);
+    }
+
     [HttpGet("booking/{bookingId:guid}")]
     [Authorize(Policy = "CanManageBookings")]
     public async Task<ActionResult<List<FolioDto>>> GetFoliosByBooking(Guid bookingId)
