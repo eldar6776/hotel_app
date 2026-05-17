@@ -1,10 +1,8 @@
-# Legacy VB.NET aplikacija - citav folder je referenca,
-# ne izvrsava se, ne mijenja se
-# Source code ostaje u git-u, samo build artefakti se ignorisu
-legacy_app/bin/
-legacy_app/obj/
-legacy_app/*.suo
-legacy_app/*.user
+# Local-only reverse-engineering inputs/outputs.
+# These folders may contain proprietary legacy source, database dumps,
+# generated graphs, and large binary artifacts. Do not commit them.
+legacy_app/
+graphify-out/
 
 # Visual Studio
 *.suo
