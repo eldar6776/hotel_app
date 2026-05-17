@@ -1,8 +1,10 @@
 # EXTRACTED BUSINESS LOGIC - INITIAL PASS
 
-Status: WORKING
+Status: WORKING - PARTIAL SOURCE EXTRACTION
 Datum: 2026-05-17
 Scope: prvi read-only prolaz kroz `legacy_app/Radna`
+
+Vazno ogranicenje: nije procitan svaki legacy fajl. Inventar pokrivenosti je u `LEGACY_SOURCE_REVIEW_INVENTORY.md`. Do sada je uradjen inventar i ciljano citanje P0 tokova: sobe/status, check-in, check-out, folio, placanje, racun/storno/fiskal i rezervacije.
 
 ## 1. Cilj
 
@@ -335,7 +337,180 @@ Postojeći novi kod može ostati tehnička osnova, ali P0 poslovne servise treba
 - `BridgeService` mora biti realan ili jasno ostati demo-only
 - `LegacyMigrator` mora dobiti punu migraciju P0 tabela
 
-## 14. Sljedeće Za Ekstrakciju
+## 14. RULE-CHECKOUT-002: Djelimicna Odjava Nije Ista Kao Odjava Sobe
+
+Legacy lokacije:
+
+- `legacy_app/Radna/Data.vb`, `OdjavaSobe(izn, gid, sid, pids, checkOutDate, uplatanocenja)`
+- `legacy_app/Radna/frmOdjava1.vb`, pozivi odjave
+
+Pravilo:
+
+`OdjavaSobe` ima dvije grane:
+
+- `gid = 0`: odjava cijele sobe/folia
+- `gid <> 0`: odjava pojedinacnog gosta/reda, uz reinsert otvorenih nocenja za preostale goste
+
+Side effects:
+
+- `nocenja.PrijavaOdjava = 1`
+- `nocenja.datumodj = checkOutDate`
+- za preostale goste insertuje novo otvoreno nocenje na `checkOutDate`
+- `relgostsoba.odjavljen = 1`
+- `relgostsoba.checkOutDate`, `checkOutRadnik`, `pl`
+- kod pune odjave zatvara `posjetaFolio`
+- kod pune odjave zakljucava otvorene `troskovi`
+
+Raskorak u novom kodu:
+
+- `backend/src/HotelPro.Infrastructure/Services/CheckOutService.cs` radi na `Booking` i prvom `BookingRoom`.
+- Nema model `RID/gid`, `PID`, djelimicnu odjavu, reinsert nocenja za preostale goste, niti zakljucavanje/otkljucavanje legacy tipa.
+
+Migracioni zahtjev:
+
+- Uvesti `StayLifecycleService` ili `CheckOutWorkflowService` koji radi nad `Stay/RoomAssignment/Folio/NightLedger`.
+- Testirati najmanje: puna odjava sobe, odjava jednog gosta iz sobe sa dva gosta, odjava sa placenim nocenjima, odjava bez uplata.
+
+## 15. RULE-FOLIO-002: Balance Polje Nije Dovoljno Za Folio
+
+Legacy lokacije:
+
+- `legacy_app/Radna/Data.vb`, `pripremaRcuna`
+- `legacy_app/Radna/Data.vb`, `nocenjeSo`
+- `legacy_app/Radna/Data.vb`, `gettroskovi`
+- `legacy_app/Radna/frmPlacanje.vb`
+
+Pravilo:
+
+Folio za racun se ne dobija iz jednog balance polja. Legacy ga sklapa iz:
+
+- aktivnih gostiju u sobi iz `relgostsoba`
+- otvorenih troskova `troskovi.zaklj = 0`
+- uplata/nocenja u `placanjedetalji` gdje je `art = 1` i `storno = 0`
+- materializovanih `nocenja`
+
+Raskorak u novom kodu:
+
+- `FolioService` cuva `Folio.Balance` i dodaje `Charge`, ali nema ekvivalent `placanjedetalji.art`, `troskovi.zaklj`, `Brrac`, niti pripremu racuna kao snapshot.
+- `StayNight` ima samo `FolioId`, `Date`, `RoomPrice`, `IsComp`, `Notes`; nema legacy `RID`, `SID`, `PID`, `PrijavaOdjava`, `Tarifa`, `popust`, `opis`, `soba`.
+
+Migracioni zahtjev:
+
+- Folio treba biti ledger agregat sa zasebnim linijama za nocenja, troskove, uplate, avanse, storno i fiskalne reference.
+- `Balance` smije biti izveden ili cached, ali ne smije biti jedini izvor istine.
+
+## 16. RULE-STORNO-002: Storno Racuna Otkljucava Troskove I Brise Nocenje-Trosak
+
+Legacy lokacije:
+
+- `legacy_app/Radna/frmRacuni.vb`, storno blok oko update-a `placanje`, `placanjeDetalji`, `printracuni`, `troskovi`
+
+Pravilo:
+
+Storno racuna:
+
+- oznaci `placanje.storno = 1`
+- oznaci `placanjeDetalji.storno = 1`
+- oznaci `printracuni.storno = 1`, `exp = 2`, `datstor = Now`
+- vrati nenocenje troskove u otvoreno stanje: `troskovi.zaklj = 0`, `Brrac = null` gdje `TID <> 1`
+- brise troskove racuna gdje je `TID = 1`
+- zatim pokrece fiskalni storno zavisno od konfiguracije uredjaja
+
+Raskorak u novom kodu:
+
+- `InvoiceGenerator.StornoInvoiceAsync` kreira negativan invoice i oznaci original kao cancelled.
+- Ne vraca otvorene troskove, ne dira payment detalje, ne razlikuje `TID = 1`, nema fiskalni storno workflow.
+
+Migracioni zahtjev:
+
+- `InvoiceReversalService` mora biti operativni workflow, ne samo dokument.
+- Mora vratiti folio/troskove u stanje iz kojeg se moze ponovo izdati ispravan racun.
+
+## 17. RULE-PAYMENT-001: Slozeno Placanje Je Stavka Po Nacinu Placanja
+
+Legacy lokacije:
+
+- `legacy_app/Radna/frmPlacanje.vb`, `placanje_slozeno`
+- SQL procedura `addPlacanjeSlozeno`
+
+Pravilo:
+
+Jedan racun moze imati vise nacina placanja. Legacy iterira `ds.Tables("PlacanjaSlozena")` i za svaki red poziva `addPlacanjeSlozeno` sa:
+
+- rednim brojem racuna/placanja
+- nacinom placanja
+- iznosom
+
+Raskorak u novom kodu:
+
+- `CheckOutService` kreira jedan `Payment` sa `PaymentMethod = request.PaymentMethod`.
+- Nema listu payment split stavki niti ravnanje ukupnog iznosa po nacinima placanja.
+
+Migracioni zahtjev:
+
+- `Payment` treba header ili transaction, a `PaymentAllocation/PaymentDetail` treba cuvati split po nacinima placanja.
+- Checkout mora validirati da zbir split placanja odgovara ukupnom racunu.
+
+## 18. RULE-RESERVATION-002: Rezervacija Koristi Header/Detail I Status Kodove
+
+Legacy lokacije:
+
+- `legacy_app/Radna/frmRezervacije_unos.vb`
+- tabela `rezervacijeh`
+- tabela `rezervadeth`
+
+Pravilo:
+
+Legacy rezervacija ima header/detail model:
+
+- header `rezervacijeh`: broj, period `odd/doo`, broj soba, naziv/opis, kontakt, telefon, email, firma/agencija, odrasli/djeca/bebe, ukupno, depozit, status
+- detail `rezervadeth`: soba, tip/atributi, cijena, gost/ime, logical delete `del`
+
+Status iz posmatranog koda:
+
+- `0`: aktivno/nepotvrdjeno ili vraceno iz potvrde/storna
+- `1`: potvrdjeno
+- `5`: stornirano
+
+Raskorak u novom kodu:
+
+- Novi booking model postoji, ali mora se dokazati da cuva header/detail semantiku, logical delete stavki, status potvrde/storna i depozit.
+
+Migracioni zahtjev:
+
+- Reservation modul mora imati `ReservationHeader` i `ReservationRoomLine` semantiku ili dokazivo ekvivalentan model.
+- Potvrda i storno moraju imati audit podatke, ne samo promjenu status stringa.
+
+## 19. RULE-GUEST-001: Gost Nije Samo CRM Profil
+
+Legacy lokacije:
+
+- `legacy_app/Radna/frmPrijavaGostiUnos.vb`, insert/update u `gosti`
+- `legacy_app/Radna/frmGosti.vb`, pregledi i turisticka/evidencijska prijava
+- tabele `gosti`, `gostdokument`, `drzave`, `relgostsoba`
+
+Pravilo:
+
+Guest podaci u legacy sistemu nisu samo kontakt profil. Koriste se za:
+
+- prijavu gosta u sobu
+- dokument i broj dokumenta
+- drzavljanstvo i drzavu rodjenja
+- pol, datum rodjenja i mjesto rodjenja
+- knjigu stranaca / turisticku prijavu
+- izvjestaje po boravku preko `relgostsoba`
+
+Raskorak u novom kodu:
+
+- `GuestService` ima bolji GDPR model i `GuestDocument`, ali treba dokazati mapiranje legacy polja `DID`, `dokument`, `brDokument`, `mjestodrzavaR`, `drzavljanstvo` i veze sa turistickom prijavom.
+- `GuestProfile` racuna historiju iz `GuestStayHistory`/`Booking`, dok legacy izvjestaji vuku boravak iz `relgostsoba` i `nocenja`.
+
+Migracioni zahtjev:
+
+- Data migracija gostiju mora imati mapiranje za dokumente i drzave, ne samo ime/prezime/email.
+- Turisticka prijava mora se tretirati kao zaseban P1/P0 regulatorni tok, ne kao obican report.
+
+## 20. Sljedece Za Ekstrakciju
 
 - Detaljno razložiti `frmPlacanje.vb` tok izdavanja računa.
 - Detaljno razložiti `frmRacuni.vb` tok storna i fiskalizacije.

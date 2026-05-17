@@ -547,3 +547,53 @@ Predlažem sljedeće dodatne dokumente prije velikih kod izmjena:
 - `.agents/06_audit/P0_FIX_PLAN.md`
 
 Ovaj dokument ostaje centralni nalaz raskoraka, a dodatni artefakti treba da budu operativni plan za popravke.
+
+## 13. Dopuna Nakon Dubljeg Legacy Citanja - 2026-05-17
+
+Ova dopuna ispravlja raniji rizik povrsnog zakljucka: nije pregledan svaki legacy fajl. Napravljen je poseban inventar pokrivenosti u `LEGACY_SOURCE_REVIEW_INVENTORY.md`.
+
+### 13.1 Najveci poslovni raskorak
+
+Najveci raskorak je da novi kod ima moderan booking/folio skeleton, ali nema dokazivo prenesen legacy operativni ledger.
+
+Legacy P0 osovina:
+
+- `relgostsoba` = stvarni boravak/gost-soba veza
+- `PID/posjetaFolio` = operativni folio
+- `nocenja` = materializovana nocenja i osnov za obracun
+- `troskovi` = otvoreni/zakljucani troskovi vezani za racun
+- `placanje` i `placanjedetalji` = naplata i stavke/split placanja
+- `printracuni*` = fiskalno/print stanje racuna
+
+Novi kod u P0 tokovima uglavnom radi iz:
+
+- `Booking`
+- `BookingRoom`
+- `Folio.Balance`
+- jedan `Payment`
+- `Invoice`/PDF
+
+To nije dovoljno da se aplikacija smatra poslovno migriranom.
+
+### 13.2 Konkretni dokazi
+
+| Tok | Legacy dokaz | Novi dokaz | Raskorak |
+|---|---|---|---|
+| Djelimicna odjava | `Data.vb`, `OdjavaSobe`, grana `gid <> 0` reinsertuje nocenja za preostale goste | `CheckOutService.cs` radi nad jednim bookingom i prvim roomom | Nema djelimicne odjave ni RID/PID semantike |
+| Folio priprema | `Data.vb`, `pripremaRcuna`, cita `relgostsoba`, `troskovi`, `placanjedetalji`, `nocenja` | `FolioService.cs` koristi `Balance`, `Charges`, `StayNights` | Balance nije izvor istine u legacy modelu |
+| Storno racuna | `frmRacuni.vb`, update `placanje`, `placanjeDetalji`, `printracuni`, `troskovi` | `InvoiceGenerator.StornoInvoiceAsync` kreira negativan invoice | Ne vraca troskove u otvoreno stanje i nema fiskalni storno workflow |
+| Slozeno placanje | `frmPlacanje.vb`, `placanje_slozeno`, SQL `addPlacanjeSlozeno` | `CheckOutService.cs` kreira jedan `Payment` | Nema split placanja po nacinima |
+| Rezervacije | `frmRezervacije_unos.vb`, `rezervacijeh` + `rezervadeth`, status 0/1/5 | `Booking` + `BookingRoom` | Treba dokazati header/detail, depozit, potvrdu/storno audit i logical delete stavki |
+
+### 13.3 Posljedica za plan implementacije
+
+Faze 5-9 ne treba tretirati kao zavrsene dok ne postoje testovi iz legacy scenarija za:
+
+- 7 legacy statusa sobe iz `fnSobaStatus`
+- check-in sa vise gostiju u istoj sobi i istim `PID`
+- materializaciju nocenja kroz `Unesinocenja`
+- punu i djelimicnu odjavu
+- pripremu racuna iz `nocenja + troskovi + uplate`
+- slozeno placanje
+- storno koje vraca operativno stanje
+- rezervaciju header/detail, potvrdu i storno
