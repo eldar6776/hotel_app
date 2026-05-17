@@ -11,6 +11,155 @@ This is the only working document for legacy reconstruction. Cheap agents must w
 
 Goal: every source/analyzable file from the manifest must be reviewed 100%, one file at a time, until all business logic, SQL, status values, reports, configuration effects, and unknowns are extracted with file/line evidence.
 
+## 0.1 Docs Archive Review And Decision
+
+The `docs/` folder was reviewed file by file before deletion/ignore decisions. Its useful content is consolidated into this master document below. After this consolidation, agents do not need to open `docs/` to know how to work.
+
+Important distinction:
+
+- `docs/README.md`, `00_*`, `01_*`, `02_*`, `03_*`, `04_*`, `05_*`, `06_*`, `AGENTS.md`, and `templates/*` contain useful operating rules and templates.
+- The old analysis output files under `docs/` are not trusted analysis. They may only be used as `UNVERIFIED_SEED` hints that must be re-proven from assigned source files.
+
+| Docs File | Reviewed | Value | Decision |
+|---|---|---|---|
+| `docs/README.md` | YES | Mission, source-of-truth priority, no production code before scenarios/mapping. | Consolidated into sections `0`, `0.2`, `1`, `5.1`. |
+| `docs/00_MISSION_AND_SCOPE.md` | YES | P0/P1/P2 business-flow priorities and forbidden behavior. | Consolidated into sections `0.2`, `0.3`. |
+| `docs/01_AGENT_OPERATING_RULES.md` | YES | Caller rule, SQL classification, status extraction, ledger rule, UNKNOWN rule. | Consolidated into sections `1`, `4`, `5`. |
+| `docs/02_EXTRACTION_PROTOCOL.md` | YES | Extraction phases and required analysis dimensions. | Consolidated into sections `4`, `5`, `5.1`. |
+| `docs/03_REQUIRED_OUTPUTS.md` | YES | Defines what final evidence categories must exist. | Converted into master-only categories in sections `5`, `5.1`. |
+| `docs/04_MODEL_PROMPTS.md` | YES | Useful prompt language, but too broad for cheap agents. | Replaced by the strict one-file prompt in section `2`. |
+| `docs/05_HOW_TO_USE_CURRENT_PROJECT.md` | YES | Existing backend/frontend are not source of truth. | Consolidated into section `1`. |
+| `docs/06_REVIEW_CHECKLIST.md` | YES | Useful acceptance checklist. | Consolidated into sections `4`, `5.1`. |
+| `docs/AGENTS.md` | YES | Local proof rules and forbidden actions. | Consolidated into sections `1`, `4`, `5.1`. |
+| `docs/templates/BUSINESS_RULE_TEMPLATE.md` | YES | Useful rule fields. | Merged into section template under `Business Rules Extracted`. |
+| `docs/templates/FUNCTION_INVENTORY_TEMPLATE.md` | YES | Useful function inventory fields. | Merged into section template under `Functions / Events / Procedures`. |
+| `docs/templates/GOLDEN_SCENARIO_TEMPLATE.md` | YES | Useful scenario fields. | Added to section `8.4`. |
+| `docs/templates/LEGACY_TO_NEW_MAPPING_TEMPLATE.md` | YES | Useful final mapping fields. | Added to section `8.5`. |
+| `docs/templates/SQL_WRITE_TEMPLATE.md` | YES | Useful write map fields. | Merged into section template under `Database Writes`. |
+| `docs/LEGACY_FUNCTION_INVENTORY.md` | YES | Contains warning that it is not full review and a few P0 targets. | Treat as `UNVERIFIED_SEED`; summarized in section `0.4`. |
+| `docs/LEGACY_DATABASE_MAP.md` | YES | Contains initial DB hypotheses from targeted reads. | Treat as `UNVERIFIED_SEED`; summarized in section `0.4`. |
+| `docs/SQL_WRITE_MAP.md` | YES | Contains initial write hypotheses. | Treat as `UNVERIFIED_SEED`; summarized in section `0.4`. |
+| `docs/BUSINESS_RULES_CATALOG.md` | YES | Contains draft rules from targeted reads. | Treat as `UNVERIFIED_SEED`; summarized in section `0.4`. |
+| `docs/STATUS_AND_TRANSITION_MATRIX.md` | YES | Contains draft status hypotheses. | Treat as `UNVERIFIED_SEED`; summarized in section `0.4`. |
+| `docs/GOLDEN_SCENARIOS.md` | YES | Contains draft scenario hypotheses. | Treat as `UNVERIFIED_SEED`; summarized in section `0.4`. |
+| `docs/CANONICAL_DOMAIN_MODEL.md` | YES | Premature target model, useful only as warning about ledgers/snapshots. | Treat as `UNVERIFIED_SEED`; summarized in section `0.4`. |
+| `docs/LEGACY_TO_NEW_MAPPING.md` | YES | Premature mapping. | Do not use until source sections prove it. |
+| `docs/IMPLEMENTATION_PLAN.md` | YES | Premature implementation order. | Do not use for coding; only keep vertical-plan warning in section `8`. |
+| `docs/ATOMIC_TASKS_DRAFT.md` | YES | Premature tasks. | Do not use until source sections prove rules and scenarios. |
+
+## 0.2 Imported Mission And Source Priority
+
+The mission is forensic business reconstruction, not UI rewrite, CRUD rewrite, or implementation. The required evidence chain is:
+
+```text
+legacy source location
+-> business rule
+-> database effect
+-> edge cases
+-> modern domain concept
+-> acceptance scenario
+-> implementation task
+```
+
+Source priority:
+
+1. Actual legacy source in `legacy_code/`
+2. Legacy database / SQL dump
+3. Runtime behavior of the old application if the user can show it
+4. Extracted audit documents
+5. FSD/task documents
+6. Existing new code
+
+Existing backend/frontend are not proof of business correctness. Frontend can later be used as GUI reference. Backend can only be used as positive/negative reference after the legacy rule is independently proven.
+
+## 0.3 Imported Business Flow Priority
+
+P0 flows must be extracted before P2 work:
+
+- room status and derived room statuses
+- reservation, confirmation, cancellation/storno, group, source
+- check-in / prijava
+- stay and guest-room relationship
+- nights as materialized ledger
+- folio preparation
+- expenses and expense locking
+- payment and payment details
+- invoice as snapshot
+- invoice storno
+- fiscalization
+- check-out / odjava
+- partial checkout
+- room transfer
+- guests, documents, tourist records
+- legacy data migration
+
+P1 flows:
+
+- partners/agencies
+- discounts and tariffs
+- reports
+- POS posting
+- housekeeping
+- RFID cards
+- PABX/CDR
+- users, roles, shifts
+
+P2 flows:
+
+- channel manager
+- IoT
+- guest self-service
+- online payment
+- revenue management
+
+Forbidden:
+
+- Do not rewrite an ekran as CRUD without workflow rules.
+- Do not mark mock as complete.
+- Do not invent a rule because it "makes sense".
+- Do not drop a legacy field because it looks outdated.
+- Do not skip SQL insert/update/delete effects.
+- Do not create an implementation task without an acceptance scenario.
+
+## 0.4 Unverified Seeds From Old Drafts
+
+The following are not accepted as analysis. They are only hints for agents about where to look. Each item must be re-proven inside the relevant `SRC-####` section before it can be used.
+
+Potential high-priority files:
+
+- `Data.vb`
+- `ModuleKod.vb`
+- `funkcije.vb`
+- `frmPrijava1.vb`
+- `frmPlacanje.vb`
+- `frmOdjava1.vb`
+- `frmRacun.vb`
+- `frmRacuni.vb`
+- `frmRezervacije*.vb`
+- `novaBazaJHotel 20150602 0848.sql`
+- `HOTELVIP 20150602 0904.sql`
+
+Potential high-priority tables/procedures/functions to verify:
+
+- `sobe`, `relgostsoba`, `posjetafolio`, `nocenja`, `troskovi`
+- `placanje`, `placanjedetalji`, `placanjeslozeno`
+- `printracuni`, `printracunidetalji`, `printracunifooter`
+- `rezervacije`, `rezervacijasobe`, `rezervacijegrupe`
+- `gosti`, document/tourist-record tables
+- `fnSobaStatus`, `addFolio`, `addRelGostSoba`, `Unesinocenja`
+
+Potential legacy concepts to verify:
+
+- `relgostsoba` may represent actual stay / guest-room assignment.
+- `nocenja` may be a materialized night ledger and must not be replaced by date arithmetic without proof.
+- `troskovi.zaklj` may represent open/locked expense state.
+- `placanje` + `placanjedetalji` may be payment ledger header/detail.
+- `printracuni*` may be invoice snapshot tables.
+- `sobe.clean` and `sobe.ooo` may participate in room operational status.
+- Status value `fnSobaStatus = 4` was suspected as unclear/unreachable in old notes; must be re-proven.
+
+These seeds are useful only for prioritization and search terms. They are not evidence.
+
 ## 1. Non-Negotiable Rules For Agents
 
 1. Analyze exactly one assigned `SRC-####` at a time.
@@ -23,6 +172,11 @@ Goal: every source/analyzable file from the manifest must be reviewed 100%, one 
 8. Do not invent modern domain terms until the legacy meaning is extracted.
 9. Do not skip designer/resource/report/config files. They can contain event wiring, report fields, labels, queries, or business wording.
 10. Do not create implementation tasks until enough file sections prove the rule.
+11. Every SQL statement must be classified as `READ`, `WRITE`, `LOCK`, `REPORT`, `MIGRATION`, `CONFIG`, or `UNKNOWN`.
+12. Every write must include business reason, or `UNKNOWN` if not proven.
+13. Status values must be recorded as `source value | label | meaning | set by | read by | transition rule`.
+14. Ledger records are business facts. If legacy materializes nights, expenses, payments, or invoices, do not reduce them to recalculation without explicit user decision.
+15. If uncertain, write `UNKNOWN` with: what is known, what is unknown, which file/function to read next, and risk if wrong.
 
 ## 2. Exact Prompt To Give A Cheap Agent
 
