@@ -3,6 +3,12 @@
 Status: INITIAL_INVENTORY
 Date: 2026-05-17
 
+## Correction / Trust Boundary
+
+This document is not a full-code review and must not be treated as one. It contains only initial P0 targeting gathered from grep and targeted reads.
+
+The authoritative review gate is `LEGACY_SOURCE_MANIFEST.md`. Every source/analyzable file starts as `NOT_REVIEWED` there. A file may be marked `FULLY_REVIEWED` only after the full per-file checklist is completed: entire file read, all functions/events extracted, all SQL classified, callers/callees traced, statuses/magic values extracted, database effects documented, and evidence linked.
+
 ## Scope
 
 Source root: `legacy_code/`
@@ -51,4 +57,3 @@ This inventory is evidence-first. `TARGETED_READ` means only relevant blocks wer
 - Separate report-only classes from business-mutating forms.
 - Find callers for every P0 function before marking a rule complete.
 - Classify all SQL writes from VB and stored procedures.
-
