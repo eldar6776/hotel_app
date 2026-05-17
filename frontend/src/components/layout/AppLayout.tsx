@@ -17,7 +17,7 @@ function AppLayoutInner({
   const { isExpanded } = useSidebar()
 
   return (
-    <div className="flex h-screen overflow-hidden bg-surface-secondary">
+    <div className="flex h-screen overflow-hidden bg-surface-secondary" suppressHydrationWarning>
       <Sidebar />
       <MobileSidebar />
       <div
