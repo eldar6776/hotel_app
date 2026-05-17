@@ -68,7 +68,7 @@ export default function SettingsPage() {
                 <Link
                   key={item.href}
                   href={item.href}
-                  className="rounded-xl border border-border bg-white dark:bg-gray-900 p-5 shadow-sm hover:shadow-md hover:border-primary-300 transition-all group"
+                  className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-5 shadow-sm hover:shadow-md hover:border-primary-300 transition-all group"
                 >
                   <div className="flex items-start gap-3">
                     <div className="rounded-lg bg-primary-50 dark:bg-primary-900/20 p-2 text-primary-600 group-hover:bg-primary-100 dark:group-hover:bg-primary-900/30 transition-colors">

@@ -107,7 +107,7 @@ export default function FolioPage() {
       {isLoading ? (
         <div className="animate-pulse h-64 rounded-xl bg-gray-200 dark:bg-gray-700" />
       ) : folios.length === 0 ? (
-        <div className="rounded-xl border border-border bg-white dark:bg-gray-900 p-12 text-center">
+        <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-12 text-center">
           <Receipt className="h-12 w-12 mx-auto text-text-secondary mb-3" />
           <p className="text-sm text-text-secondary">Nema otvorenih folija</p>
         </div>
@@ -120,7 +120,7 @@ export default function FolioPage() {
             const totalNights = folio.stayNights.reduce((s, n) => s + n.roomPrice, 0)
 
             return (
-              <div key={folio.id} className="rounded-xl border border-border bg-white dark:bg-gray-900 shadow-sm overflow-hidden">
+              <div key={folio.id} className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 shadow-sm overflow-hidden">
                 <button
                   onClick={() => setExpandedFolio(isExpanded ? null : folio.id)}
                   className="w-full flex items-center justify-between p-4 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
@@ -154,7 +154,7 @@ export default function FolioPage() {
                 </button>
 
                 {isExpanded && (
-                  <div className="border-t border-border px-4 py-4 space-y-4">
+                  <div className="border-t border-gray-200 dark:border-gray-700 px-4 py-4 space-y-4">
                     <div className="flex items-center justify-between">
                       <h3 className="text-sm font-medium text-text">Troskovi ({folio.charges.length})</h3>
                       <button
@@ -166,12 +166,12 @@ export default function FolioPage() {
                     </div>
 
                     {isChargeOpen && (
-                      <div className="rounded-lg border border-border bg-gray-50 dark:bg-gray-800 p-4 space-y-3">
+                      <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 p-4 space-y-3">
                         <div className="grid grid-cols-2 gap-3">
                           <select
                             value={chargeForm.chargeType}
                             onChange={(e) => setChargeForm({ ...chargeForm, chargeType: e.target.value })}
-                            className="rounded-lg border border-border bg-white dark:bg-gray-900 px-3 py-2 text-sm text-text"
+                            className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 px-3 py-2 text-sm text-text"
                           >
                             {CHARGE_TYPES.map((ct) => (
                               <option key={ct.value} value={ct.value}>{ct.label}</option>
@@ -181,7 +181,7 @@ export default function FolioPage() {
                             type="date"
                             value={chargeForm.chargeDate}
                             onChange={(e) => setChargeForm({ ...chargeForm, chargeDate: e.target.value })}
-                            className="rounded-lg border border-border bg-white dark:bg-gray-900 px-3 py-2 text-sm text-text"
+                            className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 px-3 py-2 text-sm text-text"
                           />
                         </div>
                         <input
@@ -196,7 +196,7 @@ export default function FolioPage() {
                             min="1"
                             value={chargeForm.quantity}
                             onChange={(e) => setChargeForm({ ...chargeForm, quantity: Number(e.target.value) })}
-                            className="rounded-lg border border-border bg-white dark:bg-gray-900 px-3 py-2 text-sm text-text"
+                            className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 px-3 py-2 text-sm text-text"
                             placeholder="Kolicina"
                           />
                           <input
@@ -205,7 +205,7 @@ export default function FolioPage() {
                             min="0"
                             value={chargeForm.unitPrice}
                             onChange={(e) => setChargeForm({ ...chargeForm, unitPrice: Number(e.target.value) })}
-                            className="rounded-lg border border-border bg-white dark:bg-gray-900 px-3 py-2 text-sm text-text"
+                            className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 px-3 py-2 text-sm text-text"
                             placeholder="Cijena po komadu"
                           />
                         </div>
@@ -247,7 +247,7 @@ export default function FolioPage() {
                                       placeholder="Razlog storna"
                                       value={stornoReason.reason}
                                       onChange={(e) => setStornoReason({ chargeId: charge.id, reason: e.target.value })}
-                                      className="rounded border border-border bg-white dark:bg-gray-900 px-2 py-1 text-xs text-text w-32"
+                                      className="rounded border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 px-2 py-1 text-xs text-text w-32"
                                     />
                                     <button onClick={() => handleStornoCharge(charge.id)} className="rounded bg-amber-500 px-2 py-1 text-xs text-white">
                                       OK
@@ -290,7 +290,7 @@ export default function FolioPage() {
                       </div>
                     )}
 
-                    <div className="flex justify-end pt-2 border-t border-border">
+                    <div className="flex justify-end pt-2 border-t border-gray-200 dark:border-gray-700">
                       <button
                         onClick={() => handleCloseFolio(folio.id)}
                         className="flex items-center gap-1 rounded-lg bg-emerald-500 px-4 py-2 text-xs font-medium text-white hover:bg-emerald-600"

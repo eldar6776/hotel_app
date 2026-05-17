@@ -41,18 +41,18 @@ export default function RolesPage() {
         })}
       </div>
 
-      <div className="rounded-xl border border-border bg-white dark:bg-gray-900 p-4">
+      <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-4">
         <h3 className="text-sm font-medium text-text mb-2">Politike autorizacije</h3>
         <div className="space-y-2 text-sm">
-          <div className="flex justify-between py-2 border-b border-border">
+          <div className="flex justify-between py-2 border-b border-gray-200 dark:border-gray-700">
             <span className="text-text-secondary">CanManageBookings</span>
             <span className="text-text font-medium">Admin, Manager, Reception</span>
           </div>
-          <div className="flex justify-between py-2 border-b border-border">
+          <div className="flex justify-between py-2 border-b border-gray-200 dark:border-gray-700">
             <span className="text-text-secondary">CanViewReports</span>
             <span className="text-text font-medium">Admin, Manager</span>
           </div>
-          <div className="flex justify-between py-2 border-b border-border">
+          <div className="flex justify-between py-2 border-b border-gray-200 dark:border-gray-700">
             <span className="text-text-secondary">CanManageSettings</span>
             <span className="text-text font-medium">Admin</span>
           </div>

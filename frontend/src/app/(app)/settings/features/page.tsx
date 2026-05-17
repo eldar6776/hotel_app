@@ -42,9 +42,9 @@ export default function FeaturesPage() {
       {categories.map((category) => (
         <div key={category}>
           <h2 className="text-sm font-medium text-text-secondary uppercase tracking-wide mb-3">{category}</h2>
-          <div className="rounded-xl border border-border bg-white dark:bg-gray-900 overflow-hidden">
+          <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 overflow-hidden">
             {features.filter(f => f.category === category).map((feature, i, arr) => (
-              <div key={feature.name} className={`flex items-center justify-between p-4 ${i < arr.length - 1 ? 'border-b border-border' : ''}`}>
+              <div key={feature.name} className={`flex items-center justify-between p-4 ${i < arr.length - 1 ? 'border-b border-gray-200 dark:border-gray-700' : ''}`}>
                 <div className="flex items-center gap-3">
                   {feature.enabled ? <CheckCircle className="h-5 w-5 text-emerald-500" /> : <XCircle className="h-5 w-5 text-gray-400" />}
                   <div>

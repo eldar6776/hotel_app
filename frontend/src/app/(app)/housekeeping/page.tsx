@@ -92,7 +92,7 @@ export default function HousekeepingPage() {
         </button>
       </div>
 
-      <div className="flex gap-2 border-b border-border">
+      <div className="flex gap-2 border-b border-gray-200 dark:border-gray-700">
         <button
           className={`px-4 py-2 text-sm font-medium transition ${activeTab === 'dirty' ? 'border-b-2 border-primary-500 text-primary-500' : 'text-text-secondary hover:text-text'}`}
           onClick={() => setActiveTab('dirty')}
@@ -111,7 +111,7 @@ export default function HousekeepingPage() {
         <div className="animate-pulse h-64 rounded-xl bg-gray-200 dark:bg-gray-700" />
       ) : activeTab === 'dirty' ? (
         dirtyRooms.length === 0 ? (
-          <div className="rounded-xl border border-border bg-white dark:bg-gray-900 p-12 text-center">
+          <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-12 text-center">
             <Sparkles className="h-12 w-12 mx-auto text-emerald-500 mb-3" />
             <p className="text-sm font-medium text-text">Sve sobe su ciste</p>
             <p className="text-xs text-text-secondary mt-1">Nema prljavih soba za ciscenje</p>
@@ -176,12 +176,12 @@ export default function HousekeepingPage() {
           </div>
 
           {showWoForm && (
-            <form onSubmit={handleCreateWorkOrder} className="rounded-xl border border-border bg-white dark:bg-gray-900 p-4 space-y-3">
+            <form onSubmit={handleCreateWorkOrder} className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-4 space-y-3">
               <div className="grid grid-cols-2 gap-3">
                 <select
                   value={woForm.roomId}
                   onChange={(e) => setWoForm({ ...woForm, roomId: e.target.value })}
-                  className="rounded-lg border border-border bg-gray-50 dark:bg-gray-800 px-3 py-2 text-sm text-text"
+                  className="rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 px-3 py-2 text-sm text-text"
                   required
                 >
                   <option value="">Odaberi sobu...</option>
@@ -192,7 +192,7 @@ export default function HousekeepingPage() {
                 <select
                   value={woForm.category}
                   onChange={(e) => setWoForm({ ...woForm, category: e.target.value })}
-                  className="rounded-lg border border-border bg-gray-50 dark:bg-gray-800 px-3 py-2 text-sm text-text"
+                  className="rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 px-3 py-2 text-sm text-text"
                 >
                   {Object.entries(CATEGORY_LABELS).map(([k, v]) => (
                     <option key={k} value={k}>{v}</option>
@@ -203,7 +203,7 @@ export default function HousekeepingPage() {
                 <select
                   value={woForm.priority}
                   onChange={(e) => setWoForm({ ...woForm, priority: e.target.value })}
-                  className="rounded-lg border border-border bg-gray-50 dark:bg-gray-800 px-3 py-2 text-sm text-text"
+                  className="rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 px-3 py-2 text-sm text-text"
                 >
                   {Object.entries(PRIORITY_LABELS).map(([k, v]) => (
                     <option key={k} value={k}>{v}</option>
@@ -213,7 +213,7 @@ export default function HousekeepingPage() {
                   placeholder="Opis kvara / problema"
                   value={woForm.description}
                   onChange={(e) => setWoForm({ ...woForm, description: e.target.value })}
-                  className="rounded-lg border border-border bg-gray-50 dark:bg-gray-800 px-3 py-2 text-sm text-text"
+                  className="rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 px-3 py-2 text-sm text-text"
                   required
                 />
               </div>
@@ -229,14 +229,14 @@ export default function HousekeepingPage() {
           )}
 
           {workOrders.length === 0 ? (
-            <div className="rounded-xl border border-border bg-white dark:bg-gray-900 p-12 text-center">
+            <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-12 text-center">
               <Wrench className="h-12 w-12 mx-auto text-text-secondary mb-3" />
               <p className="text-sm text-text-secondary">Nema naloga za popravku</p>
             </div>
           ) : (
             <div className="space-y-2">
               {workOrders.map((wo) => (
-                <div key={wo.id} className="rounded-xl border border-border bg-white dark:bg-gray-900 p-4 shadow-sm">
+                <div key={wo.id} className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-4 shadow-sm">
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-1">

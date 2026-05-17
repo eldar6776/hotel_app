@@ -72,14 +72,14 @@ export default function BuildingsPage() {
       </div>
 
       {showForm && (
-        <form onSubmit={handleSubmit} className="rounded-xl border border-border bg-white dark:bg-gray-900 p-4 space-y-3">
+        <form onSubmit={handleSubmit} className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-4 space-y-3">
           <div className="grid grid-cols-2 gap-3">
-            <input required placeholder="Naziv" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} className="rounded-lg border border-border bg-gray-50 dark:bg-gray-800 px-3 py-2 text-sm text-text" />
-            <input required placeholder="Kod" value={form.code} onChange={e => setForm({ ...form, code: e.target.value })} className="rounded-lg border border-border bg-gray-50 dark:bg-gray-800 px-3 py-2 text-sm text-text" />
+            <input required placeholder="Naziv" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} className="rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 px-3 py-2 text-sm text-text" />
+            <input required placeholder="Kod" value={form.code} onChange={e => setForm({ ...form, code: e.target.value })} className="rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 px-3 py-2 text-sm text-text" />
           </div>
           <div className="grid grid-cols-2 gap-3">
-            <input placeholder="Adresa" value={form.address} onChange={e => setForm({ ...form, address: e.target.value })} className="rounded-lg border border-border bg-gray-50 dark:bg-gray-800 px-3 py-2 text-sm text-text" />
-            <input placeholder="Grad" value={form.city} onChange={e => setForm({ ...form, city: e.target.value })} className="rounded-lg border border-border bg-gray-50 dark:bg-gray-800 px-3 py-2 text-sm text-text" />
+            <input placeholder="Adresa" value={form.address} onChange={e => setForm({ ...form, address: e.target.value })} className="rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 px-3 py-2 text-sm text-text" />
+            <input placeholder="Grad" value={form.city} onChange={e => setForm({ ...form, city: e.target.value })} className="rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 px-3 py-2 text-sm text-text" />
           </div>
           <div className="flex justify-end gap-2">
             <button type="button" onClick={() => { setShowForm(false); setEditingId(null) }} className="rounded-lg px-4 py-2 text-sm text-text-secondary hover:text-text">Odustani</button>
@@ -91,12 +91,12 @@ export default function BuildingsPage() {
       {isLoading ? (
         <div className="animate-pulse h-48 rounded-xl bg-gray-200 dark:bg-gray-700" />
       ) : buildings.length === 0 ? (
-        <div className="rounded-xl border border-border bg-white dark:bg-gray-900 p-12 text-center">
+        <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-12 text-center">
           <Building2 className="h-12 w-12 mx-auto text-text-secondary mb-3" />
           <p className="text-sm text-text-secondary">Nema zgrada</p>
         </div>
       ) : (
-        <div className="rounded-xl border border-border bg-white dark:bg-gray-900 overflow-hidden">
+        <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 overflow-hidden">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-border">
