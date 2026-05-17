@@ -10,7 +10,7 @@ export default function EmailPage() {
         <p className="text-sm text-text-secondary mt-1">Konfiguracija slanja email notifikacija i racuna</p>
       </div>
 
-      <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-5 shadow-sm">
+      <div className="rounded-xl border border-border bg-surface p-5 shadow-sm">
         <div className="flex items-center gap-3 mb-4">
           <div className="rounded-lg bg-primary-50 dark:bg-primary-900/20 p-2"><Mail className="h-5 w-5 text-primary-600" /></div>
           <h3 className="text-sm font-bold text-text">SMTP postavke</h3>
@@ -19,31 +19,31 @@ export default function EmailPage() {
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="text-xs text-text-secondary">SMTP Host</label>
-              <input defaultValue="smtp.gmail.com" className="w-full rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 px-3 py-2 text-sm text-text" />
+              <input defaultValue="smtp.gmail.com" className="w-full rounded-lg border border-border bg-surface-secondary px-3 py-2 text-sm text-text" />
             </div>
             <div>
               <label className="text-xs text-text-secondary">SMTP Port</label>
-              <input defaultValue="587" type="number" className="w-full rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 px-3 py-2 text-sm text-text" />
+              <input defaultValue="587" type="number" className="w-full rounded-lg border border-border bg-surface-secondary px-3 py-2 text-sm text-text" />
             </div>
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="text-xs text-text-secondary">Username</label>
-              <input defaultValue="" placeholder="email@hotel.com" className="w-full rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 px-3 py-2 text-sm text-text" />
+              <input defaultValue="" placeholder="email@hotel.com" className="w-full rounded-lg border border-border bg-surface-secondary px-3 py-2 text-sm text-text" />
             </div>
             <div>
               <label className="text-xs text-text-secondary">Password</label>
-              <input type="password" defaultValue="" placeholder="••••••••" className="w-full rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 px-3 py-2 text-sm text-text" />
+              <input type="password" defaultValue="" placeholder="••••••••" className="w-full rounded-lg border border-border bg-surface-secondary px-3 py-2 text-sm text-text" />
             </div>
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="text-xs text-text-secondary">From Address</label>
-              <input defaultValue="noreply@hotelpro.local" className="w-full rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 px-3 py-2 text-sm text-text" />
+              <input defaultValue="noreply@hotelpro.local" className="w-full rounded-lg border border-border bg-surface-secondary px-3 py-2 text-sm text-text" />
             </div>
             <div>
               <label className="text-xs text-text-secondary">From Name</label>
-              <input defaultValue="HotelPRO" className="w-full rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 px-3 py-2 text-sm text-text" />
+              <input defaultValue="HotelPRO" className="w-full rounded-lg border border-border bg-surface-secondary px-3 py-2 text-sm text-text" />
             </div>
           </div>
           <div className="flex items-center justify-between pt-2">
@@ -52,7 +52,7 @@ export default function EmailPage() {
               Use TLS
             </label>
             <div className="flex gap-2">
-              <button className="flex items-center gap-1 rounded-lg border border-gray-200 dark:border-gray-700 px-4 py-2 text-sm text-text-secondary hover:text-text">
+              <button className="flex items-center gap-1 rounded-lg border border-border px-4 py-2 text-sm text-text-secondary hover:text-text">
                 <Send className="h-4 w-4" /> Testiraj
               </button>
               <button className="rounded-lg bg-primary-500 px-4 py-2 text-sm font-medium text-white hover:bg-primary-600">

@@ -108,7 +108,7 @@ export default function ReportsPage() {
         <p className="text-sm text-text-secondary mt-1">Dnevni, finansijski i statisticki izvjestaji</p>
       </div>
 
-      <div className="flex gap-2 border-b border-gray-200 dark:border-gray-700">
+      <div className="flex gap-2 border-b border-border">
         {([
           { key: 'daily' as const, label: 'Dnevni izvjestaj', Icon: BarChart3 },
           { key: 'financial' as const, label: 'Finansijski', Icon: DollarSign },
@@ -133,7 +133,7 @@ export default function ReportsPage() {
               type="date"
               value={reportDate}
               onChange={(e) => setReportDate(e.target.value)}
-              className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-3 py-2 text-sm text-text"
+              className="rounded-lg border border-border bg-white dark:bg-gray-800 px-3 py-2 text-sm text-text"
             />
           </div>
         ) : (
@@ -149,7 +149,7 @@ export default function ReportsPage() {
         </button>
       </div>
 
-      {isLoading && <div className="animate-pulse h-48 rounded-xl bg-gray-200 dark:bg-gray-700" />}
+      {isLoading && <div className="animate-pulse h-48 rounded-xl bg-surface-tertiary" />}
 
       {!isLoading && activeTab === 'daily' && dailyReport && (
         <div className="space-y-4">
@@ -162,7 +162,7 @@ export default function ReportsPage() {
             ].map((item) => {
               const Icon = item.icon
               return (
-                <div key={item.label} className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-4 shadow-sm">
+                <div key={item.label} className="rounded-xl border border-border bg-surface p-4 shadow-sm">
                   <Icon className={`h-5 w-5 ${item.color} mb-2`} />
                   <p className="text-xs text-text-secondary">{item.label}</p>
                   <p className="text-xl font-bold text-text">{item.value}</p>
@@ -171,16 +171,16 @@ export default function ReportsPage() {
             })}
           </div>
           <div className="grid grid-cols-2 gap-4">
-            <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-4">
+            <div className="rounded-xl border border-border bg-surface p-4">
               <p className="text-sm text-text-secondary">Dolasci danas</p>
               <p className="text-2xl font-bold text-text">{dailyReport.arrivals}</p>
             </div>
-            <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-4">
+            <div className="rounded-xl border border-border bg-surface p-4">
               <p className="text-sm text-text-secondary">Odlasci danas</p>
               <p className="text-2xl font-bold text-text">{dailyReport.departures}</p>
             </div>
           </div>
-          <div className="rounded-xl border border-border bg-white dark:bg-gray-900 p-4">
+          <div className="rounded-xl border border-border bg-surface p-4">
             <p className="text-sm font-medium text-text mb-2">Detalji</p>
             <div className="grid grid-cols-2 gap-3 text-sm">
               <div><span className="text-text-secondary">Ukupno soba:</span> <span className="text-text font-medium ml-2">{dailyReport.totalRooms}</span></div>
@@ -195,17 +195,17 @@ export default function ReportsPage() {
       {!isLoading && activeTab === 'financial' && financialData && (
         <div className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
-            <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-4">
+            <div className="rounded-xl border border-border bg-surface p-4">
               <p className="text-sm text-text-secondary">Ukupno naplaceno</p>
               <p className="text-2xl font-bold text-emerald-600">{financialData.totalRevenue?.toFixed(2) || '0.00'} €</p>
             </div>
-            <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-4">
+            <div className="rounded-xl border border-border bg-surface p-4">
               <p className="text-sm text-text-secondary">Ukupno fakturisano</p>
               <p className="text-2xl font-bold text-text">{financialData.totalInvoiced?.toFixed(2) || '0.00'} €</p>
             </div>
           </div>
           {financialData.payments?.length > 0 && (
-            <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-4">
+            <div className="rounded-xl border border-border bg-surface p-4">
               <p className="text-sm font-medium text-text mb-3">Placanja po metodi</p>
               <div className="space-y-2">
                 {financialData.payments.map((p: any) => (
@@ -218,7 +218,7 @@ export default function ReportsPage() {
             </div>
           )}
           {financialData.invoices?.length > 0 && (
-            <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-4">
+            <div className="rounded-xl border border-border bg-surface p-4">
               <p className="text-sm font-medium text-text mb-3">Fakture po statusu</p>
               <div className="space-y-2">
                 {financialData.invoices.map((i: any) => (
@@ -235,7 +235,7 @@ export default function ReportsPage() {
 
       {!isLoading && activeTab === 'guestbook' && guestBookData && (
         <div className="space-y-4">
-          <div className="rounded-xl border border-border bg-white dark:bg-gray-900 p-4">
+          <div className="rounded-xl border border-border bg-surface p-4">
             <p className="text-sm font-medium text-text mb-1">Knjiga gostiju — {new Date(guestBookData.date).toLocaleDateString()}</p>
             <p className="text-xs text-text-secondary mb-4">{guestBookData.totalGuests} gostiju u hotelu</p>
             {guestBookData.guests?.length > 0 ? (
@@ -270,7 +270,7 @@ export default function ReportsPage() {
 
       {!isLoading && activeTab === 'channel' && channelData.length > 0 && (
         <div className="space-y-4">
-          <div className="rounded-xl border border-border bg-white dark:bg-gray-900 p-4">
+          <div className="rounded-xl border border-border bg-surface p-4">
             <p className="text-sm font-medium text-text mb-3">Prihod po kanalu</p>
             <div className="space-y-3">
               {channelData.map((ch) => {
@@ -294,7 +294,7 @@ export default function ReportsPage() {
       )}
 
       {!isLoading && !dailyReport && !financialData && !guestBookData && channelData.length === 0 && activeTab !== 'daily' && (
-        <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-12 text-center">
+        <div className="rounded-xl border border-border bg-surface p-12 text-center">
           <BarChart3 className="h-12 w-12 mx-auto text-text-secondary mb-3" />
           <p className="text-sm text-text-secondary">Klikni "Generisi" za ucitavanje izvjestaja</p>
         </div>

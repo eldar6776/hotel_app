@@ -17,7 +17,7 @@ export default function LanguagePage() {
         <p className="text-sm text-text-secondary mt-1">Prevodi i podrzani jezici</p>
       </div>
 
-      <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-5 shadow-sm">
+      <div className="rounded-xl border border-border bg-surface p-5 shadow-sm">
         <div className="flex items-center gap-3 mb-4">
           <div className="rounded-lg bg-primary-50 dark:bg-primary-900/20 p-2"><Globe className="h-5 w-5 text-primary-600" /></div>
           <h3 className="text-sm font-bold text-text">Podrzani jezici</h3>
@@ -46,15 +46,15 @@ export default function LanguagePage() {
         </div>
       </div>
 
-      <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-5 shadow-sm">
+      <div className="rounded-xl border border-border bg-surface p-5 shadow-sm">
         <div className="flex items-center gap-3 mb-3">
           <div className="rounded-lg bg-emerald-50 dark:bg-emerald-900/20 p-2"><Languages className="h-5 w-5 text-emerald-600" /></div>
           <h3 className="text-sm font-bold text-text">Formati</h3>
         </div>
         <div className="space-y-2 text-sm">
-                      <div className="flex justify-between py-2 border-b border-gray-200 dark:border-gray-700"><span className="text-text-secondary">Datum:</span><span className="text-text font-medium">DD.MM.YYYY</span></div>
-                      <div className="flex justify-between py-2 border-b border-gray-200 dark:border-gray-700"><span className="text-text-secondary">Vrijeme:</span><span className="text-text font-medium">24h (HH:mm)</span></div>
-                      <div className="flex justify-between py-2 border-b border-gray-200 dark:border-gray-700"><span className="text-text-secondary">Valuta:</span><span className="text-text font-medium">EUR (€)</span></div>
+                      <div className="flex justify-between py-2 border-b border-border"><span className="text-text-secondary">Datum:</span><span className="text-text font-medium">DD.MM.YYYY</span></div>
+                      <div className="flex justify-between py-2 border-b border-border"><span className="text-text-secondary">Vrijeme:</span><span className="text-text font-medium">24h (HH:mm)</span></div>
+                      <div className="flex justify-between py-2 border-b border-border"><span className="text-text-secondary">Valuta:</span><span className="text-text font-medium">EUR (€)</span></div>
           <div className="flex justify-between py-2"><span className="text-text-secondary">Timezone:</span><span className="text-text font-medium">Europe/Zagreb (CET)</span></div>
         </div>
       </div>

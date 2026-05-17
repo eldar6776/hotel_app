@@ -21,7 +21,7 @@ export default function TariffsPage() {
     setIsLoading(true)
     try {
       const [t, rt] = await Promise.all([
-        apiClient.get('/v2/tariffs'),
+        apiClient.get('/tariffs'),
         roomService.getRoomTypes(),
       ])
       setTariffs(t.data)
@@ -81,9 +81,9 @@ export default function TariffsPage() {
       }
 
       if (editTarget) {
-        await apiClient.put(`/v2/tariffs/${editTarget.id}`, payload)
+        await apiClient.put(`/tariffs/${editTarget.id}`, payload)
       } else {
-        await apiClient.post('/v2/tariffs', payload)
+        await apiClient.post('/tariffs', payload)
       }
       setShowForm(false)
       setEditTarget(null)
@@ -97,7 +97,7 @@ export default function TariffsPage() {
   const handleDelete = async (id: string, name: string) => {
     if (!confirm(`Obrisati tarifu "${name}"?`)) return
     try {
-      await apiClient.delete(`/v2/tariffs/${id}`)
+      await apiClient.delete(`/tariffs/${id}`)
       loadData()
     } catch {
       alert('Greska pri brisanju')
@@ -106,7 +106,7 @@ export default function TariffsPage() {
 
   const toggleActive = async (id: string, current: boolean) => {
     try {
-      await apiClient.put(`/v2/tariffs/${id}`, { isActive: !current })
+      await apiClient.put(`/tariffs/${id}`, { isActive: !current })
       loadData()
     } catch {
       alert('Greska')

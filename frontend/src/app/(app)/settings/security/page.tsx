@@ -11,7 +11,7 @@ export default function SecurityPage() {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-5 shadow-sm">
+        <div className="rounded-xl border border-border bg-surface p-5 shadow-sm">
           <div className="flex items-center gap-3 mb-3">
             <div className="rounded-lg bg-primary-50 dark:bg-primary-900/20 p-2"><Key className="h-5 w-5 text-primary-600" /></div>
             <h3 className="text-sm font-bold text-text">JWT Tokeni</h3>
@@ -23,7 +23,7 @@ export default function SecurityPage() {
           </div>
         </div>
 
-        <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-5 shadow-sm">
+        <div className="rounded-xl border border-border bg-surface p-5 shadow-sm">
           <div className="flex items-center gap-3 mb-3">
             <div className="rounded-lg bg-emerald-50 dark:bg-emerald-900/20 p-2"><Shield className="h-5 w-5 text-emerald-600" /></div>
             <h3 className="text-sm font-bold text-text">Password Hashing</h3>
@@ -35,7 +35,7 @@ export default function SecurityPage() {
           </div>
         </div>
 
-        <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-5 shadow-sm">
+        <div className="rounded-xl border border-border bg-surface p-5 shadow-sm">
           <div className="flex items-center gap-3 mb-3">
             <div className="rounded-lg bg-amber-50 dark:bg-amber-900/20 p-2"><Clock className="h-5 w-5 text-amber-600" /></div>
             <h3 className="text-sm font-bold text-text">Rate Limiting</h3>
@@ -47,7 +47,7 @@ export default function SecurityPage() {
           </div>
         </div>
 
-        <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-5 shadow-sm">
+        <div className="rounded-xl border border-border bg-surface p-5 shadow-sm">
           <div className="flex items-center gap-3 mb-3">
             <div className="rounded-lg bg-blue-50 dark:bg-blue-900/20 p-2"><Globe className="h-5 w-5 text-blue-600" /></div>
             <h3 className="text-sm font-bold text-text">Multi-Tenant</h3>

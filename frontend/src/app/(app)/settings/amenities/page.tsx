@@ -14,7 +14,7 @@ export default function AmenitiesPage() {
   const loadData = async () => {
     setIsLoading(true)
     try {
-      const res = await apiClient.get('/v2/amenities')
+      const res = await apiClient.get('/amenities')
       setAmenities(res.data)
     } catch {
       alert('Greska pri ucitavanju')
@@ -31,7 +31,7 @@ export default function AmenitiesPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     try {
-      await apiClient.post('/v2/amenities', { ...form, sortOrder: amenities.length })
+      await apiClient.post('/amenities', { ...form, sortOrder: amenities.length })
       setShowForm(false)
       setForm({ name: '', icon: '' })
       loadData()
@@ -42,7 +42,7 @@ export default function AmenitiesPage() {
 
   const toggleActive = async (id: string, current: boolean) => {
     try {
-      await apiClient.put(`/v2/amenities/${id}`, { isActive: !current })
+      await apiClient.put(`/amenities/${id}`, { isActive: !current })
       loadData()
     } catch {
       alert('Greska')
@@ -59,7 +59,7 @@ export default function AmenitiesPage() {
 
     try {
       for (let i = 0; i < reordered.length; i++) {
-        await apiClient.put(`/v2/amenities/${reordered[i].id}`, { sortOrder: i })
+        await apiClient.put(`/amenities/${reordered[i].id}`, { sortOrder: i })
       }
     } catch {
       loadData()
@@ -82,7 +82,7 @@ export default function AmenitiesPage() {
     setDraggedIdx(null)
     try {
       for (let i = 0; i < amenities.length; i++) {
-        await apiClient.put(`/v2/amenities/${amenities[i].id}`, { sortOrder: i })
+        await apiClient.put(`/amenities/${amenities[i].id}`, { sortOrder: i })
       }
     } catch {
       loadData()

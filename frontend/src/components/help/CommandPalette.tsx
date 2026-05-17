@@ -108,8 +108,8 @@ export function CommandPalette({
         className="fixed inset-0 bg-black/50 backdrop-blur-sm"
         onClick={reset}
       />
-      <div className="relative z-10 w-full max-w-xl rounded-xl bg-white dark:bg-gray-900 shadow-2xl border border-gray-200 dark:border-gray-700 overflow-hidden">
-        <div className="flex items-center gap-3 border-b border-gray-200 dark:border-gray-700 px-4 py-3">
+      <div className="relative z-10 w-full max-w-xl rounded-xl bg-surface shadow-2xl border border-border overflow-hidden">
+        <div className="flex items-center gap-3 border-b border-border px-4 py-3">
           <Search className="h-4 w-4 text-text-secondary" />
           <input
             autoFocus
@@ -118,7 +118,7 @@ export function CommandPalette({
             placeholder="Pretrazi komande..."
             className="flex-1 bg-transparent text-sm text-text outline-none placeholder:text-text-secondary/50"
           />
-          <kbd className="rounded bg-gray-100 dark:bg-gray-800 px-2 py-0.5 text-xs text-text-secondary">
+          <kbd className="rounded bg-surface-tertiary px-2 py-0.5 text-xs text-text-secondary">
             ESC
           </kbd>
         </div>
@@ -152,16 +152,16 @@ export function CommandPalette({
             ))
           )}
         </div>
-        <div className="border-t border-gray-200 dark:border-gray-700 px-4 py-2">
+        <div className="border-t border-border px-4 py-2">
           <div className="flex items-center gap-4 text-xs text-text-secondary">
             <span>
-              <kbd className="rounded bg-gray-100 dark:bg-gray-800 px-1 py-0.5">
+              <kbd className="rounded bg-surface-tertiary px-1 py-0.5">
                 Ctrl+K
               </kbd>{' '}
               Otvori
             </span>
             <span>
-              <kbd className="rounded bg-gray-100 dark:bg-gray-800 px-1 py-0.5">
+              <kbd className="rounded bg-surface-tertiary px-1 py-0.5">
                 ESC
               </kbd>{' '}
               Zatvori

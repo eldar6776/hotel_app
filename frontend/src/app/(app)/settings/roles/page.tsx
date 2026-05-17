@@ -21,7 +21,7 @@ export default function RolesPage() {
         {roles.map((role) => {
           const Icon = role.name === 'Admin' ? ShieldCheck : role.name === 'Manager' ? Key : role.name === 'Reception' ? Eye : Users
           return (
-            <div key={role.name} className="rounded-xl border border-border bg-white dark:bg-gray-900 p-5 shadow-sm">
+            <div key={role.name} className="rounded-xl border border-border bg-surface p-5 shadow-sm">
               <div className="flex items-start gap-3 mb-3">
                 <div className={`rounded-lg p-2 ${role.color}`}>
                   <Icon className="h-5 w-5" />
@@ -33,7 +33,7 @@ export default function RolesPage() {
               </div>
               <div className="flex flex-wrap gap-1">
                 {role.permissions.map((p) => (
-                  <span key={p} className="rounded-full bg-gray-100 dark:bg-gray-800 px-2 py-0.5 text-xs text-text-secondary">{p}</span>
+                  <span key={p} className="rounded-full bg-surface-tertiary px-2 py-0.5 text-xs text-text-secondary">{p}</span>
                 ))}
               </div>
             </div>
@@ -41,18 +41,18 @@ export default function RolesPage() {
         })}
       </div>
 
-      <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-4">
+      <div className="rounded-xl border border-border bg-surface p-4">
         <h3 className="text-sm font-medium text-text mb-2">Politike autorizacije</h3>
         <div className="space-y-2 text-sm">
-          <div className="flex justify-between py-2 border-b border-gray-200 dark:border-gray-700">
+          <div className="flex justify-between py-2 border-b border-border">
             <span className="text-text-secondary">CanManageBookings</span>
             <span className="text-text font-medium">Admin, Manager, Reception</span>
           </div>
-          <div className="flex justify-between py-2 border-b border-gray-200 dark:border-gray-700">
+          <div className="flex justify-between py-2 border-b border-border">
             <span className="text-text-secondary">CanViewReports</span>
             <span className="text-text font-medium">Admin, Manager</span>
           </div>
-          <div className="flex justify-between py-2 border-b border-gray-200 dark:border-gray-700">
+          <div className="flex justify-between py-2 border-b border-border">
             <span className="text-text-secondary">CanManageSettings</span>
             <span className="text-text font-medium">Admin</span>
           </div>
