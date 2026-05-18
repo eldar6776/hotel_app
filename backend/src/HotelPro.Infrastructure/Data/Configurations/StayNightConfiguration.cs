@@ -13,7 +13,7 @@ public class StayNightConfiguration : IEntityTypeConfiguration<StayNight>
         builder.HasKey(x => x.Id);
         builder.Property(x => x.TariffAmount).HasColumnType("decimal(18,2)").IsRequired();
         builder.Property(x => x.DiscountPercent).HasColumnType("decimal(5,2)").IsRequired();
-        builder.Property(x => x.Status).HasConversion<string>().HasMaxLength(20).IsRequired();
+        builder.Property(x => x.Status).IsRequired();
 
         builder.HasOne(x => x.Folio)
             .WithMany(x => x.StayNights)

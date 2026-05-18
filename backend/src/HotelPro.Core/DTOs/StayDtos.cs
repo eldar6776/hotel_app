@@ -58,3 +58,18 @@ public record StayDto(
     decimal DiscountPercent,
     string? DiscountReason
 );
+
+public record StayNightDto(
+    Guid Id,
+    Guid FolioId,
+    Guid? StayId,
+    Guid RoomId,
+    string RoomNumber,
+    DateTime Date,
+    decimal TariffAmount,
+    decimal DiscountPercent,
+    NightStatus Status,
+    bool IsComp,
+    string? Description,
+    DateTime? ClosedAt
+);

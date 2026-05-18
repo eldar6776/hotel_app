@@ -166,7 +166,7 @@
 - [x] **A.3:** Create HotelConfig entity + admin settings API - [COMPLETED 2026-05-18 - Codex]
 - [x] **B.1:** RoomOccupancyPolicy — 7 statuses + clean override - [COMPLETED 2026-05-18 - Codex]
 - [x] **B.2:** StayLifecycleService — check-in with multi-guest - [COMPLETED 2026-05-18 - opencode (glm-5.1)]
-- [ ] **B.3:** NightLedgerService — materialized nights
+- [x] **B.3:** NightLedgerService — materialized nights - [COMPLETED 2026-05-18 - opencode (glm-5.1)]
 - [ ] **B.4:** CheckOutWorkflowService — full + partial checkout
 - [ ] **B.5:** FolioLedgerService — ledger aggregation
 - [ ] **B.6:** InvoiceWorkflowService — snapshot + storno

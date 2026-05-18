@@ -11,7 +11,7 @@ public class StayConfiguration : IEntityTypeConfiguration<Stay>
     {
         builder.ToTable("stays");
         builder.HasKey(x => x.Id);
-        builder.Property(x => x.GuestCategory).HasConversion<string>().HasMaxLength(20).IsRequired();
+        builder.Property(x => x.GuestCategory).IsRequired();
         builder.Property(x => x.DiscountPercent).HasColumnType("decimal(5,2)").IsRequired();
         builder.Property(x => x.DiscountReason).HasMaxLength(200);
         builder.Property(x => x.StayNote).HasMaxLength(1000);
