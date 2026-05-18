@@ -161,7 +161,7 @@
 
 ## P0 REBUILD TASKS (From P0_REBUILD_PLAN.md)
 
-- [-] **A.1:** Create STATUS_REALISTIC.md - [IN_PROGRESS] - 2026-05-18 - Codex
+- [x] **A.1:** Create STATUS_REALISTIC.md - [COMPLETED 2026-05-18 - Codex]
 - [ ] **A.2:** Add [Mock] attribute + feature flag to mock controllers
 - [ ] **A.3:** Create HotelConfig entity + admin settings API
 - [ ] **B.1:** RoomOccupancyPolicy — 7 statuses + clean override
