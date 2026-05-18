@@ -28,7 +28,7 @@ export default function RootLayout({
     >
       <head>
         <Script id="theme-init" strategy="beforeInteractive">
-          {`try{const t=localStorage.getItem('theme');if(t)document.documentElement.classList.toggle('dark',t==='dark');else if(window.matchMedia('(prefers-color-scheme:dark)').matches)document.documentElement.classList.add('dark')}catch(e){}`}
+          {`try{const t=localStorage.getItem('theme');document.documentElement.classList.toggle('dark',t==='dark')}catch(e){}`}
         </Script>
       </head>
       <body className="min-h-full flex flex-col font-sans">

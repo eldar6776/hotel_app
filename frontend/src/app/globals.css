@@ -116,7 +116,25 @@
   --radius-4xl: 2rem;
 }
 
-body {
-  background: hsl(var(--color-surface-secondary) / 1);
-  color: hsl(var(--color-text) / 1);
+@layer base {
+  body {
+    background: hsl(var(--color-surface-secondary) / 1);
+    color: hsl(var(--color-text) / 1);
+  }
+}
+
+/* Guard against white panels that do not define their own dark background. */
+.dark [class~="bg-white"]:not([class*="dark:bg-"]),
+.dark [class~="bg-white"]:not([class*="dark:bg-"]) .text-text {
+  color: hsl(220 15% 10%) !important;
+}
+
+.dark [class~="bg-white"]:not([class*="dark:bg-"]) .text-text-secondary {
+  color: hsl(220 10% 35%) !important;
+}
+
+.dark [class~="bg-white"]:not([class*="dark:bg-"]) input,
+.dark [class~="bg-white"]:not([class*="dark:bg-"]) select,
+.dark [class~="bg-white"]:not([class*="dark:bg-"]) textarea {
+  color: hsl(220 15% 10%);
 }

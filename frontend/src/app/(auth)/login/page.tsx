@@ -71,8 +71,8 @@ export default function LoginPage() {
         <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-primary-100 dark:bg-primary-900/30">
           <Hotel className="h-6 w-6 text-primary-600 dark:text-primary-400" />
         </div>
-        <h1 className="text-2xl font-semibold text-text">HotelPRO</h1>
-        <p className="mt-2 text-sm text-text-secondary">Prijava u sistem</p>
+        <h1 className="text-2xl font-semibold" style={{ color: '#111827' }}>HotelPRO</h1>
+        <p className="mt-2 text-sm" style={{ color: '#374151' }}>Prijava u sistem</p>
       </div>
 
       <form id="login-form" onSubmit={handleSubmit} className="space-y-4">

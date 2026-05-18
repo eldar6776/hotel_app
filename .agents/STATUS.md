@@ -146,7 +146,7 @@
 
 ### Faza 19: Demo podaci i provjera aplikacije
 - [x] **T19.1: Demo seed podaci i frontend smoke pregled aplikacije** - [COMPLETED 2026-05-18 - Codex]
-- [-] **T19.2: Frontend kontrast teksta i bijela slova na bijeloj podlozi** - [IN_PROGRESS] - 2026-05-18 - Codex
+- [x] **T19.2: Frontend kontrast teksta i bijela slova na bijeloj podlozi** - [COMPLETED 2026-05-18 - Codex]
 
 ---
 
@@ -159,6 +159,10 @@ Sljedece grupe se mogu raditi istovremeno:
 - **Grupa D (MQTT/IoT):** T14.1, T14.2, T14.3 (nezavisna infrastrukturno)
 
 ## 3. AUDIT TRAIL
+
+### 2026-05-18 — Codex
+- **T19.2 COMPLETED**: Frontend kontrast popravljen za bijele podloge: aplikacija vise ne preuzima OS dark temu po defaultu, nego koristi light osim ako korisnik eksplicitno izabere dark; dodan CSS guard za `bg-white` povrsine bez `dark:bg-*` varijante.
+- Verifikacija: `npm.cmd run build` prolazi; sken `bg-white` bez dark varijante vise nalazi samo dekorativni toggle knob bez teksta.
 
 ### 2026-05-18 — Codex
 - **T19.1 COMPLETED**: Prosiren `TestDataSeeder` za demo hotel scenario: 4 sprata x 10 soba, 100 demo gostiju, prosle/aktivne/buduce rezervacije, folije, stay nights, placanja, housekeeping logovi, work orders, tarife i amenities.

@@ -21,21 +21,10 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     setMounted(true)
     const stored = localStorage.getItem('theme') as Theme | null
-    const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches
-    const initial = stored || (systemDark ? 'dark' : 'light')
+    const initial = stored || 'light'
 
     document.documentElement.classList.toggle('dark', initial === 'dark')
     setTheme(initial)
-
-    const listener = (e: MediaQueryListEvent) => {
-      if (!localStorage.getItem('theme')) {
-        const next = e.matches ? 'dark' : 'light'
-        document.documentElement.classList.toggle('dark', next === 'dark')
-        setTheme(next)
-      }
-    }
-    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', listener)
-    return () => window.matchMedia('(prefers-color-scheme: dark)').removeEventListener('change', listener)
   }, [])
 
   const toggleTheme = () => {
