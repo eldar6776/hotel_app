@@ -1,15 +1,30 @@
 using Asp.Versioning;
+using HotelPro.Api.Attributes;
+using HotelPro.Core.Attributes;
+using HotelPro.Core.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HotelPro.Api.Controllers;
 
 [ApiController, ApiVersion("2.0"), Route("api/v{version:apiVersion}/revenue"), Authorize]
+[Mock("Revenue management currently returns static pricing suggestions.")]
+[FeatureGate("RevenueManagement")]
 public class RevenueController : ControllerBase
 {
-    [HttpGet("pricing/suggestions"), Authorize(Roles = "Admin,Manager")]
-    public ActionResult PricingSuggestions([FromQuery] DateTime? from, [FromQuery] DateTime? to)
+    private readonly IFeatureFlagService _featureFlags;
+
+    public RevenueController(IFeatureFlagService featureFlags)
     {
+        _featureFlags = featureFlags;
+    }
+
+    [HttpGet("pricing/suggestions"), Authorize(Roles = "Admin,Manager")]
+    public async Task<ActionResult> PricingSuggestions([FromQuery] DateTime? from, [FromQuery] DateTime? to)
+    {
+        var unavailable = await GetMockUnavailableAsync("RevenueManagement");
+        if (unavailable != null) return unavailable;
+
         return Ok(new
         {
             from = from ?? DateTime.UtcNow,
@@ -23,8 +38,11 @@ public class RevenueController : ControllerBase
     }
 
     [HttpGet("forecast"), Authorize(Roles = "Admin,Manager")]
-    public ActionResult OccupancyForecast([FromQuery] int days = 30)
+    public async Task<ActionResult> OccupancyForecast([FromQuery] int days = 30)
     {
+        var unavailable = await GetMockUnavailableAsync("RevenueManagement");
+        if (unavailable != null) return unavailable;
+
         return Ok(new
         {
             forecastDate = DateTime.UtcNow,
@@ -39,14 +57,30 @@ public class RevenueController : ControllerBase
     }
 
     [HttpGet("competitor-analysis"), Authorize(Roles = "Admin,Manager")]
-    public ActionResult CompetitorAnalysis()
+    public async Task<ActionResult> CompetitorAnalysis()
     {
+        var unavailable = await GetMockUnavailableAsync("RevenueManagement");
+        if (unavailable != null) return unavailable;
+
         return Ok(new { status = "not_configured", message = "Competitor analysis requires external API configuration" });
     }
 
     [HttpPost("seasonal-rules"), Authorize(Roles = "Admin,Manager")]
-    public ActionResult CreateSeasonalRule([FromBody] object rule)
+    public async Task<ActionResult> CreateSeasonalRule([FromBody] object rule)
     {
+        var unavailable = await GetMockUnavailableAsync("RevenueManagement");
+        if (unavailable != null) return unavailable;
+
         return Ok(new { status = "saved", message = "Seasonal rule created" });
+    }
+
+    private async Task<ActionResult?> GetMockUnavailableAsync(string featureName)
+    {
+        if (!await _featureFlags.IsEnabledAsync(featureName))
+        {
+            return Ok(new { status = "not_configured", message = "Configure in Admin > Settings" });
+        }
+
+        return Ok(new { status = "missing_api_key", message = "Enter API key in Admin > Settings" });
     }
 }

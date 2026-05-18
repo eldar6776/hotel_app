@@ -1,4 +1,7 @@
 using Asp.Versioning;
+using HotelPro.Api.Attributes;
+using HotelPro.Core.Attributes;
+using HotelPro.Core.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -7,9 +10,21 @@ namespace HotelPro.Api.Controllers;
 [ApiController, ApiVersion("2.0"), Route("api/v{version:apiVersion}/admin"), Authorize]
 public class AdminController : ControllerBase
 {
-    [HttpGet("security/audit"), Authorize(Roles = "Admin")]
-    public ActionResult SecurityAudit()
+    private readonly IFeatureFlagService _featureFlags;
+
+    public AdminController(IFeatureFlagService featureFlags)
     {
+        _featureFlags = featureFlags;
+    }
+
+    [HttpGet("security/audit"), Authorize(Roles = "Admin")]
+    [Mock("Security audit endpoint is a placeholder until a real scan is integrated.")]
+    [FeatureGate("SecurityAudit")]
+    public async Task<ActionResult> SecurityAudit()
+    {
+        var unavailable = await GetMockUnavailableAsync("SecurityAudit");
+        if (unavailable != null) return unavailable;
+
         return Ok(new
         {
             owaspStatus = "not_scanned",
@@ -45,8 +60,13 @@ public class AdminController : ControllerBase
     }
 
     [HttpGet("pci/status"), Authorize(Roles = "Admin")]
-    public ActionResult PciStatus()
+    [Mock("PCI status is pending real payment gateway and PCI audit evidence.")]
+    [FeatureGate("PciAudit")]
+    public async Task<ActionResult> PciStatus()
     {
+        var unavailable = await GetMockUnavailableAsync("PciAudit");
+        if (unavailable != null) return unavailable;
+
         return Ok(new
         {
             level = "SAQ-D",
@@ -55,6 +75,16 @@ public class AdminController : ControllerBase
             noCardStorage = true,
             lastAudit = (DateTime?)null
         });
+    }
+
+    private async Task<ActionResult?> GetMockUnavailableAsync(string featureName)
+    {
+        if (!await _featureFlags.IsEnabledAsync(featureName))
+        {
+            return Ok(new { status = "not_configured", message = "Configure in Admin > Settings" });
+        }
+
+        return Ok(new { status = "missing_api_key", message = "Enter API key in Admin > Settings" });
     }
 }
 
