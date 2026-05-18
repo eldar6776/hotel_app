@@ -174,7 +174,18 @@
 - [x] **B.8:** ReservationPolicyService — confirmation/cancellation - [COMPLETED 2026-05-18 - opencode (glm-5.1)]
 - [x] **C:** EF Core migration for all new entities/fields - [COMPLETED 2026-05-18 - opencode (glm-5.1)]
 - [x] **D:** Frontend API adaptation - [COMPLETED 2026-05-18 - opencode (glm-5.1)]
-- [ ] **E:** Integration configuration (API keys, feature flags, IoT toggle)
+- [x] **E:** Integration configuration (feature flags, API keys) - [COMPLETED 2026-05-18 - opencode (glm-5.1)]
+
+### Integration (API endpoints + service wiring)
+
+- [x] **I.1:** StaysController — check-in, full/partial check-out - [COMPLETED 2026-05-18 - opencode (glm-5.1)]
+- [x] **I.2:** PaymentsController — allocate, lookup by reference - [COMPLETED 2026-05-18 - opencode (glm-5.1)]
+- [x] **I.3:** ReservationsController — confirm/cancel/noshow/status - [COMPLETED 2026-05-18 - opencode (glm-5.1)]
+- [x] **I.4:** InvoicesController — folio-based invoice + storno workflow - [COMPLETED 2026-05-18 - opencode (glm-5.1)]
+- [x] **I.5:** FoliosController — ledger + reconcile endpoints - [COMPLETED 2026-05-18 - opencode (glm-5.1)]
+- [x] **I.6:** BookingsController — confirm/cancel/noshow via ReservationPolicyService - [COMPLETED 2026-05-18 - opencode (glm-5.1)]
+- [x] **I.7:** NightAuditService — NightLedgerService integration + fallback - [COMPLETED 2026-05-18 - opencode (glm-5.1)]
+- [x] **I.8:** GuestStayHistory — StayId field connected - [COMPLETED 2026-05-18 - opencode (glm-5.1)]
 
 ---
 
