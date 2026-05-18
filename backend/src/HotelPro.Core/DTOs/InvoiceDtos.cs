@@ -1,19 +1,50 @@
 namespace HotelPro.Core.DTOs;
 
-public record InvoiceDetailDto(
+public record CreateInvoiceRequest(
+    Guid BookingId,
+    string? Currency = null
+);
+
+public record CreateFolioInvoiceRequest(
+    Guid FolioId,
+    Guid? IssuedBy = null,
+    string? Notes = null
+);
+
+public record StornoInvoiceRequest(
+    Guid InvoiceId,
+    string Reason,
+    Guid? IssuedBy = null
+);
+
+public record StornoRequest(
+    string Reason
+);
+
+public record InvoiceResultDto(
     Guid Id,
     string InvoiceNumber,
-    DateTime IssueDate,
+    Guid FolioId,
     string GuestName,
-    string? GuestAddress,
-    decimal Subtotal,
+    string RoomNumber,
+    DateTime PeriodFrom,
+    DateTime PeriodTo,
+    decimal SubTotal,
     decimal VatAmount,
     decimal TotalAmount,
-    string Currency,
-    string Status,
-    bool IsFiscalized,
-    string? FiscalCode,
-    List<InvoiceItemDto> Items
+    bool IsStorno,
+    string? StornoReason,
+    DateTime CreatedAt,
+    List<InvoiceLineItemDto> LineItems
+);
+
+public record InvoiceLineItemDto(
+    string Description,
+    decimal Quantity,
+    decimal UnitPrice,
+    decimal TotalPrice,
+    decimal VatRate,
+    decimal VatAmount
 );
 
 public record InvoiceItemDto(
@@ -25,9 +56,20 @@ public record InvoiceItemDto(
     decimal VatAmount
 );
 
-public record CreateInvoiceRequest(
-    Guid BookingId,
-    string? Currency
+public record InvoiceDetailDto(
+    Guid Id,
+    string InvoiceNumber,
+    DateTime IssueDate,
+    string GuestName,
+    string? GuestAddress,
+    decimal TotalNet,
+    decimal TotalVat,
+    decimal TotalGross,
+    string Currency,
+    string Status,
+    bool IsStorno,
+    string? StornoReason,
+    List<InvoiceItemDto> LineItems
 );
 
 public record ProformaInvoiceDto(
@@ -56,7 +98,7 @@ public record CreateAdvancePaymentDto(
     Guid BookingId,
     decimal Amount,
     string PaymentMethod,
-    string? Reference
+    string? Reference = null
 );
 
 public record ExchangeRateDto(
@@ -67,9 +109,4 @@ public record ExchangeRateDto(
     DateTime ValidFrom,
     DateTime? ValidTo,
     string Source
-);
-
-public record StornoRequest(
-    string Reason,
-    string? Description
 );
