@@ -138,3 +138,36 @@ public record FolioPaymentResultDto(
     decimal Amount,
     string Status
 );
+
+public record ConfirmReservationRequest(
+    Guid BookingId,
+    Guid? ConfirmedById = null,
+    string? Notes = null
+);
+
+public record CancelReservationRequest(
+    Guid BookingId,
+    string Reason,
+    Guid? CancelledById = null
+);
+
+public record MarkNoShowRequest(
+    Guid BookingId,
+    Guid? MarkedById = null,
+    string? Notes = null
+);
+
+public record ReservationResultDto(
+    Guid BookingId,
+    string Status,
+    string? CancellationReason,
+    DateTime? CancelledAt,
+    List<ReservationAuditEntryDto> AuditTrail
+);
+
+public record ReservationAuditEntryDto(
+    string Action,
+    string? PreviousValue,
+    string? NewValue,
+    DateTime ChangedAt
+);

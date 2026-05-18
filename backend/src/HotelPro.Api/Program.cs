@@ -128,6 +128,7 @@ builder.Services.AddScoped<HotelPro.Core.Services.ICheckOutWorkflowService, Hote
 builder.Services.AddScoped<HotelPro.Core.Services.IFolioLedgerService, HotelPro.Infrastructure.Services.FolioLedgerService>();
 builder.Services.AddScoped<HotelPro.Core.Services.IInvoiceWorkflowService, HotelPro.Infrastructure.Services.InvoiceWorkflowService>();
 builder.Services.AddScoped<HotelPro.Core.Services.IPaymentAllocationService, HotelPro.Infrastructure.Services.PaymentAllocationService>();
+builder.Services.AddScoped<HotelPro.Core.Services.IReservationPolicyService, HotelPro.Infrastructure.Services.ReservationPolicyService>();
 builder.Services.AddScoped<HotelPro.Core.Services.ICheckOutService, HotelPro.Infrastructure.Services.CheckOutService>();
 builder.Services.AddScoped<HotelPro.Core.Services.INightAuditService, HotelPro.Infrastructure.Services.NightAuditService>();
 builder.Services.AddScoped<HotelPro.Core.Services.IGuestService, HotelPro.Infrastructure.Services.GuestService>();
