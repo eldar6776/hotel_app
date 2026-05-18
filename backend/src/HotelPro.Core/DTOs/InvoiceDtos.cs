@@ -110,3 +110,31 @@ public record ExchangeRateDto(
     DateTime? ValidTo,
     string Source
 );
+
+public record PaymentAllocationRequest(
+    decimal TotalAmount,
+    string PaymentMethod,
+    List<FolioAllocationEntry> FolioAllocations,
+    string? Reference = null,
+    Guid? ProcessedById = null,
+    string? Notes = null
+);
+
+public record FolioAllocationEntry(
+    Guid FolioId,
+    decimal Amount
+);
+
+public record PaymentAllocationResultDto(
+    Guid AllocationId,
+    string Reference,
+    decimal TotalAmount,
+    List<FolioPaymentResultDto> FolioPayments
+);
+
+public record FolioPaymentResultDto(
+    Guid PaymentId,
+    Guid FolioId,
+    decimal Amount,
+    string Status
+);
