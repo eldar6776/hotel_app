@@ -3,18 +3,26 @@ import type { RoomDto } from '@/types/rooms'
 const statusColors: Record<string, string> = {
   Free: 'bg-emerald-500 text-white',
   Occupied: 'bg-blue-500 text-white',
+  Departing: 'bg-orange-500 text-white',
   Reserved: 'bg-amber-500 text-white',
-  Dirty: 'bg-orange-500 text-white',
+  ReservedConfirmed: 'bg-amber-500 text-white',
+  OccupiedReserved: 'bg-fuchsia-500 text-white',
+  ReservedUnconfirmed: 'bg-yellow-400 text-gray-900',
+  Dirty: 'bg-gray-500 text-white',
   OutOfOrder: 'bg-red-500 text-white',
-  OutOfService: 'bg-gray-500 text-white',
+  OutOfService: 'bg-slate-600 text-white',
 }
 
 const statusLabels: Record<string, string> = {
   Free: 'Slobodna',
   Occupied: 'Zauzeta',
+  Departing: 'Odlazak danas',
   Reserved: 'Rezervirana',
-  Dirty: 'Prljava',
-  OutOfOrder: 'Van funkcije',
+  ReservedConfirmed: 'Rezervirana - potvrdeno',
+  OccupiedReserved: 'Zauzeta + rezervirana',
+  ReservedUnconfirmed: 'Rezervirana - nepotvrdeno',
+  Dirty: 'Nije spremna',
+  OutOfOrder: 'Van upotrebe',
   OutOfService: 'Van servisa',
 }
 

@@ -68,6 +68,17 @@ public class RoomsController : ControllerBase
         return Ok(room);
     }
 
+    [HttpGet("{id:guid}/status")]
+    [Authorize(Roles = "Admin,Manager,Reception,Housekeeping")]
+    public async Task<ActionResult<RoomStatusDetailDto>> GetRoomStatus(Guid id, [FromQuery] DateTime? date)
+    {
+        var status = await _roomService.GetRoomStatusAsync(id, date);
+        if (status == null)
+            return NotFound();
+
+        return Ok(status);
+    }
+
     [HttpPost]
     [Authorize(Roles = "Admin,Manager")]
     public async Task<ActionResult<RoomDto>> CreateRoom(CreateRoomDto dto)

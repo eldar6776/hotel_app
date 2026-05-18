@@ -6,11 +6,15 @@ public static class RoomStatusTransitions
 {
     private static readonly Dictionary<RoomStatus, HashSet<RoomStatus>> AllowedTransitions = new()
     {
-        [RoomStatus.Free] = new() { RoomStatus.Reserved, RoomStatus.Occupied, RoomStatus.OutOfOrder, RoomStatus.OutOfService },
-        [RoomStatus.Reserved] = new() { RoomStatus.Occupied, RoomStatus.Free, RoomStatus.OutOfOrder },
-        [RoomStatus.Occupied] = new() { RoomStatus.Dirty, RoomStatus.OutOfOrder },
+        [RoomStatus.Free] = new() { RoomStatus.Reserved, RoomStatus.ReservedConfirmed, RoomStatus.ReservedUnconfirmed, RoomStatus.Occupied, RoomStatus.Dirty, RoomStatus.OutOfOrder, RoomStatus.OutOfService },
+        [RoomStatus.Reserved] = new() { RoomStatus.Occupied, RoomStatus.OccupiedReserved, RoomStatus.Free, RoomStatus.OutOfOrder },
+        [RoomStatus.ReservedConfirmed] = new() { RoomStatus.Occupied, RoomStatus.OccupiedReserved, RoomStatus.Free, RoomStatus.OutOfOrder },
+        [RoomStatus.ReservedUnconfirmed] = new() { RoomStatus.ReservedConfirmed, RoomStatus.Free, RoomStatus.OutOfOrder },
+        [RoomStatus.Occupied] = new() { RoomStatus.Departing, RoomStatus.Dirty, RoomStatus.OutOfOrder },
+        [RoomStatus.Departing] = new() { RoomStatus.Dirty, RoomStatus.OutOfOrder },
+        [RoomStatus.OccupiedReserved] = new() { RoomStatus.Departing, RoomStatus.Dirty, RoomStatus.OutOfOrder },
         [RoomStatus.Dirty] = new() { RoomStatus.Free, RoomStatus.OutOfOrder },
-        [RoomStatus.OutOfOrder] = new() { RoomStatus.Free, RoomStatus.OutOfService },
+        [RoomStatus.OutOfOrder] = new() { RoomStatus.Free, RoomStatus.Dirty, RoomStatus.OutOfService },
         [RoomStatus.OutOfService] = new() { RoomStatus.Free },
     };
 

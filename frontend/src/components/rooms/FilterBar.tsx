@@ -5,9 +5,13 @@ import type { RoomStatus, BuildingDto } from '@/types/rooms'
 const statusOptions: { value: RoomStatus; label: string }[] = [
   { value: 'Free', label: 'Slobodna' },
   { value: 'Occupied', label: 'Zauzeta' },
+  { value: 'Departing', label: 'Odlazak danas' },
   { value: 'Reserved', label: 'Rezervirana' },
-  { value: 'Dirty', label: 'Prljava' },
-  { value: 'OutOfOrder', label: 'Van funkcije' },
+  { value: 'ReservedConfirmed', label: 'Rezervirana - potvrdeno' },
+  { value: 'OccupiedReserved', label: 'Zauzeta + rezervirana' },
+  { value: 'ReservedUnconfirmed', label: 'Rezervirana - nepotvrdeno' },
+  { value: 'Dirty', label: 'Nije spremna' },
+  { value: 'OutOfOrder', label: 'Van upotrebe' },
   { value: 'OutOfService', label: 'Van servisa' },
 ]
 

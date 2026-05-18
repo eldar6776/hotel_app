@@ -8,18 +8,26 @@ import apiClient from '@/lib/api/client'
 const statusColors: Record<string, string> = {
   Free: 'bg-emerald-500 text-white',
   Occupied: 'bg-blue-500 text-white',
+  Departing: 'bg-orange-500 text-white',
   Reserved: 'bg-amber-500 text-white',
-  Dirty: 'bg-orange-500 text-white',
+  ReservedConfirmed: 'bg-amber-500 text-white',
+  OccupiedReserved: 'bg-fuchsia-500 text-white',
+  ReservedUnconfirmed: 'bg-yellow-400 text-gray-900',
+  Dirty: 'bg-gray-500 text-white',
   OutOfOrder: 'bg-red-500 text-white',
-  OutOfService: 'bg-gray-500 text-white',
+  OutOfService: 'bg-slate-600 text-white',
 }
 
 const statusLabels: Record<string, string> = {
   Free: 'Slobodna',
   Occupied: 'Zauzeta',
+  Departing: 'Odlazak danas',
   Reserved: 'Rezervirana',
-  Dirty: 'Prljava',
-  OutOfOrder: 'Van funkcije',
+  ReservedConfirmed: 'Rezervirana - potvrdeno',
+  OccupiedReserved: 'Zauzeta + rezervirana',
+  ReservedUnconfirmed: 'Rezervirana - nepotvrdeno',
+  Dirty: 'Nije spremna',
+  OutOfOrder: 'Van upotrebe',
   OutOfService: 'Van servisa',
 }
 
@@ -189,7 +197,7 @@ export function RoomDetail({ room, isOpen, onClose, onStatusChange }: RoomDetail
 
         {activeTab === 'guest' && (
           <div className="space-y-3">
-            {room.status === 'Occupied' ? (
+            {room.status === 'Occupied' || room.status === 'Departing' || room.status === 'OccupiedReserved' ? (
               <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 p-4">
                 <p className="text-sm font-medium text-text">Soba je trenutno zauzeta</p>
                 <p className="text-xs text-text-secondary mt-1">Detalji gosta su dostupni kroz Check-in sistem.</p>
@@ -233,7 +241,7 @@ export function RoomDetail({ room, isOpen, onClose, onStatusChange }: RoomDetail
           <div className="space-y-3">
             <p className="text-sm text-text-secondary">Promijeni status sobe:</p>
             <div className="flex flex-wrap gap-2">
-              {(['Free', 'Reserved', 'Dirty', 'OutOfOrder', 'OutOfService'] as RoomStatus[]).map((s) => (
+              {(['Free', 'ReservedConfirmed', 'ReservedUnconfirmed', 'Dirty', 'OutOfOrder', 'OutOfService'] as RoomStatus[]).map((s) => (
                 <button
                   key={s}
                   disabled={isChanging || room.status === s}
@@ -343,14 +351,14 @@ export function RoomDetail({ room, isOpen, onClose, onStatusChange }: RoomDetail
         <div className="mt-6 pt-4 border-t border-border flex flex-wrap gap-2">
           <button
             className="rounded-lg bg-primary-500 px-3 py-1.5 text-xs font-medium text-white hover:bg-primary-600 disabled:opacity-50"
-            disabled={room.status !== 'Reserved' && room.status !== 'Free'}
+            disabled={room.status !== 'Reserved' && room.status !== 'ReservedConfirmed' && room.status !== 'ReservedUnconfirmed' && room.status !== 'Free'}
             title="Check-in gosta"
           >
             Check-in
           </button>
           <button
             className="rounded-lg bg-amber-500 px-3 py-1.5 text-xs font-medium text-white hover:bg-amber-600 disabled:opacity-50"
-            disabled={room.status !== 'Occupied'}
+            disabled={room.status !== 'Occupied' && room.status !== 'Departing' && room.status !== 'OccupiedReserved'}
             title="Check-out gosta"
           >
             Check-out

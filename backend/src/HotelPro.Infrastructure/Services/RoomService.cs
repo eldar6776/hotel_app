@@ -11,11 +11,16 @@ public class RoomService : IRoomService
 {
     private readonly HotelProDbContext _dbContext;
     private readonly IRoomStatusBroadcaster _broadcaster;
+    private readonly IRoomOccupancyPolicy _occupancyPolicy;
 
-    public RoomService(HotelProDbContext dbContext, IRoomStatusBroadcaster broadcaster)
+    public RoomService(
+        HotelProDbContext dbContext,
+        IRoomStatusBroadcaster broadcaster,
+        IRoomOccupancyPolicy occupancyPolicy)
     {
         _dbContext = dbContext;
         _broadcaster = broadcaster;
+        _occupancyPolicy = occupancyPolicy;
     }
 
     public async Task<PagedResult<RoomDto>> GetRoomsAsync(RoomFilter filter)
@@ -28,11 +33,6 @@ public class RoomService : IRoomService
         if (filter.IncludeInactive)
         {
             query = query.IgnoreQueryFilters();
-        }
-
-        if (filter.Status != null && filter.Status.Count > 0)
-        {
-            query = query.Where(r => filter.Status.Contains(r.Status));
         }
 
         if (filter.BuildingId.HasValue)
@@ -55,29 +55,29 @@ public class RoomService : IRoomService
             query = query.Where(r => r.RoomNumber.Contains(filter.Search));
         }
 
-        var totalCount = await query.CountAsync();
-
-        var items = await query
+        var rooms = await query
             .OrderBy(r => r.Building.Name)
             .ThenBy(r => r.Floor)
             .ThenBy(r => r.RoomNumber)
+            .ToListAsync();
+
+        var statusMap = await _occupancyPolicy.GetRoomStatusForAllRoomsAsync(DateTime.UtcNow);
+        var mapped = rooms
+            .Select(r => MapToDto(r, statusMap.TryGetValue(r.Id, out var status) ? status.Status : r.Status))
+            .ToList();
+
+        if (filter.Status != null && filter.Status.Count > 0)
+        {
+            mapped = mapped
+                .Where(r => Enum.TryParse<RoomStatus>(r.Status, out var parsed) && filter.Status.Contains(parsed))
+                .ToList();
+        }
+
+        var totalCount = mapped.Count;
+        var items = mapped
             .Skip((filter.Page - 1) * filter.PageSize)
             .Take(filter.PageSize)
-            .Select(r => new RoomDto(
-                r.Id,
-                r.RoomNumber,
-                r.Floor,
-                r.BuildingId,
-                r.Building.Name,
-                r.RoomTypeId,
-                r.RoomType.Name,
-                r.Status.ToString(),
-                r.RoomType.BaseCapacity,
-                r.RoomType.MaxCapacity,
-                r.BasePrice,
-                r.Notes
-            ))
-            .ToListAsync();
+            .ToList();
 
         return new PagedResult<RoomDto>(items, totalCount, filter.Page, filter.PageSize);
     }
@@ -92,20 +92,19 @@ public class RoomService : IRoomService
 
         if (room == null) return null;
 
-        return new RoomDto(
-            room.Id,
-            room.RoomNumber,
-            room.Floor,
-            room.BuildingId,
-            room.Building.Name,
-            room.RoomTypeId,
-            room.RoomType.Name,
-            room.Status.ToString(),
-            room.RoomType.BaseCapacity,
-            room.RoomType.MaxCapacity,
-            room.BasePrice,
-            room.Notes
-        );
+        var status = await _occupancyPolicy.GetRoomStatusAsync(room.Id, DateTime.UtcNow);
+        return MapToDto(room, status.Status);
+    }
+
+    public async Task<RoomStatusDetailDto?> GetRoomStatusAsync(Guid id, DateTime? date = null)
+    {
+        var exists = await _dbContext.Rooms
+            .IgnoreQueryFilters()
+            .AnyAsync(x => x.Id == id);
+
+        if (!exists) return null;
+
+        return await _occupancyPolicy.GetRoomStatusAsync(id, date ?? DateTime.UtcNow);
     }
 
     public async Task<RoomDto> CreateRoomAsync(CreateRoomDto dto)
@@ -247,5 +246,23 @@ public class RoomService : IRoomService
 
         room.IsActive = false;
         await _dbContext.SaveChangesAsync();
+    }
+
+    private static RoomDto MapToDto(Room room, RoomStatus computedStatus)
+    {
+        return new RoomDto(
+            room.Id,
+            room.RoomNumber,
+            room.Floor,
+            room.BuildingId,
+            room.Building.Name,
+            room.RoomTypeId,
+            room.RoomType.Name,
+            computedStatus.ToString(),
+            room.RoomType.BaseCapacity,
+            room.RoomType.MaxCapacity,
+            room.BasePrice,
+            room.Notes
+        );
     }
 }

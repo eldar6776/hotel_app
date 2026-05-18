@@ -164,7 +164,7 @@
 - [x] **A.1:** Create STATUS_REALISTIC.md - [COMPLETED 2026-05-18 - Codex]
 - [x] **A.2:** Add [Mock] attribute + feature flag to mock controllers - [COMPLETED 2026-05-18 - Codex]
 - [x] **A.3:** Create HotelConfig entity + admin settings API - [COMPLETED 2026-05-18 - Codex]
-- [-] **B.1:** RoomOccupancyPolicy — 7 statuses + clean override - [IN_PROGRESS] - 2026-05-18 - Codex
+- [x] **B.1:** RoomOccupancyPolicy — 7 statuses + clean override - [COMPLETED 2026-05-18 - Codex]
 - [ ] **B.2:** StayLifecycleService — check-in with multi-guest
 - [ ] **B.3:** NightLedgerService — materialized nights
 - [ ] **B.4:** CheckOutWorkflowService — full + partial checkout
