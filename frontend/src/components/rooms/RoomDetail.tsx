@@ -58,7 +58,7 @@ export function RoomDetail({ room, isOpen, onClose, onStatusChange }: RoomDetail
   const loadOooEntries = async () => {
     try {
       setIsLoadingOoo(true)
-      const res = await apiClient.get(`/v2/rooms/${room.id}/ooo`)
+      const res = await apiClient.get(`/rooms/${room.id}/ooo`)
       setOooEntries(res.data)
     } catch {
       // silent
@@ -82,7 +82,7 @@ export function RoomDetail({ room, isOpen, onClose, onStatusChange }: RoomDetail
   const handleCreateOoo = async (e: React.FormEvent) => {
     e.preventDefault()
     try {
-      await apiClient.post(`/v2/rooms/${room.id}/ooo`, {
+      await apiClient.post(`/rooms/${room.id}/ooo`, {
         reason: oooForm.reason,
         description: oooForm.description || null,
         startDate: oooForm.startDate || new Date().toISOString(),
@@ -99,7 +99,7 @@ export function RoomDetail({ room, isOpen, onClose, onStatusChange }: RoomDetail
 
   const handleResolveOoo = async (id: string) => {
     try {
-      await apiClient.post(`/v2/rooms/${room.id}/ooo/${id}/resolve`, {
+      await apiClient.post(`/rooms/${room.id}/ooo/${id}/resolve`, {
         resolutionNotes: 'Reseno',
       })
       onStatusChange?.()

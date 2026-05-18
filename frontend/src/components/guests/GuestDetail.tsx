@@ -17,7 +17,7 @@ export function GuestDetail({ guest, onClose }: { guest: GuestDto; onClose: () =
   const [activeTab, setActiveTab] = useState<'info' | 'stays' | 'bookings'>('info')
 
   useEffect(() => {
-    apiClient.get(`/v2/guests/${guest.id}/profile`).then(r => setProfile(r.data)).catch(() => {})
+    apiClient.get(`/guests/${guest.id}/profile`).then(r => setProfile(r.data)).catch(() => {})
   }, [guest.id])
 
   return (

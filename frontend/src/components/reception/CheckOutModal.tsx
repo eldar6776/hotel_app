@@ -27,7 +27,7 @@ export function CheckOutModal({ booking, onClose, onSuccess }: Props) {
     e.preventDefault()
     setIsLoading(true)
     try {
-      const res = await apiClient.post('/v2/reception/check-out', {
+      const res = await apiClient.post('/reception/check-out', {
         bookingId: booking.id,
         paymentMethod,
         paymentReference: null,

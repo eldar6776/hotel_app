@@ -35,7 +35,7 @@ export function CheckInModal({ booking, onClose, onSuccess }: Props) {
     if (!roomId) return
     setIsLoading(true)
     try {
-      const res = await apiClient.post('/v2/reception/check-in', {
+      const res = await apiClient.post('/reception/check-in', {
         bookingId: booking.id,
         roomId,
         guestDocuments: null,

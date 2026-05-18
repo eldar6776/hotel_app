@@ -145,7 +145,8 @@
 - [x] **T18.6: Korisnicka dokumentacija (user manual, API docs)** - [COMPLETED 2026-05-16 - opencode]
 
 ### Faza 19: Demo podaci i provjera aplikacije
-- [-] **T19.1: Demo seed podaci i frontend smoke pregled aplikacije** - [IN_PROGRESS] - 2026-05-18 - Codex
+- [x] **T19.1: Demo seed podaci i frontend smoke pregled aplikacije** - [COMPLETED 2026-05-18 - Codex]
+- [-] **T19.2: Frontend kontrast teksta i bijela slova na bijeloj podlozi** - [IN_PROGRESS] - 2026-05-18 - Codex
 
 ---
 
@@ -158,6 +159,14 @@ Sljedece grupe se mogu raditi istovremeno:
 - **Grupa D (MQTT/IoT):** T14.1, T14.2, T14.3 (nezavisna infrastrukturno)
 
 ## 3. AUDIT TRAIL
+
+### 2026-05-18 — Codex
+- **T19.1 COMPLETED**: Prosiren `TestDataSeeder` za demo hotel scenario: 4 sprata x 10 soba, 100 demo gostiju, prosle/aktivne/buduce rezervacije, folije, stay nights, placanja, housekeeping logovi, work orders, tarife i amenities.
+- PostgreSQL baza provjerena i dopunjena: 65 soba ukupno, 110 gostiju, 150 rezervacija, 70 folija, 58 stay zapisa, 215 stay_nights, 12 work orders, 20 housekeeping logova.
+- Ispravljen API startup logging za Windows bez Event Log prava.
+- Dodan `EmployeesController` za `/settings/employees` frontend stranicu.
+- Ispravljeni frontend API URL-ovi koji su duplirali `/v2`.
+- Verifikacija: `dotnet build`, `dotnet test` 113/113, `npm.cmd run build`, API smoke i frontend route smoke 200 OK.
 
 ### 2026-05-15 — Antigravity (Claude Opus)
 - Zavrsena analiza legacy koda i MySQL baze
