@@ -1,6 +1,7 @@
 import apiClient from '@/lib/api/client'
 import type {
   CreateFolioInvoiceRequest,
+  FolioLedgerDto,
   InvoiceResultDto,
   PaymentAllocationRequest,
   PaymentAllocationResultDto,
@@ -29,10 +30,21 @@ export const invoiceService = {
 
   async stornoInvoice(request: StornoInvoiceRequest): Promise<InvoiceResultDto> {
     const response = await apiClient.post<InvoiceResultDto>(
-      `/invoices/${request.invoiceId}/storno`,
+      `/invoices/${request.invoiceId}/storno-workflow`,
       { reason: request.reason }
     )
     return response.data
+  },
+}
+
+export const folioLedgerService = {
+  async getLedger(folioId: string): Promise<FolioLedgerDto> {
+    const response = await apiClient.get<FolioLedgerDto>(`/folios/${folioId}/ledger`)
+    return response.data
+  },
+
+  async reconcileBalance(folioId: string): Promise<void> {
+    await apiClient.post(`/folios/${folioId}/reconcile`)
   },
 }
 

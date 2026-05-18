@@ -96,3 +96,59 @@ export interface MarkNoShowRequest {
   markedById?: string | null
   notes?: string | null
 }
+
+export interface FullCheckOutRequest {
+  roomId: string
+  checkedOutBy?: string | null
+  createUnpaidRecords?: boolean
+}
+
+export interface PartialCheckOutRequest {
+  stayId: string
+  checkedOutBy?: string | null
+}
+
+export interface CheckOutWorkflowResponse {
+  roomId: string
+  roomNumber: string
+  folioId: string
+  folioNumber: string
+  guestsCheckedOut: number
+  nightsClosed: number
+  expensesLocked: number
+  folioClosed: boolean
+  hasUnpaidBalance: boolean
+  outstandingAmount: number
+}
+
+export interface PartialCheckOutResponse {
+  stayId: string
+  guestId: string
+  guestName: string
+  folioId: string
+  nightsClosedForGuest: number
+  nightsCreatedForRemaining: number
+  folioStillOpen: boolean
+  remainingGuests: number
+}
+
+export interface FolioLedgerEntryDto {
+  type: string
+  date: string
+  description: string
+  debit: number
+  credit: number
+  referenceId: string | null
+}
+
+export interface FolioLedgerDto {
+  folioId: string
+  folioNumber: string
+  status: string
+  nightCharges: number
+  otherCharges: number
+  totalCharges: number
+  totalPayments: number
+  balance: number
+  entries: FolioLedgerEntryDto[]
+}

@@ -40,7 +40,8 @@ public class ReceptionTests
     private NightAuditService CreateNightAuditService(HotelProDbContext context)
     {
         var logger = new Mock<ILogger<NightAuditService>>();
-        return new NightAuditService(context, logger.Object);
+        var nightLedger = new NightLedgerService(context, new Mock<ILogger<NightLedgerService>>().Object);
+        return new NightAuditService(context, nightLedger, logger.Object);
     }
 
     private async Task<Guest> EnsureGuestAsync(HotelProDbContext context)

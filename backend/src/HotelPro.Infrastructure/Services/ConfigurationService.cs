@@ -48,7 +48,14 @@ public class ConfigurationService : IConfigurationService
         new("Hotel", "CheckInHour", "8", false, true, "Default check-in hour"),
         new("Hotel", "CheckOutHour", "12", false, true, "Default check-out hour"),
         new("Hotel", "CurrencyCode", "EUR", false, true, "Default currency code"),
-        new("Hotel", "BillingMode", "PerPerson", false, true, "Billing mode: PerPerson or PerRoom")
+        new("Hotel", "BillingMode", "PerPerson", false, true, "Billing mode: PerPerson or PerRoom"),
+        new("Feature", "UseNewStayWorkflow", "true", false, true, "Use new StayLifecycleService for check-in"),
+        new("Feature", "UseNewCheckOutWorkflow", "true", false, true, "Use new CheckOutWorkflowService for check-out"),
+        new("Feature", "UseFolioLedger", "true", false, true, "Use FolioLedgerService for balance computation"),
+        new("Feature", "UseNightLedger", "true", false, true, "Use NightLedgerService for night generation"),
+        new("Feature", "UseInvoiceWorkflow", "true", false, true, "Use InvoiceWorkflowService for invoicing"),
+        new("Feature", "UsePaymentAllocation", "true", false, true, "Use PaymentAllocationService for split payments"),
+        new("Feature", "UseReservationPolicy", "true", false, true, "Use ReservationPolicyService for booking status changes")
     ];
 
     private readonly HotelProDbContext _dbContext;

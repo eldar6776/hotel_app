@@ -15,11 +15,16 @@ public class BookingsController : ControllerBase
 {
     private readonly IBookingService _bookingService;
     private readonly IEmailService _emailService;
+    private readonly IReservationPolicyService _reservationPolicy;
 
-    public BookingsController(IBookingService bookingService, IEmailService emailService)
+    public BookingsController(
+        IBookingService bookingService,
+        IEmailService emailService,
+        IReservationPolicyService reservationPolicy)
     {
         _bookingService = bookingService;
         _emailService = emailService;
+        _reservationPolicy = reservationPolicy;
     }
 
     [HttpGet]
@@ -104,7 +109,26 @@ public class BookingsController : ControllerBase
     {
         try
         {
-            await _bookingService.UpdateBookingStatusAsync(id, newStatus);
+            if (newStatus == BookingStatus.Confirmed)
+            {
+                await _reservationPolicy.ConfirmReservationAsync(
+                    new ConfirmReservationRequest(id));
+            }
+            else if (newStatus == BookingStatus.Cancelled)
+            {
+                await _reservationPolicy.CancelReservationAsync(
+                    new CancelReservationRequest(id, "Manual cancellation"));
+            }
+            else if (newStatus == BookingStatus.NoShow)
+            {
+                await _reservationPolicy.MarkNoShowAsync(
+                    new MarkNoShowRequest(id));
+            }
+            else
+            {
+                await _bookingService.UpdateBookingStatusAsync(id, newStatus);
+            }
+
             return NoContent();
         }
         catch (InvalidOperationException ex)

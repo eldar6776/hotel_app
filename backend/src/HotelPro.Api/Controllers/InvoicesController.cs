@@ -10,8 +10,15 @@ namespace HotelPro.Api.Controllers;
 public class InvoicesController : ControllerBase
 {
     private readonly IInvoiceGenerator _invoiceGenerator;
+    private readonly IInvoiceWorkflowService _invoiceWorkflow;
 
-    public InvoicesController(IInvoiceGenerator invoiceGenerator) => _invoiceGenerator = invoiceGenerator;
+    public InvoicesController(
+        IInvoiceGenerator invoiceGenerator,
+        IInvoiceWorkflowService invoiceWorkflow)
+    {
+        _invoiceGenerator = invoiceGenerator;
+        _invoiceWorkflow = invoiceWorkflow;
+    }
 
     [HttpPost]
     [Authorize(Policy = "CanManageBookings")]
@@ -21,12 +28,35 @@ public class InvoicesController : ControllerBase
         return Ok(invoice);
     }
 
+    [HttpPost("folio")]
+    [Authorize(Policy = "CanManageBookings")]
+    public async Task<ActionResult<InvoiceResultDto>> CreateFolioInvoice(CreateFolioInvoiceRequest request)
+    {
+        try
+        {
+            var result = await _invoiceWorkflow.CreateInvoiceAsync(request);
+            return Ok(result);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new { error = ex.Message });
+        }
+    }
+
     [HttpGet("{id:guid}")]
     [Authorize(Policy = "CanManageBookings")]
     public async Task<ActionResult<InvoiceDetailDto>> GetInvoice(Guid id)
     {
         var inv = await _invoiceGenerator.GetInvoiceAsync(id);
         return inv == null ? NotFound() : Ok(inv);
+    }
+
+    [HttpGet("folio/{folioId:guid}")]
+    [Authorize(Policy = "CanManageBookings")]
+    public async Task<ActionResult<IEnumerable<InvoiceResultDto>>> GetInvoicesForFolio(Guid folioId)
+    {
+        var invoices = await _invoiceWorkflow.GetInvoicesForFolioAsync(folioId);
+        return Ok(invoices);
     }
 
     [HttpGet("{id:guid}/pdf")]
@@ -44,4 +74,21 @@ public class InvoicesController : ControllerBase
         var result = await _invoiceGenerator.StornoInvoiceAsync(id, req.Reason, "");
         return Ok(result);
     }
+
+    [HttpPost("{id:guid}/storno-workflow")]
+    [Authorize(Policy = "CanManageBookings")]
+    public async Task<ActionResult<InvoiceResultDto>> StornoWorkflow(Guid id, [FromBody] StornoInvoiceWorkflowRequest req)
+    {
+        try
+        {
+            var result = await _invoiceWorkflow.StornoInvoiceAsync(new StornoInvoiceRequest(id, req.Reason));
+            return Ok(result);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new { error = ex.Message });
+        }
+    }
 }
+
+public record StornoInvoiceWorkflowRequest(string Reason);

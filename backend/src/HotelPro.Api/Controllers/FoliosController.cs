@@ -13,10 +13,12 @@ namespace HotelPro.Api.Controllers;
 public class FoliosController : ControllerBase
 {
     private readonly IFolioService _folioService;
+    private readonly IFolioLedgerService _folioLedgerService;
 
-    public FoliosController(IFolioService folioService)
+    public FoliosController(IFolioService folioService, IFolioLedgerService folioLedgerService)
     {
         _folioService = folioService;
+        _folioLedgerService = folioLedgerService;
     }
 
     [HttpGet("open"), Authorize(Policy = "CanManageBookings")]
@@ -138,8 +140,38 @@ public class FoliosController : ControllerBase
     [Authorize(Policy = "CanManageBookings")]
     public async Task<ActionResult<decimal>> GetBalance(Guid folioId)
     {
-        var balance = await _folioService.GetFolioBalanceAsync(folioId);
+        var balance = await _folioLedgerService.GetFolioBalanceAsync(folioId);
         return Ok(new { folioId, balance });
+    }
+
+    [HttpGet("{folioId:guid}/ledger")]
+    [Authorize(Policy = "CanManageBookings")]
+    public async Task<ActionResult<FolioLedgerDto>> GetLedger(Guid folioId)
+    {
+        try
+        {
+            var ledger = await _folioLedgerService.GetFolioLedgerAsync(folioId);
+            return Ok(ledger);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return NotFound(new { error = ex.Message });
+        }
+    }
+
+    [HttpPost("{folioId:guid}/reconcile")]
+    [Authorize(Policy = "CanManageBookings")]
+    public async Task<ActionResult> ReconcileBalance(Guid folioId)
+    {
+        try
+        {
+            await _folioLedgerService.ReconcileFolioBalanceAsync(folioId);
+            return NoContent();
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new { error = ex.Message });
+        }
     }
 }
 

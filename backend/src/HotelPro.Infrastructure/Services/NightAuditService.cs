@@ -10,13 +10,16 @@ namespace HotelPro.Infrastructure.Services;
 public class NightAuditService : INightAuditService
 {
     private readonly HotelProDbContext _dbContext;
+    private readonly INightLedgerService _nightLedger;
     private readonly ILogger<NightAuditService> _logger;
 
     public NightAuditService(
         HotelProDbContext dbContext,
+        INightLedgerService nightLedger,
         ILogger<NightAuditService> logger)
     {
         _dbContext = dbContext;
+        _nightLedger = nightLedger;
         _logger = logger;
     }
 
@@ -54,55 +57,73 @@ public class NightAuditService : INightAuditService
             var totalCharges = 0m;
             var processed = 0;
 
-            foreach (var booking in checkedInBookings)
+            var nightsGenerated = await _nightLedger.GenerateNightsForDateAsync(auditDateOnly);
+            _logger.LogInformation("Night ledger generated {Count} nights for {Date}", nightsGenerated, auditDateOnly);
+
+            if (nightsGenerated == 0)
             {
-                var nights = booking.BookingRooms.Where(br => br.Status == BookingRoomStatus.Occupied).ToList();
-                if (nights.Count == 0) continue;
-
-                foreach (var br in nights)
+                foreach (var booking in checkedInBookings)
                 {
-                    var folio = await _dbContext.Folios
-                        .IgnoreQueryFilters()
-                        .FirstOrDefaultAsync(f => f.BookingId == booking.Id && f.Status == FolioStatus.Open);
+                    var bookingNights = booking.BookingRooms.Where(br => br.Status == BookingRoomStatus.Occupied).ToList();
+                    if (bookingNights.Count == 0) continue;
 
-                    if (folio == null) continue;
-
-                    var stayNight = new StayNight
+                    foreach (var br in bookingNights)
                     {
-                        Id = Guid.NewGuid(),
-                        FolioId = folio.Id,
-                        Date = auditDateOnly,
-                        TariffAmount = br.PricePerNight,
-                        DiscountPercent = 0,
-                        Status = NightStatus.Active,
-                        IsComp = false,
-                    };
+                        var folio = await _dbContext.Folios
+                            .IgnoreQueryFilters()
+                            .FirstOrDefaultAsync(f => f.BookingId == booking.Id && f.Status == FolioStatus.Open);
 
-                    _dbContext.StayNights.Add(stayNight);
+                        if (folio == null) continue;
 
-                    var charge = new Charge
-                    {
-                        Id = Guid.NewGuid(),
-                        FolioId = folio.Id,
-                        ChargeType = ChargeType.StayNight,
-                        Description = $"Noćenje - {auditDateOnly:dd.MM.yyyy.}",
-                        Quantity = 1,
-                        UnitPrice = br.PricePerNight,
-                        TotalPrice = br.PricePerNight,
-                        VatAmount = 0,
-                        ChargeDate = auditDateOnly,
-                        IsTaxable = true
-                    };
+                        var existingNight = await _dbContext.StayNights
+                            .AnyAsync(n => n.FolioId == folio.Id && n.Date == auditDateOnly);
 
-                    _dbContext.Charges.Add(charge);
+                        if (existingNight) continue;
 
-                    folio.Balance += br.PricePerNight;
-                    folio.UpdatedAt = DateTime.UtcNow;
+                        _dbContext.StayNights.Add(new StayNight
+                        {
+                            Id = Guid.NewGuid(),
+                            FolioId = folio.Id,
+                            Date = auditDateOnly,
+                            TariffAmount = br.PricePerNight,
+                            DiscountPercent = 0,
+                            Status = NightStatus.Active,
+                            IsComp = false,
+                        });
 
-                    totalCharges += br.PricePerNight;
+                        var charge = new Charge
+                        {
+                            Id = Guid.NewGuid(),
+                            FolioId = folio.Id,
+                            ChargeType = ChargeType.StayNight,
+                            Description = $"Noćenje - {auditDateOnly:dd.MM.yyyy.}",
+                            Quantity = 1,
+                            UnitPrice = br.PricePerNight,
+                            TotalPrice = br.PricePerNight,
+                            VatAmount = 0,
+                            ChargeDate = auditDateOnly,
+                            IsTaxable = true
+                        };
+
+                        _dbContext.Charges.Add(charge);
+
+                        folio.Balance += br.PricePerNight;
+                        folio.UpdatedAt = DateTime.UtcNow;
+
+                        totalCharges += br.PricePerNight;
+                    }
+
+                    processed++;
                 }
-
-                processed++;
+            }
+            else
+            {
+                foreach (var booking in checkedInBookings)
+                {
+                    var bookingNights = booking.BookingRooms.Where(br => br.Status == BookingRoomStatus.Occupied).ToList();
+                    if (bookingNights.Count > 0) processed++;
+                    totalCharges += bookingNights.Sum(br => br.PricePerNight);
+                }
             }
 
             var confirmedBookings = await _dbContext.Bookings

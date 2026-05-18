@@ -207,6 +207,7 @@ public class StayLifecycleService : IStayLifecycleService
                 Id = Guid.NewGuid(),
                 GuestId = guestEntry.GuestId,
                 BookingId = request.BookingId ?? Guid.Empty,
+                StayId = stay.Id,
                 RoomId = room.Id,
                 CheckedInAt = checkInDate,
                 RoomNumber = room.RoomNumber,
