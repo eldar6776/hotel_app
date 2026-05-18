@@ -168,7 +168,7 @@
 - [x] **B.2:** StayLifecycleService — check-in with multi-guest - [COMPLETED 2026-05-18 - opencode (glm-5.1)]
 - [x] **B.3:** NightLedgerService — materialized nights - [COMPLETED 2026-05-18 - opencode (glm-5.1)]
 - [x] **B.4:** CheckOutWorkflowService — full + partial checkout - [COMPLETED 2026-05-18 - opencode (glm-5.1)]
-- [ ] **B.5:** FolioLedgerService — ledger aggregation
+- [x] **B.5:** FolioLedgerService — ledger aggregation - [COMPLETED 2026-05-18 - opencode (glm-5.1)]
 - [ ] **B.6:** InvoiceWorkflowService — snapshot + storno
 - [ ] **B.7:** PaymentAllocationService — split payment
 - [ ] **B.8:** ReservationPolicyService — confirmation/cancellation
