@@ -16,7 +16,7 @@ No edits are allowed before this procedure is completed.
 
 Before reading FSD, before creating checkpoint, before any implementation:
 
-1. Open `STATUS.md`
+1. Open `.agents\STATUS.md`
 2. Find the task you intend to work on
 3. Check the task marker:
    - `[-]` = **IN_PROGRESS — STOP. Another agent has claimed this task. Do NOT proceed.**
