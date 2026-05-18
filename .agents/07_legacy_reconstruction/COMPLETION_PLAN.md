@@ -328,3 +328,48 @@ Svaki output dokument mora zadovoljiti:
 2. **Completeness test**: Nema "UNKNOWN" u kritičnim mjestima (P0 statusi, P0 tokovi)
 3. **Contradiction test**: Ne kontradiktuje drugi dokument
 4. **Implementation test**: Developer može pročitati dokument i implementirati bez dodatnih pitanja
+
+---
+
+### KORAK 8: Commit i push na GitHub
+
+**Cilj:** Sva analiza bude dostupna na GitHubu za daljni rad
+
+**Aktivnosti:**
+1. `git add .` - dodati sve nove i izmijenjene fajlove
+2. `git commit -m "feat: legacy analysis complete - 16 docs + completion plan + 7 new steps pending"`
+3. `git push origin main` (ili odgovarajuću branch)
+
+**Fajlovi za commit:**
+
+Postojeći (već stage-ani):
+- `LEGACY_ANALYSIS/00_DATABASE_SCHEMA.md`
+- `LEGACY_ANALYSIS/01_GLOBALS.md`
+- `LEGACY_ANALYSIS/02_MODULEKOD_FUNCTIONS.md`
+- `LEGACY_ANALYSIS/10_CHECKIN.md`
+- `LEGACY_ANALYSIS/12_ROOM_STATUS.md`
+- `LEGACY_ANALYSIS/13_RESERVATIONS.md`
+- `LEGACY_ANALYSIS/14_PAYMENT.md`
+- `LEGACY_ANALYSIS/15_EXPENSES_NIGHTS.md`
+- `LEGACY_ANALYSIS/16_INVOICE_CHECKOUT.md`
+- `LEGACY_ANALYSIS/17_FISCAL_PROFORMA.md`
+- `LEGACY_ANALYSIS/20_GUESTS.md`
+- `LEGACY_ANALYSIS/21_REPORTS.md`
+- `LEGACY_ANALYSIS/22_PARTNERS_TARIFFS_SETTINGS.md`
+- `LEGACY_ANALYSIS/23_CARDS_EXPORT_MISC.md`
+- `LEGACY_ANALYSIS/30_STATUS_MATRIX.md`
+- `LEGACY_ANALYSIS/40_GOLDEN_SCENARIOS.md`
+- `ANALYSIS_PLAN.md`
+- `COMPLETION_PLAN.md`
+
+Novi (nakon koraka 1-7):
+- `LEGACY_ANALYSIS/03_STORED_PROCEDURES.md`
+- `LEGACY_ANALYSIS/24_MAIN_MENU_ADMIN.md`
+- `LEGACY_ANALYSIS/25_SETTINGS_CONFIGURATION.md`
+- `LEGACY_ANALYSIS/35_CROSS_FLOW_DEPENDENCIES.md`
+- `LEGACY_ANALYSIS/45_REPORTS_CONTENT.md`
+- `LEGACY_ANALYSIS/50_DOMAIN_MODEL_MAPPING.md`
+- `LEGACY_ANALYSIS/60_API_SPECIFICATION.md`
+
+**VAŽNO:** Commit se radi NAKON što se svi koraci 1-7 završe,
+i prije toga se provjeri da nema secrets/credentials u fajlovima.
