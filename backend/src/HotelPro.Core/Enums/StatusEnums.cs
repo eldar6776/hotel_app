@@ -168,6 +168,26 @@ public enum ChargeType
     Other
 }
 
+public enum GuestCategory
+{
+    Unknown = 0,
+    Adult = 1,
+    Minor = 3,
+    Child = 4
+}
+
+public enum BillingMode
+{
+    SplitPerPerson = 0,
+    FullPerPerson = 1
+}
+
+public enum NightStatus
+{
+    Active = 0,
+    Closed = 1
+}
+
 public enum DocumentType
 {
     Passport,

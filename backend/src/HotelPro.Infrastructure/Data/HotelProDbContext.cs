@@ -69,6 +69,7 @@ public class HotelProDbContext : DbContext
     public DbSet<EmailLog> EmailLogs => Set<EmailLog>();
     public DbSet<NightAuditLog> NightAuditLogs => Set<NightAuditLog>();
     public DbSet<GuestStayHistory> GuestStayHistories => Set<GuestStayHistory>();
+    public DbSet<Stay> Stays => Set<Stay>();
     public DbSet<DayLock> DayLocks => Set<DayLock>();
     public DbSet<InvoiceSequence> InvoiceSequences => Set<InvoiceSequence>();
     public DbSet<ProformaInvoice> ProformaInvoices => Set<ProformaInvoice>();
@@ -105,6 +106,7 @@ public class HotelProDbContext : DbContext
         modelBuilder.ApplyConfiguration(new ServiceCatalogConfiguration());
         modelBuilder.ApplyConfiguration(new FolioConfiguration());
         modelBuilder.ApplyConfiguration(new StayNightConfiguration());
+        modelBuilder.ApplyConfiguration(new StayConfiguration());
         modelBuilder.ApplyConfiguration(new ChargeConfiguration());
         modelBuilder.ApplyConfiguration(new PaymentConfiguration());
         modelBuilder.ApplyConfiguration(new ExpenseConfiguration());

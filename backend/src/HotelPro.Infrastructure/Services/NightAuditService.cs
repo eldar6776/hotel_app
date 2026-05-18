@@ -72,7 +72,9 @@ public class NightAuditService : INightAuditService
                         Id = Guid.NewGuid(),
                         FolioId = folio.Id,
                         Date = auditDateOnly,
-                        RoomPrice = br.PricePerNight,
+                        TariffAmount = br.PricePerNight,
+                        DiscountPercent = 0,
+                        Status = NightStatus.Active,
                         IsComp = false,
                     };
 

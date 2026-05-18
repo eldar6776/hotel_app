@@ -240,7 +240,7 @@ public class FolioService : IFolioService
             sn.Id,
             sn.FolioId,
             sn.Date,
-            sn.RoomPrice,
+            sn.TariffAmount,
             sn.IsComp,
             sn.Notes
         )).ToList();
