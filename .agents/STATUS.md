@@ -144,6 +144,9 @@
 - [x] **T18.5: PCI DSS audit — tokenizacija kartica, payment flow security** - [COMPLETED 2026-05-16 - opencode]
 - [x] **T18.6: Korisnicka dokumentacija (user manual, API docs)** - [COMPLETED 2026-05-16 - opencode]
 
+### Faza 19: Demo podaci i provjera aplikacije
+- [-] **T19.1: Demo seed podaci i frontend smoke pregled aplikacije** - [IN_PROGRESS] - 2026-05-18 - Codex
+
 ---
 
 ## 2. PARALELNI TOKOVI
