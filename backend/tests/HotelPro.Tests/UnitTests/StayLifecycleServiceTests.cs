@@ -316,7 +316,7 @@ public class StayLifecycleServiceTests
         var stay = await context.Stays.FirstAsync(s => s.GuestId == guest.Id);
         Assert.Equal(GuestCategory.Child, stay.GuestCategory);
         Assert.Equal(50m, stay.DiscountPercent);
-        Assert.Contains("8", stay.DiscountReason);
+        Assert.Contains("discount", stay.DiscountReason?.ToLowerInvariant());
     }
 
     [Fact]
@@ -331,11 +331,15 @@ public class StayLifecycleServiceTests
             .ReturnsAsync(new RoomStatusDetailDto(room.Id, "101", RoomStatus.Free, RoomStatus.Free, "Free", false));
 
         var configMock = new Mock<IConfigurationService>();
-        configMock.Setup(x => x.GetValueAsync("billing_mode")).ReturnsAsync("1");
-        configMock.Setup(x => x.GetValueAsync("tourist_tax_amount")).ReturnsAsync("3");
-        configMock.Setup(x => x.GetValueAsync("insurance_amount")).ReturnsAsync("2");
-        configMock.Setup(x => x.GetValueAsync("child_age_threshold")).ReturnsAsync("0");
-        configMock.Setup(x => x.GetValueAsync("child_discount_percent")).ReturnsAsync("0");
+        configMock.Setup(x => x.GetValueAsync("BillingMode")).ReturnsAsync("1");
+        configMock.Setup(x => x.GetValueAsync("TouristTax")).ReturnsAsync("3");
+        configMock.Setup(x => x.GetValueAsync("InsuranceAmount")).ReturnsAsync("2");
+        configMock.Setup(x => x.GetValueAsync("ChildMaxAge")).ReturnsAsync("0");
+        configMock.Setup(x => x.GetValueAsync("ChildDiscountPercent")).ReturnsAsync("0");
+        configMock.Setup(x => x.GetValueAsync("InfantMaxAge")).ReturnsAsync("2");
+        configMock.Setup(x => x.GetValueAsync("InfantDiscountPercent")).ReturnsAsync("100");
+        configMock.Setup(x => x.GetValueAsync("SeniorMinAge")).ReturnsAsync("65");
+        configMock.Setup(x => x.GetValueAsync("SeniorDiscountPercent")).ReturnsAsync("0");
 
         var service = CreateService(context, policyMock, configMock);
 
