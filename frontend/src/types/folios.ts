@@ -13,10 +13,16 @@ export interface FolioChargeDto {
 export interface FolioStayNightDto {
   id: string
   folioId: string
+  stayId: string | null
+  roomId: string
   date: string
-  roomPrice: number
+  tariffAmount: number
+  discountPercent: number
+  status: string
   isComp: boolean
+  description: string | null
   notes: string | null
+  closedAt: string | null
 }
 
 export interface FolioDto {
