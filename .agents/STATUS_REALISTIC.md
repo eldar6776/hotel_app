@@ -169,11 +169,11 @@
 - [x] **B.3:** NightLedgerService — materialized nights - [COMPLETED 2026-05-18 - opencode (glm-5.1)]
 - [x] **B.4:** CheckOutWorkflowService — full + partial checkout - [COMPLETED 2026-05-18 - opencode (glm-5.1)]
 - [x] **B.5:** FolioLedgerService — ledger aggregation - [COMPLETED 2026-05-18 - opencode (glm-5.1)]
-- [-] **B.6:** InvoiceWorkflowService — snapshot + storno - [IN_PROGRESS] - 2026-05-18 - opencode (glm-5.1)
-- [ ] **B.7:** PaymentAllocationService — split payment
-- [ ] **B.8:** ReservationPolicyService — confirmation/cancellation
-- [ ] **C:** EF Core migration for all new entities/fields
-- [ ] **D:** Frontend API adaptation
+- [x] **B.6:** InvoiceWorkflowService — snapshot + storno - [COMPLETED 2026-05-18 - opencode (glm-5.1)]
+- [x] **B.7:** PaymentAllocationService — split payment - [COMPLETED 2026-05-18 - opencode (glm-5.1)]
+- [x] **B.8:** ReservationPolicyService — confirmation/cancellation - [COMPLETED 2026-05-18 - opencode (glm-5.1)]
+- [x] **C:** EF Core migration for all new entities/fields - [COMPLETED 2026-05-18 - opencode (glm-5.1)]
+- [x] **D:** Frontend API adaptation - [COMPLETED 2026-05-18 - opencode (glm-5.1)]
 - [ ] **E:** Integration configuration (API keys, feature flags, IoT toggle)
 
 ---
