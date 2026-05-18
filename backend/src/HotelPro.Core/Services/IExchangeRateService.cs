@@ -7,4 +7,5 @@ public interface IExchangeRateService
     Task<List<ExchangeRateDto>> GetCurrentRatesAsync();
     Task UpdateRateAsync(string currencyCode, decimal rate);
     Task<decimal> ConvertAsync(decimal amount, string fromCurrency, string toCurrency);
+    Task<int> SyncRatesFromExternalApiAsync(string? baseCurrency = null);
 }

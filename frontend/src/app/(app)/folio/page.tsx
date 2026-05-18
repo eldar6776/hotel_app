@@ -117,7 +117,7 @@ export default function FolioPage() {
             const isExpanded = expandedFolio === folio.id
             const isChargeOpen = chargeFormFolio === folio.id
             const totalCharges = folio.charges.reduce((s, c) => s + c.totalPrice, 0)
-            const totalNights = folio.stayNights.reduce((s, n) => s + n.roomPrice, 0)
+            const totalNights = folio.stayNights.reduce((s, n) => s + n.tariffAmount, 0)
 
             return (
               <div key={folio.id} className="rounded-xl border border-border bg-surface shadow-sm overflow-hidden">
@@ -283,7 +283,7 @@ export default function FolioPage() {
                                 <p className="text-text font-medium">Nocenje</p>
                                 <p className="text-xs text-text-secondary">{new Date(night.date).toLocaleDateString()}{night.isComp ? ' · Komp' : ''}</p>
                               </div>
-                              <span className="font-bold text-text">{night.roomPrice.toFixed(2)} €</span>
+                              <span className="font-bold text-text">{night.tariffAmount.toFixed(2)} €</span>
                             </div>
                           ))}
                         </div>

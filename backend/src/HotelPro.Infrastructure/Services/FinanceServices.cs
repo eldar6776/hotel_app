@@ -4,6 +4,8 @@ using HotelPro.Core.Enums;
 using HotelPro.Core.Services;
 using HotelPro.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using System.Net.Http.Json;
 
 namespace HotelPro.Infrastructure.Services;
 
@@ -129,8 +131,18 @@ public class AdvancePaymentService : IAdvancePaymentService
 public class ExchangeRateService : IExchangeRateService
 {
     private readonly HotelProDbContext _dbContext;
+    private readonly IHttpClientFactory _httpClientFactory;
+    private readonly ILogger<ExchangeRateService> _logger;
 
-    public ExchangeRateService(HotelProDbContext dbContext) => _dbContext = dbContext;
+    public ExchangeRateService(
+        HotelProDbContext dbContext,
+        IHttpClientFactory httpClientFactory,
+        ILogger<ExchangeRateService> logger)
+    {
+        _dbContext = dbContext;
+        _httpClientFactory = httpClientFactory;
+        _logger = logger;
+    }
 
     public async Task<List<ExchangeRateDto>> GetCurrentRatesAsync()
     {
@@ -167,9 +179,76 @@ public class ExchangeRateService : IExchangeRateService
 
     public async Task<decimal> ConvertAsync(decimal amount, string fromCurrency, string toCurrency)
     {
+        if (fromCurrency == toCurrency) return amount;
+
         var rates = await GetCurrentRatesAsync();
         var fromRate = rates.FirstOrDefault(r => r.CurrencyCode == fromCurrency)?.Rate ?? 1m;
         var toRate = rates.FirstOrDefault(r => r.CurrencyCode == toCurrency)?.Rate ?? 1m;
         return amount * (toRate / fromRate);
     }
+
+    public async Task<int> SyncRatesFromExternalApiAsync(string? baseCurrency = null)
+    {
+        var @base = baseCurrency ?? "EUR";
+        var client = _httpClientFactory.CreateClient("Frankfurter");
+
+        try
+        {
+            var response = await client.GetAsync($"https://api.frankfurter.app/latest?base={@base}");
+            response.EnsureSuccessStatusCode();
+
+            var json = await response.Content.ReadFromJsonAsync<FrankfurterResponse>();
+            if (json?.Rates == null) return 0;
+
+            var now = DateTime.UtcNow;
+
+            var existing = await _dbContext.Set<ExchangeRate>()
+                .Where(r => r.ValidTo == null)
+                .ToListAsync();
+
+            foreach (var ex in existing)
+            {
+                ex.ValidTo = now;
+                ex.UpdatedAt = now;
+            }
+
+            var baseEntry = new ExchangeRate
+            {
+                Id = Guid.NewGuid(),
+                CurrencyCode = @base,
+                Rate = 1.0m,
+                IsLocalCurrency = true,
+                ValidFrom = now,
+                Source = "Frankfurter",
+                UpdatedAt = now
+            };
+            _dbContext.Set<ExchangeRate>().Add(baseEntry);
+
+            foreach (var kvp in json.Rates)
+            {
+                _dbContext.Set<ExchangeRate>().Add(new ExchangeRate
+                {
+                    Id = Guid.NewGuid(),
+                    CurrencyCode = kvp.Key,
+                    Rate = kvp.Value,
+                    IsLocalCurrency = false,
+                    ValidFrom = now,
+                    Source = "Frankfurter",
+                    UpdatedAt = now
+                });
+            }
+
+            await _dbContext.SaveChangesAsync();
+
+            _logger.LogInformation("Synced {Count} exchange rates from Frankfurter API (base: {Base})", json.Rates.Count + 1, @base);
+            return json.Rates.Count + 1;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to sync exchange rates from Frankfurter API");
+            return 0;
+        }
+    }
+
+    private record FrankfurterResponse(Dictionary<string, decimal> Rates, string @Base, string Date);
 }

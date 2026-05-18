@@ -136,6 +136,7 @@ builder.Services.AddScoped<HotelPro.Core.Services.IInvoiceGenerator, HotelPro.In
 builder.Services.AddScoped<HotelPro.Core.Services.IProformaService, HotelPro.Infrastructure.Services.ProformaService>();
 builder.Services.AddScoped<HotelPro.Core.Services.IAdvancePaymentService, HotelPro.Infrastructure.Services.AdvancePaymentService>();
 builder.Services.AddScoped<HotelPro.Core.Services.IExchangeRateService, HotelPro.Infrastructure.Services.ExchangeRateService>();
+builder.Services.AddHttpClient("Frankfurter", c => c.Timeout = TimeSpan.FromSeconds(10));
 builder.Services.AddScoped<HotelPro.Infrastructure.Services.ReportsService>();
 builder.Services.AddSingleton<HotelPro.Infrastructure.Services.BridgeService>();
 

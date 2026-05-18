@@ -69,4 +69,21 @@ public class FinanceController : ControllerBase
         await _exchangeRate.UpdateRateAsync(dto.CurrencyCode, dto.Rate);
         return NoContent();
     }
+
+    [HttpPost("exchange-rates/sync"), Authorize(Roles = "Admin,Manager")]
+    public async Task<ActionResult> SyncRates([FromQuery] string? baseCurrency = null)
+    {
+        var count = await _exchangeRate.SyncRatesFromExternalApiAsync(baseCurrency);
+        return Ok(new { syncedCount = count, source = "Frankfurter", timestamp = DateTime.UtcNow });
+    }
+
+    [HttpGet("exchange-rates/convert"), Authorize(Policy = "CanManageBookings")]
+    public async Task<ActionResult> ConvertAmount(
+        [FromQuery] decimal amount,
+        [FromQuery] string from,
+        [FromQuery] string to)
+    {
+        var result = await _exchangeRate.ConvertAsync(amount, from, to);
+        return Ok(new { amount, fromCurrency = from, toCurrency = to, convertedAmount = result });
+    }
 }
