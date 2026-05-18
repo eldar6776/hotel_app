@@ -63,6 +63,7 @@ public class HotelProDbContext : DbContext
     public DbSet<Hotel> Hotels => Set<Hotel>();
     public DbSet<AuditLog> AuditLogs => Set<AuditLog>();
     public DbSet<FeatureFlag> FeatureFlags => Set<FeatureFlag>();
+    public DbSet<HotelConfig> HotelConfigs => Set<HotelConfig>();
     public DbSet<LegacyIdMapping> LegacyIdMappings => Set<LegacyIdMapping>();
     public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
     public DbSet<EmailLog> EmailLogs => Set<EmailLog>();
@@ -134,6 +135,8 @@ public class HotelProDbContext : DbContext
             b.HasKey(x => x.Id);
             b.HasIndex(x => new { x.FeatureName, x.HotelId }).IsUnique();
         });
+
+        modelBuilder.ApplyConfiguration(new HotelConfigConfiguration());
 
         modelBuilder.Entity<LegacyIdMapping>(b =>
         {

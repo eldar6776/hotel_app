@@ -106,6 +106,7 @@ builder.Services.AddScoped<AuditInterceptor>();
 
 builder.Services.AddMemoryCache();
 builder.Services.AddScoped<IFeatureFlagService, FeatureFlagService>();
+builder.Services.AddScoped<HotelPro.Core.Services.IConfigurationService, HotelPro.Infrastructure.Services.ConfigurationService>();
 builder.Services.AddSingleton<ITranslationService, TranslationService>();
 builder.Services.AddScoped<ITenantService, TenantService>();
 builder.Services.AddScoped<HotelPro.Core.Services.IRoomService, HotelPro.Infrastructure.Services.RoomService>();
