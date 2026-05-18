@@ -3,6 +3,7 @@
 # generated graphs, and large binary artifacts. Do not commit them.
 legacy_app/
 graphify-out/
+.agents/07_legacy_reconstruction/legacy_code/
 
 # Visual Studio
 *.suo

@@ -36,7 +36,14 @@ public class GroupReleaseJob : BackgroundService
                 _logger.LogError(ex, "Group release job failed");
             }
 
-            await Task.Delay(TimeSpan.FromHours(1), stoppingToken);
+            try
+            {
+                await Task.Delay(TimeSpan.FromHours(1), stoppingToken);
+            }
+            catch (OperationCanceledException)
+            {
+                break;
+            }
         }
     }
 }
