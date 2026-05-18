@@ -293,7 +293,7 @@ public class InvoiceWorkflowService : IInvoiceWorkflowService
 
     private async Task<decimal> GetVatRateAsync()
     {
-        var value = await _configurationService.GetValueAsync("vat_rate");
+        var value = await _configurationService.GetValueAsync("VatRate");
         if (decimal.TryParse(value, out var rate))
             return rate;
         return 17m;

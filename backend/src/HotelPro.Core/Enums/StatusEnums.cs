@@ -172,8 +172,10 @@ public enum GuestCategory
 {
     Unknown = 0,
     Adult = 1,
+    Infant = 2,
     Minor = 3,
-    Child = 4
+    Child = 4,
+    Senior = 5
 }
 
 public enum BillingMode

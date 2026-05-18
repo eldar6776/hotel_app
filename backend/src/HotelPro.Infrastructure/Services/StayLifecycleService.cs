@@ -118,10 +118,14 @@ public class StayLifecycleService : IStayLifecycleService
         }
 
         var billingMode = await GetBillingModeAsync();
-        var touristTax = await GetConfigValueAsync("tourist_tax_amount", 0m);
-        var insurance = await GetConfigValueAsync("insurance_amount", 0m);
-        var childAgeThreshold = await GetConfigValueAsync("child_age_threshold", 0m);
-        var childDiscountPercent = await GetConfigValueAsync("child_discount_percent", 0m);
+        var touristTax = await GetConfigValueAsync("TouristTax", 0m);
+        var insurance = await GetConfigValueAsync("InsuranceAmount", 0m);
+        var childAgeThreshold = await GetConfigValueAsync("ChildMaxAge", 11m);
+        var childDiscountPercent = await GetConfigValueAsync("ChildDiscountPercent", 50m);
+        var infantMaxAge = await GetConfigValueAsync("InfantMaxAge", 2m);
+        var infantDiscountPercent = await GetConfigValueAsync("InfantDiscountPercent", 100m);
+        var seniorMinAge = await GetConfigValueAsync("SeniorMinAge", 65m);
+        var seniorDiscountPercent = await GetConfigValueAsync("SeniorDiscountPercent", 0m);
 
         var guestCount = request.Guests.Count;
         var tariff = room.BasePrice ?? 0m;
@@ -139,20 +143,30 @@ public class StayLifecycleService : IStayLifecycleService
             if (category == GuestCategory.Unknown && guest.DateOfBirth.HasValue)
             {
                 var age = CalculateAge(guest.DateOfBirth.Value, checkInDate);
-                category = age < 12 ? GuestCategory.Child
-                    : age < 18 ? GuestCategory.Minor
+                category = age <= infantMaxAge ? GuestCategory.Infant
+                    : age <= childAgeThreshold ? GuestCategory.Child
+                    : age >= seniorMinAge ? GuestCategory.Senior
                     : GuestCategory.Adult;
             }
 
             var discountPercent = guestEntry.DiscountPercent;
             var discountReason = guestEntry.DiscountReason;
-            if (discountPercent == 0 && category == GuestCategory.Child && childAgeThreshold > 0)
+            if (discountPercent == 0)
             {
-                var age = guest.DateOfBirth.HasValue ? CalculateAge(guest.DateOfBirth.Value, checkInDate) : 0;
-                if (age > 0 && age < childAgeThreshold)
+                if (category == GuestCategory.Infant && infantDiscountPercent > 0)
+                {
+                    discountPercent = infantDiscountPercent;
+                    discountReason = "Infant discount";
+                }
+                else if (category == GuestCategory.Child && childDiscountPercent > 0)
                 {
                     discountPercent = childDiscountPercent;
-                    discountReason = $"Osoba ima {age}. godina";
+                    discountReason = "Child discount";
+                }
+                else if (category == GuestCategory.Senior && seniorDiscountPercent > 0)
+                {
+                    discountPercent = seniorDiscountPercent;
+                    discountReason = "Senior discount";
                 }
             }
 

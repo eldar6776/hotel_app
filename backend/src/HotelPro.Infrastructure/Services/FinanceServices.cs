@@ -132,15 +132,18 @@ public class ExchangeRateService : IExchangeRateService
 {
     private readonly HotelProDbContext _dbContext;
     private readonly IHttpClientFactory _httpClientFactory;
+    private readonly IConfigurationService _config;
     private readonly ILogger<ExchangeRateService> _logger;
 
     public ExchangeRateService(
         HotelProDbContext dbContext,
         IHttpClientFactory httpClientFactory,
+        IConfigurationService config,
         ILogger<ExchangeRateService> logger)
     {
         _dbContext = dbContext;
         _httpClientFactory = httpClientFactory;
+        _config = config;
         _logger = logger;
     }
 
@@ -189,66 +192,151 @@ public class ExchangeRateService : IExchangeRateService
 
     public async Task<int> SyncRatesFromExternalApiAsync(string? baseCurrency = null)
     {
-        var @base = baseCurrency ?? "EUR";
-        var client = _httpClientFactory.CreateClient("Frankfurter");
+        var @base = baseCurrency ?? await _config.GetValueAsync("CurrencyCode") ?? "EUR";
+        var provider = await _config.GetValueAsync("ExchangeRate_Provider") ?? "Frankfurter";
 
         try
         {
-            var response = await client.GetAsync($"https://api.frankfurter.app/latest?base={@base}");
-            response.EnsureSuccessStatusCode();
+            var client = _httpClientFactory.CreateClient("ExchangeRates");
+            Dictionary<string, decimal> rates;
+            string source;
 
-            var json = await response.Content.ReadFromJsonAsync<FrankfurterResponse>();
-            if (json?.Rates == null) return 0;
-
-            var now = DateTime.UtcNow;
-
-            var existing = await _dbContext.Set<ExchangeRate>()
-                .Where(r => r.ValidTo == null)
-                .ToListAsync();
-
-            foreach (var ex in existing)
+            switch (provider.ToLowerInvariant())
             {
-                ex.ValidTo = now;
-                ex.UpdatedAt = now;
+                case "openexchangerates":
+                    rates = await FetchOpenExchangeRates(client, @base);
+                    source = "OpenExchangeRates";
+                    break;
+                case "fixer":
+                    rates = await FetchFixer(client, @base);
+                    source = "Fixer";
+                    break;
+                case "exchangerateapi":
+                    rates = await FetchExchangeRateAPI(client, @base);
+                    source = "ExchangeRateAPI";
+                    break;
+                case "currencylayer":
+                    rates = await FetchCurrencyLayer(client, @base);
+                    source = "CurrencyLayer";
+                    break;
+                case "frankfurter":
+                default:
+                    rates = await FetchFrankfurter(client, @base);
+                    source = "Frankfurter";
+                    break;
             }
 
-            var baseEntry = new ExchangeRate
-            {
-                Id = Guid.NewGuid(),
-                CurrencyCode = @base,
-                Rate = 1.0m,
-                IsLocalCurrency = true,
-                ValidFrom = now,
-                Source = "Frankfurter",
-                UpdatedAt = now
-            };
-            _dbContext.Set<ExchangeRate>().Add(baseEntry);
+            if (rates.Count == 0) return 0;
 
-            foreach (var kvp in json.Rates)
-            {
-                _dbContext.Set<ExchangeRate>().Add(new ExchangeRate
-                {
-                    Id = Guid.NewGuid(),
-                    CurrencyCode = kvp.Key,
-                    Rate = kvp.Value,
-                    IsLocalCurrency = false,
-                    ValidFrom = now,
-                    Source = "Frankfurter",
-                    UpdatedAt = now
-                });
-            }
-
-            await _dbContext.SaveChangesAsync();
-
-            _logger.LogInformation("Synced {Count} exchange rates from Frankfurter API (base: {Base})", json.Rates.Count + 1, @base);
-            return json.Rates.Count + 1;
+            return await PersistRates(rates, @base, source);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to sync exchange rates from Frankfurter API");
+            _logger.LogError(ex, "Failed to sync exchange rates from {Provider}", provider);
             return 0;
         }
     }
 
+    private async Task<Dictionary<string, decimal>> FetchFrankfurter(HttpClient client, string @base)
+    {
+        var response = await client.GetAsync($"https://api.frankfurter.app/latest?base={@base}");
+        response.EnsureSuccessStatusCode();
+        var json = await response.Content.ReadFromJsonAsync<FrankfurterResponse>();
+        return json?.Rates ?? new();
+    }
+
+    private async Task<Dictionary<string, decimal>> FetchOpenExchangeRates(HttpClient client, string @base)
+    {
+        var apiKey = await _config.GetValueAsync("ExchangeRate_OpenExchangeRates_ApiKey");
+        if (string.IsNullOrEmpty(apiKey)) { _logger.LogWarning("OpenExchangeRates API key not configured"); return new(); }
+        var response = await client.GetAsync($"https://openexchangerates.org/api/latest.json?app_id={apiKey}&base={@base}");
+        response.EnsureSuccessStatusCode();
+        var json = await response.Content.ReadFromJsonAsync<GenericRatesResponse>();
+        return json?.Rates ?? new();
+    }
+
+    private async Task<Dictionary<string, decimal>> FetchFixer(HttpClient client, string @base)
+    {
+        var apiKey = await _config.GetValueAsync("ExchangeRate_Fixer_ApiKey");
+        if (string.IsNullOrEmpty(apiKey)) { _logger.LogWarning("Fixer API key not configured"); return new(); }
+        var response = await client.GetAsync($"https://api.fixer.io/latest?base={@base}&access_key={apiKey}");
+        response.EnsureSuccessStatusCode();
+        var json = await response.Content.ReadFromJsonAsync<GenericRatesResponse>();
+        return json?.Rates ?? new();
+    }
+
+    private async Task<Dictionary<string, decimal>> FetchExchangeRateAPI(HttpClient client, string @base)
+    {
+        var apiKey = await _config.GetValueAsync("ExchangeRate_ExchangeRateAPI_ApiKey");
+        if (string.IsNullOrEmpty(apiKey)) { _logger.LogWarning("ExchangeRateAPI key not configured"); return new(); }
+        var response = await client.GetAsync($"https://v6.exchangerate-api.com/v6/{apiKey}/latest/{@base}");
+        response.EnsureSuccessStatusCode();
+        var json = await response.Content.ReadFromJsonAsync<GenericRatesResponse>();
+        return json?.Rates ?? new();
+    }
+
+    private async Task<Dictionary<string, decimal>> FetchCurrencyLayer(HttpClient client, string @base)
+    {
+        var apiKey = await _config.GetValueAsync("ExchangeRate_CurrencyLayer_ApiKey");
+        if (string.IsNullOrEmpty(apiKey)) { _logger.LogWarning("CurrencyLayer API key not configured"); return new(); }
+        var response = await client.GetAsync($"http://apilayer.net/api/live?access_key={apiKey}&source={@base}");
+        response.EnsureSuccessStatusCode();
+        var json = await response.Content.ReadFromJsonAsync<CurrencyLayerResponse>();
+        if (json?.Quotes == null) return new();
+        var result = new Dictionary<string, decimal>();
+        foreach (var kvp in json.Quotes)
+        {
+            var code = kvp.Key.Length > 3 ? kvp.Key[3..] : kvp.Key;
+            result[code] = kvp.Value;
+        }
+        return result;
+    }
+
+    private async Task<int> PersistRates(Dictionary<string, decimal> rates, string baseCurrency, string source)
+    {
+        var now = DateTime.UtcNow;
+
+        var existing = await _dbContext.Set<ExchangeRate>()
+            .Where(r => r.ValidTo == null)
+            .ToListAsync();
+
+        foreach (var ex in existing)
+        {
+            ex.ValidTo = now;
+            ex.UpdatedAt = now;
+        }
+
+        _dbContext.Set<ExchangeRate>().Add(new ExchangeRate
+        {
+            Id = Guid.NewGuid(),
+            CurrencyCode = baseCurrency,
+            Rate = 1.0m,
+            IsLocalCurrency = true,
+            ValidFrom = now,
+            Source = source,
+            UpdatedAt = now
+        });
+
+        foreach (var kvp in rates)
+        {
+            _dbContext.Set<ExchangeRate>().Add(new ExchangeRate
+            {
+                Id = Guid.NewGuid(),
+                CurrencyCode = kvp.Key,
+                Rate = kvp.Value,
+                IsLocalCurrency = false,
+                ValidFrom = now,
+                Source = source,
+                UpdatedAt = now
+            });
+        }
+
+        await _dbContext.SaveChangesAsync();
+        _logger.LogInformation("Synced {Count} exchange rates from {Source} (base: {Base})", rates.Count + 1, source, baseCurrency);
+        return rates.Count + 1;
+    }
+
     private record FrankfurterResponse(Dictionary<string, decimal> Rates, string @Base, string Date);
+    private record GenericRatesResponse(Dictionary<string, decimal> Rates, string @Base);
+    private record CurrencyLayerResponse(Dictionary<string, decimal> Quotes);
 }
