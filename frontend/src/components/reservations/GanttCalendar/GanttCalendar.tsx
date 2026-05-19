@@ -24,6 +24,11 @@ function dateToStr(d: Date): string {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
 }
 
+function parseLocalDate(dateStr: string): Date {
+  const [y, m, d] = dateStr.split('T')[0].split('-').map(Number)
+  return new Date(y, m - 1, d, 0, 0, 0, 0)
+}
+
 function generateDateRange(start: Date, days: number): string[] {
   return Array.from({ length: days }, (_, i) => {
     const d = new Date(start)
@@ -235,14 +240,14 @@ export function GanttCalendar() {
     handleAssignError,
   )
 
-  const startDate = useMemo(() => new Date(dateRange[0]), [dateRange])
+  const startDate = useMemo(() => parseLocalDate(dateRange[0]), [dateRange])
   const totalWidth = dateRange.length * COLUMN_WIDTH
   const totalHeight = ganttData.length * ROW_HEIGHT
 
   const getLeft = useCallback(
     (dateStr: string) => {
-      const d = new Date(dateStr)
-      const diff = Math.floor((d.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24))
+      const d = parseLocalDate(dateStr)
+      const diff = Math.round((d.getTime() - startDate.getTime()) / 86400000)
       return diff * COLUMN_WIDTH
     },
     [startDate]
@@ -250,9 +255,9 @@ export function GanttCalendar() {
 
   const getWidth = useCallback(
     (arrival: string, departure: string) => {
-      const a = new Date(arrival)
-      const d = new Date(departure)
-      const diff = Math.ceil((d.getTime() - a.getTime()) / (1000 * 60 * 60 * 24))
+      const a = parseLocalDate(arrival)
+      const d = parseLocalDate(departure)
+      const diff = Math.round((d.getTime() - a.getTime()) / 86400000)
       return Math.max(diff * COLUMN_WIDTH, COLUMN_WIDTH)
     },
     []
@@ -299,7 +304,7 @@ export function GanttCalendar() {
     let start = 0
     let span = 0
     dateRange.forEach((ds, i) => {
-      const label = new Date(ds).toLocaleDateString('hr-HR', { month: 'short' })
+      const label = parseLocalDate(ds).toLocaleDateString('hr-HR', { month: 'short' })
       if (label !== cur) {
         if (span > 0) result.push({ month: cur, startIndex: start, span })
         cur = label
@@ -383,7 +388,7 @@ export function GanttCalendar() {
               </div>
               <div className="flex h-[24px]">
                 {dateRange.map((ds, i) => {
-                  const d = new Date(ds)
+                  const d = parseLocalDate(ds)
                   const we = isWeekend(ds)
                   const isToday = ds === todayStr
                   return (
@@ -463,7 +468,7 @@ export function GanttCalendar() {
               ))}
 
               {/* Booking bars */}
-              {ganttData.map((room) =>
+              {ganttData.map((room, rowIndex) =>
                 room.bookings.map((booking) => {
                   const isDraggingMe = dragState?.booking?.id === booking.id
                   return (
@@ -471,6 +476,7 @@ export function GanttCalendar() {
                       key={booking.id}
                       booking={booking}
                       left={getLeft(booking.arrivalDate)}
+                      top={rowIndex * ROW_HEIGHT + 4}
                       width={getWidth(booking.arrivalDate, booking.departureDate)}
                       rowHeight={ROW_HEIGHT}
                       isDragging={isDraggingMe}
@@ -524,8 +530,8 @@ export function GanttCalendar() {
 
               {/* Drag preview tooltip */}
               {dragState?.booking && offset && (() => {
-                const newArrival = new Date(dragState.newArrival)
-                const newDeparture = new Date(dragState.newDeparture)
+                const newArrival = parseLocalDate(dragState.newArrival)
+                const newDeparture = parseLocalDate(dragState.newDeparture)
                 const newNights = Math.round((newDeparture.getTime() - newArrival.getTime()) / 86400000)
                 return (
                   <div

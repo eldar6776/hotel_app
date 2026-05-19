@@ -272,9 +272,9 @@ public class GuestService : IGuestService
             EntityId = guestId.ToString(),
             Action = "PrivacyAccess",
             ChangedAt = DateTime.UtcNow,
-            OldValues = "",
-            NewValues = "",
-            ChangedProperties = ""
+            OldValues = null,
+            NewValues = null,
+            ChangedProperties = null
         };
         _dbContext.AuditLogs.Add(log);
         await _dbContext.SaveChangesAsync();

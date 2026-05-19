@@ -6,6 +6,7 @@ import { STATUS_COLORS, STATUS_LABELS } from '@/types/bookings'
 interface GanttBarProps {
   booking: GanttBooking
   left: number
+  top: number
   width: number
   rowHeight: number
   isDragging: boolean
@@ -17,6 +18,7 @@ interface GanttBarProps {
 export function GanttBar({
   booking,
   left,
+  top,
   width,
   rowHeight,
   isDragging,
@@ -29,7 +31,6 @@ export function GanttBar({
   const color = STATUS_COLORS[displayStatus] || '#9E9E9E'
   const isCancelled = booking.status === 'Cancelled'
   const barHeight = rowHeight - 8
-  const top = 4
 
   return (
     <div

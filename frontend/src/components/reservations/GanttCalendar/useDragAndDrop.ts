@@ -19,6 +19,18 @@ interface DragState {
   newDeparture: string
 }
 
+function parseLocalDate(dateStr: string): Date {
+  const [y, m, d] = dateStr.split('T')[0].split('-').map(Number)
+  return new Date(y, m - 1, d, 0, 0, 0, 0)
+}
+
+function toLocalISOString(date: Date): string {
+  const y = date.getFullYear()
+  const m = String(date.getMonth() + 1).padStart(2, '0')
+  const d = String(date.getDate()).padStart(2, '0')
+  return `${y}-${m}-${d}T00:00:00.000Z`
+}
+
 export interface DropTarget {
   rowIndex: number
   roomId: string
@@ -114,22 +126,19 @@ export function useDragAndDrop(
     // Ograničenje: ne smije u prošlost (dolazak na kalendaru)
     const today = new Date()
     today.setHours(0, 0, 0, 0)
-    const originalArrival = new Date(current.booking.arrivalDate)
-    originalArrival.setHours(0, 0, 0, 0)
-
-    // minDaysDiff je razlika u danima do danas
-    const minDaysDiff = Math.ceil((today.getTime() - originalArrival.getTime()) / (1000 * 60 * 60 * 24))
+    const originalArrival = parseLocalDate(current.booking.arrivalDate)
+    const minDaysDiff = Math.round((today.getTime() - originalArrival.getTime()) / 86400000)
     if (daysDiff < minDaysDiff) {
       daysDiff = minDaysDiff
     }
 
     const newArrival = new Date(originalArrival)
     newArrival.setDate(newArrival.getDate() + daysDiff)
-    const newDeparture = new Date(current.booking.departureDate)
+    const newDeparture = parseLocalDate(current.booking.departureDate)
     newDeparture.setDate(newDeparture.getDate() + daysDiff)
 
-    const newArrivalStr = newArrival.toISOString().split('T')[0]
-    const newDepartureStr = newDeparture.toISOString().split('T')[0]
+    const newArrivalStr = toLocalISOString(newArrival).split('T')[0]
+    const newDepartureStr = toLocalISOString(newDeparture).split('T')[0]
 
     // 2. Proračun vertikalne promjene sobe
     let targetRowIndex: number | null = null
@@ -187,20 +196,19 @@ export function useDragAndDrop(
     let daysDiff = Math.round(dx / cw)
     const today = new Date()
     today.setHours(0, 0, 0, 0)
-    const originalArrival = new Date(current.booking.arrivalDate)
-    originalArrival.setHours(0, 0, 0, 0)
-    const minDaysDiff = Math.ceil((today.getTime() - originalArrival.getTime()) / (1000 * 60 * 60 * 24))
+    const originalArrival = parseLocalDate(current.booking.arrivalDate)
+    const minDaysDiff = Math.round((today.getTime() - originalArrival.getTime()) / 86400000)
     if (daysDiff < minDaysDiff) {
       daysDiff = minDaysDiff
     }
 
     const newArrival = new Date(originalArrival)
     newArrival.setDate(newArrival.getDate() + daysDiff)
-    const newDeparture = new Date(current.booking.departureDate)
+    const newDeparture = parseLocalDate(current.booking.departureDate)
     newDeparture.setDate(newDeparture.getDate() + daysDiff)
 
-    const newArrivalStr = newArrival.toISOString().split('T')[0]
-    const newDepartureStr = newDeparture.toISOString().split('T')[0]
+    const newArrivalStr = toLocalISOString(newArrival).split('T')[0]
+    const newDepartureStr = toLocalISOString(newDeparture).split('T')[0]
 
     const targetRoomId = current.targetRoomId
     const newRoomId = targetRoomId === '__unassigned__' ? null : targetRoomId
@@ -244,8 +252,8 @@ export function useDragAndDrop(
 
       try {
         await bookingService.updateBooking(current.booking.id, {
-          arrivalDate: newArrival.toISOString(),
-          departureDate: newDeparture.toISOString(),
+          arrivalDate: toLocalISOString(newArrival),
+          departureDate: toLocalISOString(newDeparture),
         })
         onBookingMovedRef.current?.()
       } catch (err) {
@@ -264,8 +272,8 @@ export function useDragAndDrop(
       try {
         // Sekvencijalno: prvo ažuriramo datume pa dodjeljujemo sobu
         await bookingService.updateBooking(current.booking.id, {
-          arrivalDate: newArrival.toISOString(),
-          departureDate: newDeparture.toISOString(),
+          arrivalDate: toLocalISOString(newArrival),
+          departureDate: toLocalISOString(newDeparture),
         })
         await bookingService.assignRoom(current.booking.id, newRoomId)
         onBookingMovedRef.current?.()
