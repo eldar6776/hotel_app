@@ -50,8 +50,8 @@ public class BookingsController : ControllerBase
 
         var filter = new BookingFilter(
             Status: statuses,
-            FromDate: fromDate,
-            ToDate: toDate,
+            FromDate: NormalizeQueryDate(fromDate),
+            ToDate: NormalizeQueryDate(toDate),
             GuestId: guestId,
             RoomId: roomId,
             Page: page,
@@ -172,5 +172,17 @@ public class BookingsController : ControllerBase
             return BadRequest(new { error = result.ErrorMessage });
 
         return Ok(new { message = "Cancellation email sent." });
+    }
+
+    private static DateTime? NormalizeQueryDate(DateTime? value)
+    {
+        if (!value.HasValue) return null;
+
+        return value.Value.Kind switch
+        {
+            DateTimeKind.Utc => value.Value,
+            DateTimeKind.Local => value.Value.ToUniversalTime(),
+            _ => DateTime.SpecifyKind(value.Value, DateTimeKind.Utc)
+        };
     }
 }

@@ -12,7 +12,11 @@ apiClient.interceptors.request.use((config) => {
     config.headers.Authorization = `Bearer ${token}`
   }
   if (typeof window !== 'undefined') {
-    const hotelCode = localStorage.getItem('hotelpro_hotel_code') || 'HVA'
+    const defaultHotelCode = process.env.NEXT_PUBLIC_HOTEL_CODE || 'localhost'
+    const storedHotelCode = localStorage.getItem('hotelpro_hotel_code')
+    const hotelCode = storedHotelCode === 'HVA' && defaultHotelCode === 'localhost'
+      ? defaultHotelCode
+      : storedHotelCode || defaultHotelCode
     config.headers['X-Hotel-Code'] = hotelCode
   }
   return config

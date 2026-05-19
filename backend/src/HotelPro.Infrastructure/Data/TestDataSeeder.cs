@@ -265,7 +265,7 @@ public static class TestDataSeeder
 
     private static void EnsureDemoBookingsAndStays(HotelProDbContext db, Guid hotelId, List<Room> rooms, List<Guest> guests)
     {
-        if (db.Bookings.Any(x => x.InternalNotes == DemoMarker)) return;
+        if (db.Bookings.IgnoreQueryFilters().Any(x => x.InternalNotes == DemoMarker)) return;
 
         var today = DateTime.UtcNow.Date;
         var paymentMethods = db.PaymentMethods.ToList();

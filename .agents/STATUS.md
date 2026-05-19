@@ -148,7 +148,7 @@
 - [x] **T19.1: Demo seed podaci i frontend smoke pregled aplikacije** - [COMPLETED 2026-05-18 - Codex]
 - [x] **T19.2: Frontend kontrast teksta i bijela slova na bijeloj podlozi** - [COMPLETED 2026-05-18 - Codex]
 - [x] **T19.3: Uskladjivanje neutralnih/recovery akcija sa temom (retry/refresh)** - [COMPLETED 2026-05-19 - GitHub Copilot (GPT-5.3-Codex)]
-- [-] **T19.4: Popravka vidljivosti demo podataka u aplikaciji** - [IN_PROGRESS] - 2026-05-19 - Codex
+- [x] **T19.4: Popravka vidljivosti demo podataka u aplikaciji** - [COMPLETED 2026-05-19 - Codex]
 
 ---
 
@@ -161,6 +161,11 @@ Sljedece grupe se mogu raditi istovremeno:
 - **Grupa D (MQTT/IoT):** T14.1, T14.2, T14.3 (nezavisna infrastrukturno)
 
 ## 3. AUDIT TRAIL
+
+### 2026-05-19 — Codex
+- **T19.4 COMPLETED**: Popravljena vidljivost demo podataka kroz frontend/API: lokalni tenant header sada koristi `localhost` umjesto nepostojeceg `HVA`, SignalR rooms fallback port uskladjen je na `5149`, booking query datumi se normalizuju na UTC, a `TestDataSeeder` koristi `IgnoreQueryFilters()` pri provjeri `DEMO_T19` rezervacija da se demo podaci ne dupliraju pri svakom startu.
+- PostgreSQL provjera: `hotelpro` sadrzi 65 soba, 110 gostiju i demo rezervacije; nakon starta API-ja broj `DEMO_T19` rezervacija ostao je 2900, bez novog dupliranja.
+- Verifikacija: `dotnet build src\HotelPro.Api\HotelPro.Api.csproj --no-restore`, `dotnet test tests\HotelPro.Tests\HotelPro.Tests.csproj --no-build --verbosity minimal` (113/113), `npm.cmd run build`, API smoke `/rooms`, `/guests`, `/bookings?fromDate=2026-05-01&toDate=2026-05-31`.
 
 ### 2026-05-19 — GitHub Copilot (GPT-5.3-Codex)
 - **T19.3 COMPLETED**: Neutralne/recovery akcije uskladjene sa temom u frontendu; uklonjen primarni `bg-primary + text-white` stil za `Pokusaj ponovo` i `Refresh/Osvjezi` gdje je akcija recovery/neutral.

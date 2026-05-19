@@ -59,7 +59,7 @@ export default function RoomsPage() {
     const token = localStorage.getItem('hotelpro_access_token')
     if (!token || typeof window === 'undefined') return
 
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5149'
 
     roomHubService.connect(apiUrl, token).catch(() => {})
 
