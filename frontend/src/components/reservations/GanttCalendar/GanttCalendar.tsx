@@ -188,16 +188,17 @@ export function GanttCalendar() {
     })
 
     bookings.forEach((b) => {
+      const activeRoom = b.rooms.find((r) => r.roomId) ?? b.rooms[0]
       const gb: GanttBooking = {
         id: b.id,
         guestName: b.guestName,
         status: b.status,
         arrivalDate: b.arrivalDate.split('T')[0],
         departureDate: b.departureDate.split('T')[0],
-        roomId: b.rooms[0]?.roomId || null,
-        roomTypeId: b.rooms[0]?.roomTypeId || '',
-        roomTypeName: b.rooms[0]?.roomTypeName || '',
-        pricePerNight: b.rooms[0]?.pricePerNight || 0,
+        roomId: activeRoom?.roomId || null,
+        roomTypeId: activeRoom?.roomTypeId || '',
+        roomTypeName: activeRoom?.roomTypeName || '',
+        pricePerNight: activeRoom?.pricePerNight || 0,
         nights: b.nights,
         totalPrice: b.totalPrice,
         source: b.source,
@@ -486,7 +487,7 @@ export function GanttCalendar() {
                 const dropTarget = getDropTarget()
                 if (!dropTarget || !dragState) return null
                 const bk = dragState.booking
-                const dropLeft = getLeft(bk.arrivalDate)
+                const dropLeft = getLeft(bk.arrivalDate) + (offset?.x || 0)
                 const dropWidth = getWidth(bk.arrivalDate, bk.departureDate)
                 const dropTop = dropTarget.rowIndex * ROW_HEIGHT
                 return (
