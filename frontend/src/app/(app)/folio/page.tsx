@@ -163,12 +163,12 @@ export default function FolioPage() {
                   <div className="border-t border-border px-4 py-4 space-y-4">
                     <div className="flex items-center justify-between">
                       <h3 className="text-sm font-medium text-text">Troskovi ({charges.length})</h3>
-                      <button
+                      <Button
                         onClick={() => setChargeFormFolio(isChargeOpen ? null : folio.id)}
-                        className="flex items-center gap-1 rounded-lg bg-primary-500 px-3 py-1.5 text-xs font-medium text-white hover:bg-primary-600"
+                        className="gap-1 px-3 py-1.5 text-xs"
                       >
                         <Plus className="h-3 w-3" /> Dodaj trosak
-                      </button>
+                      </Button>
                     </div>
 
                     {isChargeOpen && (
@@ -219,13 +219,13 @@ export default function FolioPage() {
                           <button onClick={() => setChargeFormFolio(null)} className="rounded-lg px-3 py-1.5 text-xs text-text-secondary hover:text-text">
                             Odustani
                           </button>
-                          <button
+                          <Button
                             onClick={() => handleAddCharge(folio.id)}
                             disabled={!chargeForm.description || chargeForm.unitPrice <= 0}
-                            className="rounded-lg bg-primary-500 px-4 py-1.5 text-xs font-medium text-white hover:bg-primary-600 disabled:opacity-50"
+                            className="px-4 py-1.5 text-xs"
                           >
                             Dodaj ({money(chargeForm.quantity * chargeForm.unitPrice)} €)
-                          </button>
+                          </Button>
                         </div>
                       </div>
                     )}
