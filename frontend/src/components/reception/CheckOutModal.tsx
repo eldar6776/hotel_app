@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import type { BookingDto } from '@/types/bookings'
 import apiClient from '@/lib/api/client'
+import Button from '@/components/ui/Button'
 
 interface Props {
   booking: BookingDto
@@ -59,9 +60,9 @@ export function CheckOutModal({ booking, onClose, onSuccess }: Props) {
             <div className="flex justify-between border-t border-border pt-2 font-bold"><span>Ukupno:</span><span className="text-text">{result.totalAmount.toFixed(2)} €</span></div>
             <div className="text-xs text-text-secondary">Folio: {result.folioNumber} · Plaćanje: {paymentMethod}</div>
           </div>
-          <button onClick={() => { onSuccess(); onClose() }} className="w-full rounded-lg bg-primary-500 px-4 py-2 text-sm font-medium text-white">
+          <Button onClick={() => { onSuccess(); onClose() }} variant="secondary" className="w-full">
             Zatvori
-          </button>
+          </Button>
         </div>
       </div>
     )

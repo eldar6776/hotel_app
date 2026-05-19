@@ -111,7 +111,7 @@ export default function LoginPage() {
 
         {error && <Alert type="error">{error}</Alert>}
 
-        <Button type="submit" loading={loading} variant="ghost" className="w-full hover:underline">
+        <Button type="submit" loading={loading} variant="primary" className="w-full">
           Prijavi se
         </Button>
       </form>

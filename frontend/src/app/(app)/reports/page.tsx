@@ -3,6 +3,7 @@
 import { useState, useCallback } from 'react'
 import apiClient from '@/lib/api/client'
 import { BarChart3, Calendar, DollarSign, Users, TrendingUp, Download } from 'lucide-react'
+import Button from '@/components/ui/Button'
 
 interface DailyReport {
   date: string
@@ -144,9 +145,9 @@ export default function ReportsPage() {
             <input type="date" value={financialTo} onChange={(e) => setFinancialTo(e.target.value)} className="rounded-lg border border-border bg-white dark:bg-gray-800 px-3 py-2 text-sm text-text" />
           </div>
         )}
-        <button onClick={handleLoad} disabled={isLoading} className="rounded-lg bg-primary-500 px-4 py-2 text-sm font-medium text-white hover:bg-primary-600 disabled:opacity-50">
+        <Button variant="secondary" disabled={isLoading} onClick={handleLoad}>
           {isLoading ? 'Ucitavam...' : 'Generisi'}
-        </button>
+        </Button>
       </div>
 
       {isLoading && <div className="animate-pulse h-48 rounded-xl bg-surface-tertiary" />}

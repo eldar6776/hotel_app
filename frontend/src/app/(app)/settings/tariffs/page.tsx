@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import type { TariffDto, RoomTypeDto } from '@/types/rooms'
 import { roomService } from '@/lib/rooms/room-service'
 import apiClient from '@/lib/api/client'
+import Button from '@/components/ui/Button'
 
 type SortField = 'name' | 'price' | 'validFrom'
 
@@ -124,9 +125,11 @@ export default function TariffsPage() {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-text">Tarife</h1>
-        <button onClick={() => { setShowForm(!showForm); if (showForm) setEditTarget(null) }} className="rounded-lg bg-primary-500 px-4 py-2 text-sm font-medium text-white hover:bg-primary-600">
-          {showForm ? 'Odustani' : '+ Nova Tarifa'}
-        </button>
+        {showForm ? (
+          <Button variant="secondary" onClick={() => { setShowForm(false); setEditTarget(null) }}>Odustani</Button>
+        ) : (
+          <button onClick={() => setShowForm(true)} className="rounded-lg bg-primary-500 px-4 py-2 text-sm font-medium text-white hover:bg-primary-600">+ Nova Tarifa</button>
+        )}
       </div>
 
       {showForm && (
