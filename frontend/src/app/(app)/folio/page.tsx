@@ -14,6 +14,7 @@ import {
   ChevronDown,
   ChevronUp,
 } from 'lucide-react'
+import Button from '@/components/ui/Button'
 
 export default function FolioPage() {
   const [folios, setFolios] = useState<FolioDto[]>([])
@@ -99,9 +100,9 @@ export default function FolioPage() {
             {folios.length} otvorenih folija · Ukupno: <span className="font-bold text-text">{totalBalance.toFixed(2)} EUR</span>
           </p>
         </div>
-        <button onClick={loadFolios} className="rounded-lg bg-primary-500 px-4 py-2 text-sm font-medium text-white hover:bg-primary-600">
+        <Button variant="secondary" onClick={loadFolios}>
           Osvjezi
-        </button>
+        </Button>
       </div>
 
       {isLoading ? (

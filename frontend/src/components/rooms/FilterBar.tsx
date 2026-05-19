@@ -1,5 +1,6 @@
 'use client'
 
+import Button from '@/components/ui/Button'
 import type { RoomStatus, BuildingDto } from '@/types/rooms'
 
 const statusOptions: { value: RoomStatus; label: string }[] = [
@@ -99,9 +100,13 @@ export function FilterBar({
           className="rounded-lg border border-border bg-surface px-3 py-1.5 text-sm text-text"
         />
 
-        <button onClick={onRefresh} className="rounded-lg bg-primary-500 px-3 py-1.5 text-sm font-medium text-white hover:bg-primary-600">
+        <Button
+          variant="secondary"
+          onClick={onRefresh}
+          className="px-3 py-1.5"
+        >
           Refresh
-        </button>
+        </Button>
         <button onClick={onReset} className="rounded-lg border border-border px-3 py-1.5 text-sm text-text-secondary hover:text-text">
           Reset
         </button>

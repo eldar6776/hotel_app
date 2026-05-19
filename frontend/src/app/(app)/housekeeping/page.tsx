@@ -11,6 +11,7 @@ import {
   STATUS_COLORS,
 } from '@/types/housekeeping'
 import { Sparkles, Wrench, Plus, Check, Eye, X } from 'lucide-react'
+import Button from '@/components/ui/Button'
 
 export default function HousekeepingPage() {
   const [activeTab, setActiveTab] = useState<'dirty' | 'workorders'>('dirty')
@@ -87,9 +88,9 @@ export default function HousekeepingPage() {
             {dirtyCount} prljavih soba · {openWoCount} otvorenih naloga
           </p>
         </div>
-        <button onClick={loadData} className="rounded-lg bg-primary-500 px-4 py-2 text-sm font-medium text-white hover:bg-primary-600">
+        <Button variant="secondary" onClick={loadData}>
           Osvjezi
-        </button>
+        </Button>
       </div>
 
       <div className="flex gap-2 border-b border-border">

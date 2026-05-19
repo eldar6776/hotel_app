@@ -147,7 +147,8 @@
 ### Faza 19: Demo podaci i provjera aplikacije
 - [x] **T19.1: Demo seed podaci i frontend smoke pregled aplikacije** - [COMPLETED 2026-05-18 - Codex]
 - [x] **T19.2: Frontend kontrast teksta i bijela slova na bijeloj podlozi** - [COMPLETED 2026-05-18 - Codex]
-- [-] **T19.3: Uskladjivanje neutralnih/recovery akcija sa temom (retry/refresh)** - [IN_PROGRESS] - 2026-05-19 - GitHub Copilot (GPT-5.3-Codex)
+- [x] **T19.3: Uskladjivanje neutralnih/recovery akcija sa temom (retry/refresh)** - [COMPLETED 2026-05-19 - GitHub Copilot (GPT-5.3-Codex)]
+- [-] **T19.4: Popravka vidljivosti demo podataka u aplikaciji** - [IN_PROGRESS] - 2026-05-19 - Codex
 
 ---
 
@@ -160,6 +161,11 @@ Sljedece grupe se mogu raditi istovremeno:
 - **Grupa D (MQTT/IoT):** T14.1, T14.2, T14.3 (nezavisna infrastrukturno)
 
 ## 3. AUDIT TRAIL
+
+### 2026-05-19 — GitHub Copilot (GPT-5.3-Codex)
+- **T19.3 COMPLETED**: Neutralne/recovery akcije uskladjene sa temom u frontendu; uklonjen primarni `bg-primary + text-white` stil za `Pokusaj ponovo` i `Refresh/Osvjezi` gdje je akcija recovery/neutral.
+- Izmijenjeno: `dashboard/page.tsx` (`Button variant="secondary"`), `rooms/FilterBar.tsx` (Refresh na shared `Button` secondary), `folio/page.tsx` (Osvjezi na shared `Button` secondary), `housekeeping/page.tsx` (Osvjezi na shared `Button` secondary).
+- Verifikacija: staticka provjera bez gresaka na sva 4 fajla.
 
 ### 2026-05-18 — Codex
 - **T19.2 COMPLETED**: Frontend kontrast popravljen za bijele podloge: aplikacija vise ne preuzima OS dark temu po defaultu, nego koristi light osim ako korisnik eksplicitno izabere dark; dodan CSS guard za `bg-white` povrsine bez `dark:bg-*` varijante.

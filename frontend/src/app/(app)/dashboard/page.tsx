@@ -210,7 +210,9 @@ export default function DashboardPage() {
     return (
       <div className="space-y-4">
         <Alert type="error">{error}</Alert>
-        <Button onClick={() => window.location.reload()}>Pokusaj ponovo</Button>
+        <Button variant="secondary" onClick={() => window.location.reload()}>
+          Pokusaj ponovo
+        </Button>
       </div>
     )
   }
