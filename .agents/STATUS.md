@@ -147,6 +147,7 @@
 ### Faza 19: Demo podaci i provjera aplikacije
 - [x] **T19.1: Demo seed podaci i frontend smoke pregled aplikacije** - [COMPLETED 2026-05-18 - Codex]
 - [x] **T19.2: Frontend kontrast teksta i bijela slova na bijeloj podlozi** - [COMPLETED 2026-05-18 - Codex]
+- [-] **T19.3: Uskladjivanje neutralnih/recovery akcija sa temom (retry/refresh)** - [IN_PROGRESS] - 2026-05-19 - GitHub Copilot (GPT-5.3-Codex)
 
 ---
 

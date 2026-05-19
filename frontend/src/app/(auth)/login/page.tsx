@@ -67,12 +67,13 @@ export default function LoginPage() {
 
   return (
     <div className="w-full max-w-md rounded-xl bg-surface p-8 shadow-lg border border-border">
-      <div className="mb-8 text-center">
+      <div className="mb-8 text-center text-text">
         <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-primary-100 dark:bg-primary-900/30">
           <Hotel className="h-6 w-6 text-primary-600 dark:text-primary-400" />
         </div>
-        <h1 className="text-2xl font-semibold" style={{ color: '#111827' }}>HotelPRO</h1>
-        <p className="mt-2 text-sm" style={{ color: '#374151' }}>Prijava u sistem</p>
+        <h1 className="text-2xl font-semibold">HotelPRO</h1>
+        <p className="mt-2 text-sm">Hotel Management System</p>
+        <p className="mt-1 text-sm">Prijava u sistem</p>
       </div>
 
       <form id="login-form" onSubmit={handleSubmit} className="space-y-4">
@@ -110,7 +111,7 @@ export default function LoginPage() {
 
         {error && <Alert type="error">{error}</Alert>}
 
-        <Button type="submit" loading={loading} className="w-full">
+        <Button type="submit" loading={loading} variant="ghost" className="w-full hover:underline">
           Prijavi se
         </Button>
       </form>
