@@ -150,7 +150,8 @@
 - [x] **T19.3: Uskladjivanje neutralnih/recovery akcija sa temom (retry/refresh)** - [COMPLETED 2026-05-19 - GitHub Copilot (GPT-5.3-Codex)]
 - [x] **T19.4: Popravka vidljivosti demo podataka u aplikaciji** - [COMPLETED 2026-05-19 - Codex]
 - [x] **T19.5: Popravka Gantt sjenčenja i zadržavanja sobe nakon vertical drop-a** - [COMPLETED 2026-05-19 - Antigravity (Gemini 1.5 Flash)]
-- [-] **T19.6: Dijagnoza pokretanja GUI-ja u browseru** - [IN_PROGRESS] - 2026-05-19 - Codex
+- [x] **T19.6: Dijagnoza pokretanja GUI-ja u browseru** - [COMPLETED 2026-05-19 - Codex]
+- [-] **T19.7: Kompletan reset baze i demo seed verifikacija** - [IN_PROGRESS] - 2026-05-19 - Codex
 
 ---
 
@@ -163,6 +164,10 @@ Sljedece grupe se mogu raditi istovremeno:
 - **Grupa D (MQTT/IoT):** T14.1, T14.2, T14.3 (nezavisna infrastrukturno)
 
 ## 3. AUDIT TRAIL
+
+### 2026-05-19 — Codex
+- **T19.6 COMPLETED**: Dijagnostikovan vjerovatni uzrok problema sa GUI/API komunikacijom između računara: lokalna baza ima hotel kod `HVA`, dok frontend po defaultu šalje `X-Hotel-Code: localhost`; lokalna baza je stale u odnosu na prethodni demo seed audit (`25` soba, `10` gostiju, `210` rezervacija umjesto očekivanih demo podataka). `fix_tenant.sql` je zastario jer cilja hardkodirani hotel ID koji ne postoji u trenutnoj bazi.
+- Verifikacija: PostgreSQL `localhost:5432` dostupan; migracija `20260516204704_InitialCreate`; hoteli tabela sadrži samo `HVA`; backend `localhost:5149` trenutno nije slušao u sesiji, frontend `localhost:3000` nije imao aktivan listener kroz TCP provjeru.
 
 ### 2026-05-19 — Antigravity (Gemini 1.5 Flash)
 - **T19.5 COMPLETED**: Popravljeno Gantt sjenčenje i spremanje/zadržavanje sobe i datuma u 2D modu kretanja.
