@@ -150,6 +150,7 @@
 - [x] **T19.3: Uskladjivanje neutralnih/recovery akcija sa temom (retry/refresh)** - [COMPLETED 2026-05-19 - GitHub Copilot (GPT-5.3-Codex)]
 - [x] **T19.4: Popravka vidljivosti demo podataka u aplikaciji** - [COMPLETED 2026-05-19 - Codex]
 - [x] **T19.5: Popravka Gantt sjenčenja i zadržavanja sobe nakon vertical drop-a** - [COMPLETED 2026-05-19 - Antigravity (Gemini 1.5 Flash)]
+- [-] **T19.6: Dijagnoza pokretanja GUI-ja u browseru** - [IN_PROGRESS] - 2026-05-19 - Codex
 
 ---
 
