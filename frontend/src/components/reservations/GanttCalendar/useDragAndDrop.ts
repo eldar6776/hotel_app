@@ -14,6 +14,9 @@ interface DragState {
   targetRowIndex: number | null
   targetRoomId: string | null
   dropAvailable: boolean | null
+  daysDiff: number
+  newArrival: string
+  newDeparture: string
 }
 
 export interface DropTarget {
@@ -22,13 +25,18 @@ export interface DropTarget {
   available: boolean
 }
 
-function isRoomAvailable(room: GanttRoom, booking: GanttBooking): boolean {
+function isRoomAvailableForDates(
+  room: GanttRoom,
+  bookingId: string,
+  arrivalDate: string,
+  departureDate: string
+): boolean {
   if (room.id === '__unassigned__') return true
   return !room.bookings.some(
     (b) =>
-      b.id !== booking.id &&
-      b.arrivalDate < booking.departureDate &&
-      b.departureDate > booking.arrivalDate,
+      b.id !== bookingId &&
+      b.arrivalDate < departureDate &&
+      b.departureDate > arrivalDate,
   )
 }
 
@@ -78,6 +86,9 @@ export function useDragAndDrop(
         targetRowIndex: null,
         targetRoomId: null,
         dropAvailable: null,
+        daysDiff: 0,
+        newArrival: booking.arrivalDate,
+        newDeparture: booking.departureDate,
       }
       dragRef.current = state
       setDragState(state)
@@ -86,8 +97,6 @@ export function useDragAndDrop(
   )
 
   // ── POINTER MOVE — React handler, ide na grid div ───────────────────────────
-  // Pointer capture na GanttBaru garantuje da eventi bubblauju do grida čak i
-  // kad je miš izvan grid elementa.
   const handlePointerMove = useCallback((e: React.PointerEvent) => {
     if (!dragRef.current) return
     e.preventDefault()
@@ -96,32 +105,63 @@ export function useDragAndDrop(
     const dx = e.clientX - current.startX
     const dy = e.clientY - current.startY
 
-    const updated: DragState = { ...current, currentX: e.clientX, currentY: e.clientY }
+    const cw = columnWidthRef.current
+    const rh = rowHeightRef.current
 
-    // Vertikalni drag: mora biti dominantno vertikalan I minimalno 10px pomaka
-    const isVertical = Math.abs(dy) > Math.abs(dx) && Math.abs(dy) > 10
+    // 1. Proračun horizontalne promjene datuma (dvodimenzionalno)
+    let daysDiff = Math.round(dx / cw)
 
-    if (isVertical) {
-      const grid = gridRef.current
-      if (grid) {
-        const rect = grid.getBoundingClientRect()
-        const relY = e.clientY - rect.top + grid.scrollTop
-        const rh = rowHeightRef.current
-        const rowIndex = Math.max(
-          0,
-          Math.min(Math.floor(relY / rh), ganttDataRef.current.length - 1),
-        )
-        const targetRoom = ganttDataRef.current[rowIndex]
-        if (targetRoom) {
-          updated.targetRowIndex = rowIndex
-          updated.targetRoomId = targetRoom.id
-          updated.dropAvailable = isRoomAvailable(targetRoom, current.booking)
-        }
+    // Ograničenje: ne smije u prošlost (dolazak na kalendaru)
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+    const originalArrival = new Date(current.booking.arrivalDate)
+    originalArrival.setHours(0, 0, 0, 0)
+
+    // minDaysDiff je razlika u danima do danas
+    const minDaysDiff = Math.ceil((today.getTime() - originalArrival.getTime()) / (1000 * 60 * 60 * 24))
+    if (daysDiff < minDaysDiff) {
+      daysDiff = minDaysDiff
+    }
+
+    const newArrival = new Date(originalArrival)
+    newArrival.setDate(newArrival.getDate() + daysDiff)
+    const newDeparture = new Date(current.booking.departureDate)
+    newDeparture.setDate(newDeparture.getDate() + daysDiff)
+
+    const newArrivalStr = newArrival.toISOString().split('T')[0]
+    const newDepartureStr = newDeparture.toISOString().split('T')[0]
+
+    // 2. Proračun vertikalne promjene sobe
+    let targetRowIndex: number | null = null
+    let targetRoomId: string | null = null
+    let dropAvailable: boolean | null = null
+
+    const grid = gridRef.current
+    if (grid) {
+      const rect = grid.getBoundingClientRect()
+      const relY = e.clientY - rect.top + grid.scrollTop
+      const rowIndex = Math.max(
+        0,
+        Math.min(Math.floor(relY / rh), ganttDataRef.current.length - 1),
+      )
+      const targetRoom = ganttDataRef.current[rowIndex]
+      if (targetRoom) {
+        targetRowIndex = rowIndex
+        targetRoomId = targetRoom.id
+        dropAvailable = isRoomAvailableForDates(targetRoom, current.booking.id, newArrivalStr, newDepartureStr)
       }
-    } else {
-      updated.targetRowIndex = null
-      updated.targetRoomId = null
-      updated.dropAvailable = null
+    }
+
+    const updated: DragState = {
+      ...current,
+      currentX: e.clientX,
+      currentY: e.clientY,
+      targetRowIndex,
+      targetRoomId,
+      dropAvailable,
+      daysDiff,
+      newArrival: newArrivalStr,
+      newDeparture: newDepartureStr,
     }
 
     dragRef.current = updated
@@ -141,24 +181,51 @@ export function useDragAndDrop(
 
     if (Math.abs(dx) < 5 && Math.abs(dy) < 5) return // klik bez pomaka
 
-    const isVertical = Math.abs(dy) > Math.abs(dx) && Math.abs(dy) > 10
+    const cw = columnWidthRef.current
 
-    if (isVertical) {
-      // ── VERTIKALNI DROP: dodjela / oslobađanje sobe ─────────────────
-      const targetRoomId = current.targetRoomId
-      if (!targetRoomId || !current.dropAvailable) return
+    // Proračun konačnog daysDiff i datuma
+    let daysDiff = Math.round(dx / cw)
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+    const originalArrival = new Date(current.booking.arrivalDate)
+    originalArrival.setHours(0, 0, 0, 0)
+    const minDaysDiff = Math.ceil((today.getTime() - originalArrival.getTime()) / (1000 * 60 * 60 * 24))
+    if (daysDiff < minDaysDiff) {
+      daysDiff = minDaysDiff
+    }
 
-      const currentRoomId = current.booking.roomId ?? null
-      const newRoomId = targetRoomId === '__unassigned__' ? null : targetRoomId
-      if (newRoomId === currentRoomId) return
+    const newArrival = new Date(originalArrival)
+    newArrival.setDate(newArrival.getDate() + daysDiff)
+    const newDeparture = new Date(current.booking.departureDate)
+    newDeparture.setDate(newDeparture.getDate() + daysDiff)
 
+    const newArrivalStr = newArrival.toISOString().split('T')[0]
+    const newDepartureStr = newDeparture.toISOString().split('T')[0]
+
+    const targetRoomId = current.targetRoomId
+    const newRoomId = targetRoomId === '__unassigned__' ? null : targetRoomId
+    const currentRoomId = current.booking.roomId ?? null
+
+    const datesChanged = daysDiff !== 0
+    const roomChanged = newRoomId !== currentRoomId
+
+    if (!datesChanged && !roomChanged) return // Nema promjena
+
+    // ── PROVJERA DOSTUPNOSTI ──────────────────────────────────────────
+    if (newRoomId) {
+      const targetRoom = ganttDataRef.current.find((r) => r.id === newRoomId)
+      const isAvailable = targetRoom ? isRoomAvailableForDates(targetRoom, current.booking.id, newArrivalStr, newDepartureStr) : false
+      if (!isAvailable) return // zauzeto -> snap-back
+    }
+
+    if (!datesChanged && roomChanged) {
+      // ── SAMO PROMJENA SOBE ──────────────────────────────────────────
       const canAssign =
         current.booking.status === 'Confirmed' ||
         current.booking.status === 'Pending' ||
         current.booking.status === 'CheckedIn'
       if (!canAssign) return
 
-      // Odmah pomijeri u UI bez čekanja API-ja
       onOptimisticAssignRef.current?.(current.booking.id, newRoomId, currentRoomId)
 
       try {
@@ -168,24 +235,12 @@ export function useDragAndDrop(
         console.error('[Drag] assignRoom greška:', err)
         onAssignErrorRef.current?.(current.booking.id, currentRoomId)
       }
-    } else {
-      // ── HORIZONTALNI DROP: pomjeranje datuma ────────────────────────
-      const cw = columnWidthRef.current
-      const daysDiff = Math.round(dx / cw)
+    }
+    else if (datesChanged && !roomChanged) {
+      // ── SAMO PROMJENA DATUMA ────────────────────────────────────────
       const canMove =
-        daysDiff !== 0 &&
-        (current.booking.status === 'Confirmed' || current.booking.status === 'Pending')
-
+        current.booking.status === 'Confirmed' || current.booking.status === 'Pending'
       if (!canMove) return
-
-      const newArrival = new Date(current.booking.arrivalDate)
-      newArrival.setDate(newArrival.getDate() + daysDiff)
-      const newDeparture = new Date(current.booking.departureDate)
-      newDeparture.setDate(newDeparture.getDate() + daysDiff)
-
-      const today = new Date()
-      today.setHours(0, 0, 0, 0)
-      if (newArrival < today) return
 
       try {
         await bookingService.updateBooking(current.booking.id, {
@@ -195,6 +250,28 @@ export function useDragAndDrop(
         onBookingMovedRef.current?.()
       } catch (err) {
         console.error('[Drag] updateBooking greška:', err)
+      }
+    }
+    else if (datesChanged && roomChanged) {
+      // ── PROMJENA I SOBE I DATUMA ────────────────────────────────────
+      const canMove =
+        current.booking.status === 'Confirmed' || current.booking.status === 'Pending'
+      if (!canMove) return
+
+      // Optimistički pomičemo u sobu
+      onOptimisticAssignRef.current?.(current.booking.id, newRoomId, currentRoomId)
+
+      try {
+        // Sekvencijalno: prvo ažuriramo datume pa dodjeljujemo sobu
+        await bookingService.updateBooking(current.booking.id, {
+          arrivalDate: newArrival.toISOString(),
+          departureDate: newDeparture.toISOString(),
+        })
+        await bookingService.assignRoom(current.booking.id, newRoomId)
+        onBookingMovedRef.current?.()
+      } catch (err) {
+        console.error('[Drag] updateBooking + assignRoom greška:', err)
+        onAssignErrorRef.current?.(current.booking.id, currentRoomId)
       }
     }
   }, [])

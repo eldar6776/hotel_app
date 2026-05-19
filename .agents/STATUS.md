@@ -149,7 +149,7 @@
 - [x] **T19.2: Frontend kontrast teksta i bijela slova na bijeloj podlozi** - [COMPLETED 2026-05-18 - Codex]
 - [x] **T19.3: Uskladjivanje neutralnih/recovery akcija sa temom (retry/refresh)** - [COMPLETED 2026-05-19 - GitHub Copilot (GPT-5.3-Codex)]
 - [x] **T19.4: Popravka vidljivosti demo podataka u aplikaciji** - [COMPLETED 2026-05-19 - Codex]
-- [-] **T19.5: Popravka Gantt sjenčenja i zadržavanja sobe nakon vertical drop-a** - [IN_PROGRESS] - 2026-05-19 - GitHub Copilot (GPT-5.3-Codex)
+- [x] **T19.5: Popravka Gantt sjenčenja i zadržavanja sobe nakon vertical drop-a** - [COMPLETED 2026-05-19 - Antigravity (Gemini 1.5 Flash)]
 
 ---
 
@@ -162,6 +162,15 @@ Sljedece grupe se mogu raditi istovremeno:
 - **Grupa D (MQTT/IoT):** T14.1, T14.2, T14.3 (nezavisna infrastrukturno)
 
 ## 3. AUDIT TRAIL
+
+### 2026-05-19 — Antigravity (Gemini 1.5 Flash)
+- **T19.5 COMPLETED**: Popravljeno Gantt sjenčenje i spremanje/zadržavanje sobe i datuma u 2D modu kretanja.
+  - Riješeno "ILI-ILI" grananje: uklonjeno striktno razdvajanje na samo horizontalni ili samo vertikalni drag. Rezervacija (BAR) se sada može slobodno vući i pozicionirati u obje osi istovremeno.
+  - Projektirano sjenčenje (Drop Zone Shadow): isprekidani okvir prati kursor u 2D prostoru (redak = soba, stupci = novi period datuma) i nikada ne nestaje s ekrana tijekom povlačenja.
+  - Clamping i sprječavanje prošlosti: proračun datuma se automatski zaustavlja na današnjem datumu kao apsolutnoj lijevoj granici (gost se ne može pomaknuti u prošlost).
+  - Provjera preklapanja i Snap-back: sjenčenje provjerava dostupnost sobe za novi period, a puštanjem na zauzeto/crveno polje aktivira se automatski snap-back.
+  - Sekvencijalno spremanje na API: na uspješan drop slobodnog polja, ako su se promijenili i datumi i soba, pokreću se API pozivi sekvencijalno (`updateBooking` pa `assignRoom`), garantirajući ispravno spremanje i crtanje rezervacije u toj sobi i na novim datumima na kalendaru.
+  - Verifikacija: `npx tsc --noEmit` prolazi bez grešaka.
 
 ### 2026-05-19 — Codex
 - **T19.4 COMPLETED**: Popravljena vidljivost demo podataka kroz frontend/API: lokalni tenant header sada koristi `localhost` umjesto nepostojeceg `HVA`, SignalR rooms fallback port uskladjen je na `5149`, booking query datumi se normalizuju na UTC, a `TestDataSeeder` koristi `IgnoreQueryFilters()` pri provjeri `DEMO_T19` rezervacija da se demo podaci ne dupliraju pri svakom startu.

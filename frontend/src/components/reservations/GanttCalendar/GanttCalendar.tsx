@@ -482,17 +482,17 @@ export function GanttCalendar() {
                 })
               )}
 
-              {/* Drop Zone Shadow — pojavljuje se tokom vertikalnog draga */}
+              {/* Drop Zone Shadow — pojavljuje se tokom draga */}
               {(() => {
                 const dropTarget = getDropTarget()
                 if (!dropTarget || !dragState) return null
                 const bk = dragState.booking
-                const dropLeft = getLeft(bk.arrivalDate) + (offset?.x || 0)
-                const dropWidth = getWidth(bk.arrivalDate, bk.departureDate)
+                const dropLeft = getLeft(dragState.newArrival)
+                const dropWidth = getWidth(dragState.newArrival, dragState.newDeparture)
                 const dropTop = dropTarget.rowIndex * ROW_HEIGHT
                 return (
                   <div
-                    className={`absolute pointer-events-none border-2 border-dashed rounded-md z-40 transition-colors ${
+                    className={`absolute pointer-events-none border-2 border-dashed rounded-md z-40 transition-all duration-75 ${
                       dropTarget.available
                         ? 'border-green-500 bg-green-100/40 dark:bg-green-900/20'
                         : 'border-red-500 bg-red-100/30 dark:bg-red-900/20'
@@ -524,28 +524,23 @@ export function GanttCalendar() {
 
               {/* Drag preview tooltip */}
               {dragState?.booking && offset && (() => {
-                const daysDiff = Math.round(offset.x / COLUMN_WIDTH)
-                const oldArrival = new Date(dragState.booking.arrivalDate)
-                const oldDeparture = new Date(dragState.booking.departureDate)
-                const newArrival = new Date(oldArrival)
-                newArrival.setDate(newArrival.getDate() + daysDiff)
-                const newDeparture = new Date(oldDeparture)
-                newDeparture.setDate(newDeparture.getDate() + daysDiff)
+                const newArrival = new Date(dragState.newArrival)
+                const newDeparture = new Date(dragState.newDeparture)
                 const newNights = Math.round((newDeparture.getTime() - newArrival.getTime()) / 86400000)
                 return (
-                <div
-                  className="absolute z-50 bg-surface border border-border rounded-lg shadow-lg px-3 py-2 text-xs text-text pointer-events-none"
-                  style={{
-                    left: getLeft(dragState.booking.arrivalDate) + offset.x + 10,
-                    top: 8 + offset.y,
-                  }}
-                >
-                  <div className="font-medium">{dragState.booking.guestName}</div>
-                  <div className="text-text-secondary">
-                    {newArrival.toISOString().split('T')[0]} → {newDeparture.toISOString().split('T')[0]}
+                  <div
+                    className="absolute z-50 bg-surface border border-border rounded-lg shadow-lg px-3 py-2 text-xs text-text pointer-events-none"
+                    style={{
+                      left: getLeft(dragState.booking.arrivalDate) + offset.x + 10,
+                      top: 8 + offset.y,
+                    }}
+                  >
+                    <div className="font-medium">{dragState.booking.guestName}</div>
+                    <div className="text-text-secondary">
+                      {dragState.newArrival} → {dragState.newDeparture}
+                    </div>
+                    <div className="text-text-secondary">{newNights} noci</div>
                   </div>
-                  <div className="text-text-secondary">{newNights} noci</div>
-                </div>
                 )
               })()}
             </div>
