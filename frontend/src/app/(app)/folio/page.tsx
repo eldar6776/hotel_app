@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback } from 'react'
 import { folioService } from '@/lib/folios/folio-service'
-import type { FolioDto, CreateFolioChargeDto } from '@/types/folios'
+import type { FolioDto, CreateFolioChargeDto, FolioStayNightDto } from '@/types/folios'
 import { CHARGE_TYPES } from '@/types/folios'
 import {
   Plus,
@@ -15,6 +15,9 @@ import {
   ChevronUp,
 } from 'lucide-react'
 import Button from '@/components/ui/Button'
+
+const money = (value: number | null | undefined) => (value ?? 0).toFixed(2)
+const stayNightAmount = (night: FolioStayNightDto) => night.tariffAmount ?? night.roomPrice ?? 0
 
 export default function FolioPage() {
   const [folios, setFolios] = useState<FolioDto[]>([])
@@ -89,7 +92,7 @@ export default function FolioPage() {
     }
   }
 
-  const totalBalance = folios.reduce((sum, f) => sum + f.balance, 0)
+  const totalBalance = folios.reduce((sum, f) => sum + (f.balance ?? 0), 0)
 
   return (
     <div className="space-y-4">
@@ -97,7 +100,7 @@ export default function FolioPage() {
         <div>
           <h1 className="text-xl font-semibold text-text">Folio — Otvoreni racuni</h1>
           <p className="text-sm text-text-secondary mt-1">
-            {folios.length} otvorenih folija · Ukupno: <span className="font-bold text-text">{totalBalance.toFixed(2)} EUR</span>
+            {folios.length} otvorenih folija · Ukupno: <span className="font-bold text-text">{money(totalBalance)} EUR</span>
           </p>
         </div>
         <Button variant="secondary" onClick={loadFolios}>
@@ -117,8 +120,10 @@ export default function FolioPage() {
           {folios.map((folio) => {
             const isExpanded = expandedFolio === folio.id
             const isChargeOpen = chargeFormFolio === folio.id
-            const totalCharges = folio.charges.reduce((s, c) => s + c.totalPrice, 0)
-            const totalNights = folio.stayNights.reduce((s, n) => s + n.tariffAmount, 0)
+            const charges = folio.charges ?? []
+            const stayNights = folio.stayNights ?? []
+            const totalCharges = charges.reduce((s, c) => s + (c.totalPrice ?? 0), 0)
+            const totalNights = stayNights.reduce((s, n) => s + stayNightAmount(n), 0)
 
             return (
               <div key={folio.id} className="rounded-xl border border-border bg-surface shadow-sm overflow-hidden">
@@ -138,16 +143,16 @@ export default function FolioPage() {
                   <div className="flex items-center gap-6">
                     <div className="text-right">
                       <p className="text-xs text-text-secondary">Troskovi</p>
-                      <p className="text-sm font-medium text-text">{totalCharges.toFixed(2)} €</p>
+                      <p className="text-sm font-medium text-text">{money(totalCharges)} €</p>
                     </div>
                     <div className="text-right">
                       <p className="text-xs text-text-secondary">Nocenja</p>
-                      <p className="text-sm font-medium text-text">{totalNights.toFixed(2)} €</p>
+                      <p className="text-sm font-medium text-text">{money(totalNights)} €</p>
                     </div>
                     <div className="text-right">
                       <p className="text-xs text-text-secondary">Stanje</p>
-                      <p className={`text-sm font-bold ${folio.balance > 0 ? 'text-red-600' : 'text-emerald-600'}`}>
-                        {folio.balance.toFixed(2)} €
+                      <p className={`text-sm font-bold ${(folio.balance ?? 0) > 0 ? 'text-red-600' : 'text-emerald-600'}`}>
+                        {money(folio.balance)} €
                       </p>
                     </div>
                     {isExpanded ? <ChevronUp className="h-4 w-4 text-text-secondary" /> : <ChevronDown className="h-4 w-4 text-text-secondary" />}
@@ -157,7 +162,7 @@ export default function FolioPage() {
                 {isExpanded && (
                   <div className="border-t border-border px-4 py-4 space-y-4">
                     <div className="flex items-center justify-between">
-                      <h3 className="text-sm font-medium text-text">Troskovi ({folio.charges.length})</h3>
+                      <h3 className="text-sm font-medium text-text">Troskovi ({charges.length})</h3>
                       <button
                         onClick={() => setChargeFormFolio(isChargeOpen ? null : folio.id)}
                         className="flex items-center gap-1 rounded-lg bg-primary-500 px-3 py-1.5 text-xs font-medium text-white hover:bg-primary-600"
@@ -219,27 +224,27 @@ export default function FolioPage() {
                             disabled={!chargeForm.description || chargeForm.unitPrice <= 0}
                             className="rounded-lg bg-primary-500 px-4 py-1.5 text-xs font-medium text-white hover:bg-primary-600 disabled:opacity-50"
                           >
-                            Dodaj ({(chargeForm.quantity * chargeForm.unitPrice).toFixed(2)} €)
+                            Dodaj ({money(chargeForm.quantity * chargeForm.unitPrice)} €)
                           </button>
                         </div>
                       </div>
                     )}
 
-                    {folio.charges.length === 0 ? (
+                    {charges.length === 0 ? (
                       <p className="text-xs text-text-secondary text-center py-4">Nema troskova</p>
                     ) : (
                       <div className="space-y-1">
-                        {folio.charges.map((charge) => (
+                        {charges.map((charge) => (
                           <div key={charge.id} className="flex items-center justify-between rounded-lg bg-surface-secondary px-3 py-2 text-sm">
                             <div className="flex-1">
                               <p className="text-text font-medium">{charge.description}</p>
                               <p className="text-xs text-text-secondary">
-                                {charge.chargeType} · {charge.quantity} x {charge.unitPrice.toFixed(2)} € · {new Date(charge.chargeDate).toLocaleDateString()}
+                                {charge.chargeType} · {charge.quantity} x {money(charge.unitPrice)} € · {new Date(charge.chargeDate).toLocaleDateString()}
                               </p>
                             </div>
                             <div className="flex items-center gap-3">
-                              <span className={`font-bold ${charge.totalPrice < 0 ? 'text-emerald-600' : 'text-text'}`}>
-                                {charge.totalPrice.toFixed(2)} €
+                              <span className={`font-bold ${(charge.totalPrice ?? 0) < 0 ? 'text-emerald-600' : 'text-text'}`}>
+                                {money(charge.totalPrice)} €
                               </span>
                               <div className="flex gap-1">
                                 {stornoReason?.chargeId === charge.id ? (
@@ -274,17 +279,17 @@ export default function FolioPage() {
                       </div>
                     )}
 
-                    {folio.stayNights.length > 0 && (
+                    {stayNights.length > 0 && (
                       <div>
-                        <h3 className="text-sm font-medium text-text mb-2">Nocenja ({folio.stayNights.length})</h3>
+                        <h3 className="text-sm font-medium text-text mb-2">Nocenja ({stayNights.length})</h3>
                         <div className="space-y-1">
-                          {folio.stayNights.map((night) => (
+                          {stayNights.map((night) => (
                             <div key={night.id} className="flex items-center justify-between rounded-lg bg-surface-secondary px-3 py-2 text-sm">
                               <div>
                                 <p className="text-text font-medium">Nocenje</p>
                                 <p className="text-xs text-text-secondary">{new Date(night.date).toLocaleDateString()}{night.isComp ? ' · Komp' : ''}</p>
                               </div>
-                              <span className="font-bold text-text">{night.tariffAmount.toFixed(2)} €</span>
+                              <span className="font-bold text-text">{money(stayNightAmount(night))} €</span>
                             </div>
                           ))}
                         </div>
