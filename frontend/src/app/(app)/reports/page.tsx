@@ -3,8 +3,6 @@
 import { useState, useCallback } from 'react'
 import apiClient from '@/lib/api/client'
 import { BarChart3, Calendar, DollarSign, Users, TrendingUp, Download } from 'lucide-react'
-import Button from '@/components/ui/Button'
-
 interface DailyReport {
   date: string
   totalRooms: number
@@ -134,20 +132,20 @@ export default function ReportsPage() {
               type="date"
               value={reportDate}
               onChange={(e) => setReportDate(e.target.value)}
-              className="rounded-lg border border-border bg-white dark:bg-gray-800 px-3 py-2 text-sm text-text"
+              className="rounded-lg border border-border bg-surface px-3 py-2 text-sm text-text"
             />
           </div>
         ) : (
           <div className="flex items-center gap-2">
             <Calendar className="h-4 w-4 text-text-secondary" />
-            <input type="date" value={financialFrom} onChange={(e) => setFinancialFrom(e.target.value)} className="rounded-lg border border-border bg-white dark:bg-gray-800 px-3 py-2 text-sm text-text" />
+            <input type="date" value={financialFrom} onChange={(e) => setFinancialFrom(e.target.value)} className="rounded-lg border border-border bg-surface px-3 py-2 text-sm text-text" />
             <span className="text-sm text-text-secondary">do</span>
-            <input type="date" value={financialTo} onChange={(e) => setFinancialTo(e.target.value)} className="rounded-lg border border-border bg-white dark:bg-gray-800 px-3 py-2 text-sm text-text" />
+            <input type="date" value={financialTo} onChange={(e) => setFinancialTo(e.target.value)} className="rounded-lg border border-border bg-surface px-3 py-2 text-sm text-text" />
           </div>
         )}
-        <Button variant="secondary" disabled={isLoading} onClick={handleLoad}>
+        <button onClick={handleLoad} disabled={isLoading} className="rounded-lg bg-primary-500 px-4 py-2 text-sm font-medium text-white hover:bg-primary-600 disabled:opacity-50">
           {isLoading ? 'Ucitavam...' : 'Generisi'}
-        </Button>
+        </button>
       </div>
 
       {isLoading && <div className="animate-pulse h-48 rounded-xl bg-surface-tertiary" />}

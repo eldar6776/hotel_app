@@ -5,8 +5,6 @@ import type { GuestDto } from '@/types/guests'
 import apiClient from '@/lib/api/client'
 import { GuestCard } from '@/components/guests/GuestCard'
 import { GuestDetail } from '@/components/guests/GuestDetail'
-import Button from '@/components/ui/Button'
-
 export default function GuestsPage() {
   const [guests, setGuests] = useState<GuestDto[]>([])
   const [isLoading, setIsLoading] = useState(true)
@@ -50,9 +48,9 @@ export default function GuestsPage() {
           placeholder="Pretraga po imenu, email-u, telefonu..."
           className="flex-1 rounded-lg border border-border bg-surface px-4 py-2 text-sm text-text"
         />
-        <Button type="submit" variant="secondary">
+        <button type="submit" className="rounded-lg bg-primary-500 px-4 py-2 text-sm font-medium text-white">
           Trazi
-        </Button>
+        </button>
       </form>
 
       {isLoading ? (

@@ -52,7 +52,7 @@ export function CheckInModal({ booking, onClose, onSuccess }: Props) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm" onClick={onClose}>
-      <div className="w-full max-w-md rounded-xl bg-white dark:bg-gray-900 p-6 shadow-2xl border border-gray-200 dark:border-gray-700" onClick={(e) => e.stopPropagation()}>
+      <div className="w-full max-w-md rounded-xl bg-surface p-6 shadow-2xl border border-border" onClick={(e) => e.stopPropagation()}>
         <h2 className="text-lg font-bold text-text mb-2">Check-in: {booking.guestName}</h2>
         <p className="text-sm text-text-secondary mb-4">{booking.rooms?.[0]?.roomTypeName} · {booking.nights}n</p>
 
@@ -66,7 +66,7 @@ export function CheckInModal({ booking, onClose, onSuccess }: Props) {
           <select
             value={roomId}
             onChange={(e) => setRoomId(e.target.value)}
-            className="w-full rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-3 py-2 text-sm text-text"
+            className="w-full rounded-lg border border-border bg-surface px-3 py-2 text-sm text-text"
             required
           >
             <option value="">Odaberi sobu...</option>

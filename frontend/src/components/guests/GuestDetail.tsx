@@ -22,7 +22,7 @@ export function GuestDetail({ guest, onClose }: { guest: GuestDto; onClose: () =
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm" onClick={onClose}>
-      <div className="w-full max-w-3xl rounded-xl bg-white dark:bg-gray-900 p-6 shadow-2xl border border-gray-200 dark:border-gray-700 max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
+      <div className="w-full max-w-3xl rounded-xl bg-white dark:bg-gray-900 p-6 shadow-2xl border border-border ring-1 ring-black/5 dark:ring-white/10 max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-bold text-text">{guest.firstName} {guest.lastName}</h2>
           <button onClick={onClose} className="text-text-secondary hover:text-text">&times;</button>
@@ -72,7 +72,7 @@ export function GuestDetail({ guest, onClose }: { guest: GuestDto; onClose: () =
               <p className="text-sm text-text-secondary text-center py-8">Nema istorije boravaka</p>
             ) : (
               profile.stayHistory.map(s => (
-                <div key={s.bookingId} className="rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 p-3 flex justify-between items-center">
+                <div key={s.bookingId} className="rounded-lg border border-border bg-surface-secondary p-3 shadow-sm flex justify-between items-center">
                   <div>
                     <p className="text-sm font-medium text-text">Soba {s.roomNumber} · {s.nights}n</p>
                     <p className="text-xs text-text-secondary">
@@ -92,7 +92,7 @@ export function GuestDetail({ guest, onClose }: { guest: GuestDto; onClose: () =
               <p className="text-sm text-text-secondary text-center py-8">Nema rezervacija</p>
             ) : (
               profile.bookingHistory.map(b => (
-                <div key={b.bookingId} className="rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 p-3 flex justify-between items-center">
+                <div key={b.bookingId} className="rounded-lg border border-border bg-surface-secondary p-3 shadow-sm flex justify-between items-center">
                   <div>
                     <p className="text-sm font-medium text-text">{b.roomTypeName} · {b.nights}n</p>
                     <p className="text-xs text-text-secondary">{new Date(b.arrival).toLocaleDateString()} → {new Date(b.departure).toLocaleDateString()}</p>

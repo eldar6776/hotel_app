@@ -3,8 +3,6 @@
 import { useEffect, useState } from 'react'
 import type { AmenityDto } from '@/types/rooms'
 import apiClient from '@/lib/api/client'
-import Button from '@/components/ui/Button'
-
 export default function AmenitiesPage() {
   const [amenities, setAmenities] = useState<AmenityDto[]>([])
   const [isLoading, setIsLoading] = useState(true)
@@ -96,11 +94,9 @@ export default function AmenitiesPage() {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-text">Sadrzaji</h1>
-        {showForm ? (
-          <Button variant="secondary" onClick={() => setShowForm(false)}>Odustani</Button>
-        ) : (
-          <button onClick={() => setShowForm(true)} className="rounded-lg bg-primary-500 px-4 py-2 text-sm font-medium text-white hover:bg-primary-600">+ Novi Sadrzaj</button>
-        )}
+        <button onClick={() => setShowForm(!showForm)} className="rounded-lg bg-primary-500 px-4 py-2 text-sm font-medium text-white hover:bg-primary-600">
+          {showForm ? 'Odustani' : '+ Novi Sadrzaj'}
+        </button>
       </div>
 
       {showForm && (

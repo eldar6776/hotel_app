@@ -3,8 +3,6 @@
 import { useState } from 'react'
 import type { BookingDto } from '@/types/bookings'
 import apiClient from '@/lib/api/client'
-import Button from '@/components/ui/Button'
-
 interface Props {
   booking: BookingDto
   onClose: () => void
@@ -46,7 +44,7 @@ export function CheckOutModal({ booking, onClose, onSuccess }: Props) {
   if (result) {
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm" onClick={onClose}>
-        <div className="w-full max-w-md rounded-xl bg-white dark:bg-gray-900 p-6 shadow-2xl border border-gray-200 dark:border-gray-700" onClick={(e) => e.stopPropagation()}>
+        <div className="w-full max-w-md rounded-xl bg-surface p-6 shadow-2xl border border-border" onClick={(e) => e.stopPropagation()}>
           <h2 className="text-lg font-bold text-text mb-2">Check-out završen</h2>
           <div className="space-y-2 text-sm mb-4">
             <div className="flex justify-between"><span className="text-text-secondary">Noćenja:</span><span className="text-text">{result.stayCharges.toFixed(2)} €</span></div>
@@ -60,9 +58,9 @@ export function CheckOutModal({ booking, onClose, onSuccess }: Props) {
             <div className="flex justify-between border-t border-border pt-2 font-bold"><span>Ukupno:</span><span className="text-text">{result.totalAmount.toFixed(2)} €</span></div>
             <div className="text-xs text-text-secondary">Folio: {result.folioNumber} · Plaćanje: {paymentMethod}</div>
           </div>
-          <Button onClick={() => { onSuccess(); onClose() }} variant="secondary" className="w-full">
+          <button onClick={() => { onSuccess(); onClose() }} className="w-full rounded-lg bg-primary-500 px-4 py-2 text-sm font-medium text-white">
             Zatvori
-          </Button>
+          </button>
         </div>
       </div>
     )
@@ -70,7 +68,7 @@ export function CheckOutModal({ booking, onClose, onSuccess }: Props) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm" onClick={onClose}>
-      <div className="w-full max-w-md rounded-xl bg-white dark:bg-gray-900 p-6 shadow-2xl border border-gray-200 dark:border-gray-700" onClick={(e) => e.stopPropagation()}>
+      <div className="w-full max-w-md rounded-xl bg-surface p-6 shadow-2xl border border-border" onClick={(e) => e.stopPropagation()}>
         <h2 className="text-lg font-bold text-text mb-2">Check-out: {booking.guestName}</h2>
         <p className="text-sm text-text-secondary mb-4">Soba {booking.rooms?.[0]?.roomNumber || 'N/A'} · {booking.nights}n</p>
 
@@ -78,7 +76,7 @@ export function CheckOutModal({ booking, onClose, onSuccess }: Props) {
           <select
             value={paymentMethod}
             onChange={(e) => setPaymentMethod(e.target.value)}
-            className="w-full rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-3 py-2 text-sm text-text"
+            className="w-full rounded-lg border border-border bg-surface px-3 py-2 text-sm text-text"
           >
             <option value="Cash">Gotovina</option>
             <option value="Card">Kartica</option>

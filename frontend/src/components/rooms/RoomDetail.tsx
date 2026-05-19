@@ -113,7 +113,7 @@ export function RoomDetail({ room, isOpen, onClose, onStatusChange }: RoomDetail
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm" onClick={onClose}>
-      <div className="w-full max-w-2xl rounded-xl bg-white dark:bg-gray-900 p-6 shadow-2xl border border-gray-200 dark:border-gray-700 max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+      <div className="w-full max-w-2xl rounded-xl bg-surface p-6 shadow-2xl border border-border max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
         <div className="mb-4 flex items-center justify-between">
           <h2 className="text-xl font-bold text-text">Soba {room.roomNumber}</h2>
           <button onClick={onClose} className="text-text-secondary hover:text-text" aria-label="Zatvori">&times;</button>
@@ -198,7 +198,7 @@ export function RoomDetail({ room, isOpen, onClose, onStatusChange }: RoomDetail
         {activeTab === 'guest' && (
           <div className="space-y-3">
             {room.status === 'Occupied' || room.status === 'Departing' || room.status === 'OccupiedReserved' ? (
-              <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 p-4">
+              <div className="rounded-lg border border-border bg-surface-secondary p-4">
                 <p className="text-sm font-medium text-text">Soba je trenutno zauzeta</p>
                 <p className="text-xs text-text-secondary mt-1">Detalji gosta su dostupni kroz Check-in sistem.</p>
               </div>
@@ -220,7 +220,7 @@ export function RoomDetail({ room, isOpen, onClose, onStatusChange }: RoomDetail
         {activeTab === 'hk' && (
           <div className="space-y-3">
             <p className="text-sm font-medium text-text">Housekeeping</p>
-            <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 p-4">
+            <div className="rounded-lg border border-border bg-surface-secondary p-4">
               <p className="text-sm text-text-secondary">
                 Status: {room.status === 'Dirty' ? 'Potrebno čišćenje' : room.status === 'Free' ? 'Čista i spremna' : 'Nije primjenjivo'}
               </p>
@@ -273,7 +273,7 @@ export function RoomDetail({ room, isOpen, onClose, onStatusChange }: RoomDetail
             </div>
 
             {showOooForm && (
-              <form onSubmit={handleCreateOoo} className="rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 p-4 space-y-3">
+              <form onSubmit={handleCreateOoo} className="rounded-lg border border-border bg-surface-secondary p-4 space-y-3">
                 <select
                   value={oooForm.reason}
                   onChange={(e) => setOooForm({ ...oooForm, reason: e.target.value })}
@@ -315,7 +315,7 @@ export function RoomDetail({ room, isOpen, onClose, onStatusChange }: RoomDetail
             ) : (
               <div className="space-y-2">
                 {oooEntries.map((entry) => (
-                  <div key={entry.id} className="rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 p-3">
+                  <div key={entry.id} className="rounded-lg border border-border bg-surface-secondary p-3">
                     <div className="flex items-center justify-between">
                       <div>
                         <p className="text-sm font-medium text-text">{entry.reason}</p>
