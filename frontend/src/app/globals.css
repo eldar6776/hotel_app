@@ -66,46 +66,46 @@
 }
 
 @theme inline {
-  --color-primary-50: hsl(var(--color-primary-50) / <alpha-value>);
-  --color-primary-100: hsl(var(--color-primary-100) / <alpha-value>);
-  --color-primary-200: hsl(var(--color-primary-200) / <alpha-value>);
-  --color-primary-300: hsl(var(--color-primary-300) / <alpha-value>);
-  --color-primary-400: hsl(var(--color-primary-400) / <alpha-value>);
-  --color-primary-500: hsl(var(--color-primary-500) / <alpha-value>);
-  --color-primary-600: hsl(var(--color-primary-600) / <alpha-value>);
-  --color-primary-700: hsl(var(--color-primary-700) / <alpha-value>);
-  --color-primary-800: hsl(var(--color-primary-800) / <alpha-value>);
-  --color-primary-900: hsl(var(--color-primary-900) / <alpha-value>);
+  --color-primary-50: hsl(var(--color-primary-50));
+  --color-primary-100: hsl(var(--color-primary-100));
+  --color-primary-200: hsl(var(--color-primary-200));
+  --color-primary-300: hsl(var(--color-primary-300));
+  --color-primary-400: hsl(var(--color-primary-400));
+  --color-primary-500: hsl(var(--color-primary-500));
+  --color-primary-600: hsl(var(--color-primary-600));
+  --color-primary-700: hsl(var(--color-primary-700));
+  --color-primary-800: hsl(var(--color-primary-800));
+  --color-primary-900: hsl(var(--color-primary-900));
 
-  --color-accent-50: hsl(var(--color-accent-50) / <alpha-value>);
-  --color-accent-100: hsl(var(--color-accent-100) / <alpha-value>);
-  --color-accent-200: hsl(var(--color-accent-200) / <alpha-value>);
-  --color-accent-300: hsl(var(--color-accent-300) / <alpha-value>);
-  --color-accent-400: hsl(var(--color-accent-400) / <alpha-value>);
-  --color-accent-500: hsl(var(--color-accent-500) / <alpha-value>);
-  --color-accent-600: hsl(var(--color-accent-600) / <alpha-value>);
-  --color-accent-700: hsl(var(--color-accent-700) / <alpha-value>);
-  --color-accent-800: hsl(var(--color-accent-800) / <alpha-value>);
-  --color-accent-900: hsl(var(--color-accent-900) / <alpha-value>);
+  --color-accent-50: hsl(var(--color-accent-50));
+  --color-accent-100: hsl(var(--color-accent-100));
+  --color-accent-200: hsl(var(--color-accent-200));
+  --color-accent-300: hsl(var(--color-accent-300));
+  --color-accent-400: hsl(var(--color-accent-400));
+  --color-accent-500: hsl(var(--color-accent-500));
+  --color-accent-600: hsl(var(--color-accent-600));
+  --color-accent-700: hsl(var(--color-accent-700));
+  --color-accent-800: hsl(var(--color-accent-800));
+  --color-accent-900: hsl(var(--color-accent-900));
 
-  --color-success: hsl(var(--color-success) / <alpha-value>);
-  --color-success-light: hsl(var(--color-success-light) / <alpha-value>);
-  --color-success-dark: hsl(var(--color-success-dark) / <alpha-value>);
+  --color-success: hsl(var(--color-success));
+  --color-success-light: hsl(var(--color-success-light));
+  --color-success-dark: hsl(var(--color-success-dark));
 
-  --color-warning: hsl(var(--color-warning) / <alpha-value>);
-  --color-warning-light: hsl(var(--color-warning-light) / <alpha-value>);
-  --color-warning-dark: hsl(var(--color-warning-dark) / <alpha-value>);
+  --color-warning: hsl(var(--color-warning));
+  --color-warning-light: hsl(var(--color-warning-light));
+  --color-warning-dark: hsl(var(--color-warning-dark));
 
-  --color-error: hsl(var(--color-error) / <alpha-value>);
-  --color-error-light: hsl(var(--color-error-light) / <alpha-value>);
-  --color-error-dark: hsl(var(--color-error-dark) / <alpha-value>);
+  --color-error: hsl(var(--color-error));
+  --color-error-light: hsl(var(--color-error-light));
+  --color-error-dark: hsl(var(--color-error-dark));
 
-  --color-surface: hsl(var(--color-surface) / <alpha-value>);
-  --color-surface-secondary: hsl(var(--color-surface-secondary) / <alpha-value>);
-  --color-surface-tertiary: hsl(var(--color-surface-tertiary) / <alpha-value>);
-  --color-border: hsl(var(--color-border) / <alpha-value>);
-  --color-text: hsl(var(--color-text) / <alpha-value>);
-  --color-text-secondary: hsl(var(--color-text-secondary) / <alpha-value>);
+  --color-surface: hsl(var(--color-surface));
+  --color-surface-secondary: hsl(var(--color-surface-secondary));
+  --color-surface-tertiary: hsl(var(--color-surface-tertiary));
+  --color-border: hsl(var(--color-border));
+  --color-text: hsl(var(--color-text));
+  --color-text-secondary: hsl(var(--color-text-secondary));
 
   --font-sans: var(--font-inter), system-ui, sans-serif;
 
