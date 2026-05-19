@@ -149,6 +149,7 @@
 - [x] **T19.2: Frontend kontrast teksta i bijela slova na bijeloj podlozi** - [COMPLETED 2026-05-18 - Codex]
 - [x] **T19.3: Uskladjivanje neutralnih/recovery akcija sa temom (retry/refresh)** - [COMPLETED 2026-05-19 - GitHub Copilot (GPT-5.3-Codex)]
 - [x] **T19.4: Popravka vidljivosti demo podataka u aplikaciji** - [COMPLETED 2026-05-19 - Codex]
+- [-] **T19.5: Popravka Gantt sjenčenja i zadržavanja sobe nakon vertical drop-a** - [IN_PROGRESS] - 2026-05-19 - GitHub Copilot (GPT-5.3-Codex)
 
 ---
 

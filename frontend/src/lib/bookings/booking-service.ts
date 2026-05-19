@@ -32,4 +32,9 @@ export const bookingService = {
     const response = await apiClient.put(`/bookings/${id}`, data)
     return response.data
   },
+
+  async assignRoom(id: string, roomId: string | null): Promise<BookingDto> {
+    const response = await apiClient.patch(`/bookings/${id}/assign-room`, { roomId })
+    return response.data
+  },
 }

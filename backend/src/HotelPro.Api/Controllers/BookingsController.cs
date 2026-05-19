@@ -103,6 +103,21 @@ public class BookingsController : ControllerBase
         }
     }
 
+    [HttpPatch("{id:guid}/assign-room")]
+    [Authorize(Policy = "CanManageBookings")]
+    public async Task<ActionResult<BookingDto>> AssignRoom(Guid id, [FromBody] AssignRoomDto dto)
+    {
+        try
+        {
+            var booking = await _bookingService.AssignRoomAsync(id, dto);
+            return Ok(booking);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new { error = ex.Message });
+        }
+    }
+
     [HttpPatch("{id:guid}/status")]
     [Authorize(Policy = "CanManageBookings")]
     public async Task<ActionResult> UpdateStatus(Guid id, [FromBody] BookingStatus newStatus)

@@ -9,6 +9,7 @@ public interface IBookingService
     Task<BookingDto?> GetBookingByIdAsync(Guid id);
     Task<BookingDto> CreateBookingAsync(CreateBookingDto dto);
     Task<BookingDto> UpdateBookingAsync(Guid id, UpdateBookingDto dto);
+    Task<BookingDto> AssignRoomAsync(Guid id, AssignRoomDto dto);
     Task DeleteBookingAsync(Guid id);
     Task UpdateBookingStatusAsync(Guid id, BookingStatus newStatus);
 }

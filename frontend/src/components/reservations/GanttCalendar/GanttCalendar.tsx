@@ -10,6 +10,11 @@ import type { RoomDto } from '@/types/rooms'
 import type { BookingDto, GanttRoom, GanttBooking } from '@/types/bookings'
 import { STATUS_COLORS, STATUS_LABELS } from '@/types/bookings'
 
+interface Toast {
+  type: 'success' | 'error' | 'saving'
+  message: string
+}
+
 const COLUMN_WIDTH = 80
 const ROW_HEIGHT = 48
 const ROOM_LABEL_WIDTH = 150
@@ -43,16 +48,64 @@ export function GanttCalendar() {
   })
   const [scrollLeft, setScrollLeft] = useState(0)
   const [scrollTop, setScrollTop] = useState(0)
+  const [toast, setToast] = useState<Toast | null>(null)
   const gridRef = useRef<HTMLDivElement>(null)
   const fetchDataRef = useRef<() => void>(() => {})
+  const silentRefetchRef = useRef<() => void>(() => {})
+  const hasScrolledToTodayRef = useRef(false)
 
   const dateRange = useMemo(() => generateDateRange(currentMonth, DAYS_TO_SHOW), [currentMonth])
 
-  const {
-    dragState,
-    handleDragStart,
-    getDragOffset,
-  } = useDragAndDrop(COLUMN_WIDTH, ROW_HEIGHT, dateRange, () => fetchDataRef.current())
+  // Toast auto-dismiss
+  useEffect(() => {
+    if (toast && toast.type !== 'saving') {
+      const t = setTimeout(() => setToast(null), 3000)
+      return () => clearTimeout(t)
+    }
+  }, [toast])
+
+  // Optimistic UI: odmah ažurira lokalni state, bez čekanja API-ja
+  const handleOptimisticAssign = useCallback(
+    (bookingId: string, newRoomId: string | null, _oldRoomId: string | null) => {
+      setBookings((prev) =>
+        prev.map((b) => {
+          if (b.id !== bookingId) return b
+          return {
+            ...b,
+            rooms: b.rooms.map((r, i) =>
+              i === 0 ? { ...r, roomId: newRoomId, roomNumber: null } : r,
+            ),
+          }
+        }),
+      )
+      setToast({ type: 'saving', message: 'Spašavanje...' })
+    },
+    [],
+  )
+
+  // Revert na originalno stanje ako API greška
+  const handleAssignError = useCallback(
+    (bookingId: string, originalRoomId: string | null) => {
+      setBookings((prev) =>
+        prev.map((b) => {
+          if (b.id !== bookingId) return b
+          return {
+            ...b,
+            rooms: b.rooms.map((r, i) =>
+              i === 0 ? { ...r, roomId: originalRoomId } : r,
+            ),
+          }
+        }),
+      )
+      setToast({ type: 'error', message: '✗ Greška — promjena vraćena' })
+    },
+    [],
+  )
+
+  const handleBookingMoved = useCallback(() => {
+    setToast({ type: 'success', message: '✓ Promjena spašena' })
+    silentRefetchRef.current()
+  }, [])
 
   const fetchData = useCallback(async () => {
     try {
@@ -77,11 +130,42 @@ export function GanttCalendar() {
     }
   }, [dateRange])
 
+  // Tihi refresh u pozadini — ne prikazuje loading spinner
+  const silentFetch = useCallback(async () => {
+    try {
+      const [roomsResult, bookingsResult] = await Promise.all([
+        roomService.getRooms({ pageSize: 500 }),
+        bookingService.getBookings({
+          fromDate: dateRange[0],
+          toDate: dateRange[dateRange.length - 1],
+          pageSize: 500,
+        }),
+      ])
+      setRooms(roomsResult.items)
+      setBookings(bookingsResult.items)
+    } catch {
+      // Silent fail — optimistic state se čuva
+    }
+  }, [dateRange])
+
   useEffect(() => {
     fetchDataRef.current = fetchData
-    // eslint-disable-next-line react-hooks/set-state-in-effect
+    silentRefetchRef.current = silentFetch
     fetchData()
-  }, [fetchData])
+  }, [fetchData, silentFetch])
+
+  // Auto-scroll na danas pri prvom učitavanju
+  useEffect(() => {
+    if (loading || hasScrolledToTodayRef.current) return
+    hasScrolledToTodayRef.current = true
+    requestAnimationFrame(() => {
+      const now = new Date()
+      const todayCol = now.getDate() - 1
+      const target = Math.max(0, todayCol * COLUMN_WIDTH - COLUMN_WIDTH * 2)
+      setScrollLeft(target)
+      if (gridRef.current) gridRef.current.scrollLeft = target
+    })
+  }, [loading])
 
   const ganttData = useMemo((): GanttRoom[] => {
     const roomMap = new Map<string, GanttRoom>()
@@ -131,6 +215,24 @@ export function GanttCalendar() {
     if (unassigned.bookings.length > 0) result.unshift(unassigned)
     return result
   }, [rooms, bookings])
+
+  const {
+    dragState,
+    handleDragStart,
+    handlePointerMove,
+    handlePointerUp,
+    getDragOffset,
+    getDropTarget,
+  } = useDragAndDrop(
+    COLUMN_WIDTH,
+    ROW_HEIGHT,
+    dateRange,
+    ganttData,
+    gridRef,
+    handleBookingMoved,
+    handleOptimisticAssign,
+    handleAssignError,
+  )
 
   const startDate = useMemo(() => new Date(dateRange[0]), [dateRange])
   const totalWidth = dateRange.length * COLUMN_WIDTH
@@ -331,6 +433,9 @@ export function GanttCalendar() {
             ref={gridRef}
             className="flex-1 overflow-auto"
             onScroll={handleScroll}
+            onPointerMove={handlePointerMove}
+            onPointerUp={handlePointerUp}
+            onPointerCancel={handlePointerUp}
             style={{ position: 'relative' }}
           >
             <div style={{ width: totalWidth, height: totalHeight, position: 'relative' }}>
@@ -376,6 +481,46 @@ export function GanttCalendar() {
                 })
               )}
 
+              {/* Drop Zone Shadow — pojavljuje se tokom vertikalnog draga */}
+              {(() => {
+                const dropTarget = getDropTarget()
+                if (!dropTarget || !dragState) return null
+                const bk = dragState.booking
+                const dropLeft = getLeft(bk.arrivalDate)
+                const dropWidth = getWidth(bk.arrivalDate, bk.departureDate)
+                const dropTop = dropTarget.rowIndex * ROW_HEIGHT
+                return (
+                  <div
+                    className={`absolute pointer-events-none border-2 border-dashed rounded-md z-40 transition-colors ${
+                      dropTarget.available
+                        ? 'border-green-500 bg-green-100/40 dark:bg-green-900/20'
+                        : 'border-red-500 bg-red-100/30 dark:bg-red-900/20'
+                    }`}
+                    style={{
+                      left: dropLeft,
+                      top: dropTop + 4,
+                      width: dropWidth,
+                      height: ROW_HEIGHT - 8,
+                    }}
+                  >
+                    <div className="flex flex-col items-center justify-center h-full px-2 gap-0">
+                      <span className="text-[10px] font-semibold text-text truncate w-full text-center leading-tight">
+                        {bk.guestName}
+                      </span>
+                      <span
+                        className={`text-[10px] font-medium leading-tight ${
+                          dropTarget.available
+                            ? 'text-green-700 dark:text-green-300'
+                            : 'text-red-700 dark:text-red-300'
+                        }`}
+                      >
+                        {dropTarget.available ? '✓ Slobodno' : '✗ Zauzeto'}
+                      </span>
+                    </div>
+                  </div>
+                )
+              })()}
+
               {/* Drag preview tooltip */}
               {dragState?.booking && offset && (() => {
                 const daysDiff = Math.round(offset.x / COLUMN_WIDTH)
@@ -418,10 +563,28 @@ export function GanttCalendar() {
         ))}
         {dragState && (
           <div className="ml-auto text-[11px] bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-300 px-2 py-1 rounded-full animate-pulse">
-            Pomjeranje...
+            {dragState.booking.roomId ? 'Premještanje sobe...' : 'Dodjela sobe...'}
           </div>
         )}
       </div>
+
+      {/* Toast notifikacija — Optimistic UI povratna informacija */}
+      {toast && (
+        <div
+          className={`fixed bottom-6 right-6 z-[9999] flex items-center gap-2 px-4 py-3 rounded-xl shadow-xl text-sm font-medium text-white transition-all ${
+            toast.type === 'success'
+              ? 'bg-green-600'
+              : toast.type === 'error'
+                ? 'bg-red-600'
+                : 'bg-gray-700'
+          }`}
+        >
+          {toast.type === 'saving' && (
+            <span className="inline-block w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+          )}
+          {toast.message}
+        </div>
+      )}
     </div>
   )
 }

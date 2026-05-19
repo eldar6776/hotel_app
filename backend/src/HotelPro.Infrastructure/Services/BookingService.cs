@@ -261,8 +261,69 @@ public class BookingService : IBookingService
         return MapToDto(result);
     }
 
-    public async Task DeleteBookingAsync(Guid id)
+    public async Task<BookingDto> AssignRoomAsync(Guid id, AssignRoomDto dto)
     {
+        var booking = await _bookingRepository.GetByIdWithRoomsAsync(id)
+            ?? throw new InvalidOperationException($"Booking {id} not found.");
+
+        if (booking.Status == BookingStatus.Cancelled)
+            throw new InvalidOperationException("Cannot assign room to a cancelled booking.");
+        if (booking.Status == BookingStatus.CheckedOut)
+            throw new InvalidOperationException("Cannot assign room to a checked-out booking.");
+
+        if (dto.RoomId.HasValue && dto.RoomId.Value != Guid.Empty)
+        {
+            // Provjeri postoji li soba
+            var roomExists = await _dbContext.Rooms.AnyAsync(r => r.Id == dto.RoomId.Value);
+            if (!roomExists)
+                throw new InvalidOperationException($"Room {dto.RoomId.Value} not found.");
+
+            // Provjeri kolizije: drugi bookings koji imaju ovu sobu u istom periodu
+            var conflictingBookingIds = await _dbContext.Bookings
+                .Where(b =>
+                    b.Id != id &&
+                    b.Status != BookingStatus.Cancelled &&
+                    b.Status != BookingStatus.NoShow &&
+                    b.ArrivalDate < booking.DepartureDate &&
+                    b.DepartureDate > booking.ArrivalDate)
+                .Select(b => b.Id)
+                .ToListAsync();
+
+            var hasConflict = conflictingBookingIds.Count > 0 &&
+                await _dbContext.BookingRooms
+                    .AnyAsync(br =>
+                        br.RoomId == dto.RoomId.Value &&
+                        conflictingBookingIds.Contains(br.BookingId));
+
+            if (hasConflict)
+                throw new InvalidOperationException("Soba je zauzeta u tom terminu.");
+
+            // Dodijeli sobu — za group bookings, dodijeli prvoj nedodjeljenoj BookingRoom
+            // Ako sve imaju sobe, ažuriraj prvu
+            var targetBookingRoom = booking.BookingRooms
+                .FirstOrDefault(br => br.RoomId == null)
+                ?? booking.BookingRooms.FirstOrDefault();
+
+            if (targetBookingRoom != null)
+                targetBookingRoom.RoomId = dto.RoomId.Value;
+        }
+        else
+        {
+            // Oslobodi sobu — ukloni RoomId sa svih BookingRooms
+            foreach (var br in booking.BookingRooms)
+                br.RoomId = null;
+        }
+
+        booking.UpdatedAt = DateTime.UtcNow;
+        await _bookingRepository.UpdateAsync(booking);
+
+        var result = await _bookingRepository.GetByIdWithRoomsAsync(id)
+            ?? throw new InvalidOperationException($"Booking {id} not found after update.");
+
+        return MapToDto(result);
+    }
+
+    public async Task DeleteBookingAsync(Guid id)    {
         var booking = await _bookingRepository.GetByIdAsync(id)
             ?? throw new InvalidOperationException($"Booking with ID {id} not found.");
 
