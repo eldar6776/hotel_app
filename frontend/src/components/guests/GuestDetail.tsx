@@ -22,7 +22,7 @@ export function GuestDetail({ guest, onClose }: { guest: GuestDto; onClose: () =
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm" onClick={onClose}>
-      <div className="w-full max-w-3xl rounded-xl bg-white dark:bg-gray-900 p-6 shadow-2xl border border-border ring-1 ring-black/5 dark:ring-white/10 max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
+      <div className="w-full max-w-3xl rounded-xl bg-surface p-6 shadow-2xl border border-border ring-1 ring-black/5 dark:ring-white/10 max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-bold text-text">{guest.firstName} {guest.lastName}</h2>
           <button onClick={onClose} className="text-text-secondary hover:text-text">&times;</button>
