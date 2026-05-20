@@ -151,7 +151,7 @@
 - [x] **T19.4: Popravka vidljivosti demo podataka u aplikaciji** - [COMPLETED 2026-05-19 - Codex]
 - [x] **T19.5: Popravka Gantt sjenčenja i zadržavanja sobe nakon vertical drop-a** - [COMPLETED 2026-05-19 - Antigravity (Gemini 1.5 Flash)]
 - [x] **T19.6: Dijagnoza pokretanja GUI-ja u browseru** - [COMPLETED 2026-05-19 - Codex]
-- [-] **T19.7: Kompletan reset baze i demo seed verifikacija** - [IN_PROGRESS] - 2026-05-19 - Codex
+- [x] **T19.7: Kompletan reset baze i demo seed verifikacija** - [COMPLETED 2026-05-19 - Codex]
 
 ---
 
@@ -164,6 +164,12 @@ Sljedece grupe se mogu raditi istovremeno:
 - **Grupa D (MQTT/IoT):** T14.1, T14.2, T14.3 (nezavisna infrastrukturno)
 
 ## 3. AUDIT TRAIL
+
+### 2026-05-19 — Codex
+- **T19.7 COMPLETED**: Izvršen kompletan reset lokalne PostgreSQL baze `hotelpro`: `DROP DATABASE ... WITH (FORCE)`, ponovno kreiranje baze, EF `InitialCreate`, ručni `apply_migrations.sql` za `hotel_configs`/`stays`/`stay_nights` proširenja i API startup seed (`SeedData` + `TestDataSeeder`).
+- Tenant usklađen za frontend: hotel kod promijenjen iz `HVA` u `localhost`, jer frontend koristi `NEXT_PUBLIC_API_URL=http://localhost:5149` i default `X-Hotel-Code: localhost`.
+- Seed rezultat: 4 migration history zapisa, 50 soba, 100 gostiju, 100 rezervacija (`DEMO_T19`), 55 folija, 55 stays, 203 stay_nights, 20 housekeeping logova, 12 work orders, 6 amenities, 4 tarife.
+- Verifikacija: API `/api/health` 200, login `admin@hotelpro.local / admin123` uspješan, `/api/v2/rooms` vraća 50, `/api/v2/guests` vraća 100, `/api/v2/bookings` vraća podatke za test period, frontend `/login` 200 na `http://localhost:3000`.
 
 ### 2026-05-19 — Codex
 - **T19.6 COMPLETED**: Dijagnostikovan vjerovatni uzrok problema sa GUI/API komunikacijom između računara: lokalna baza ima hotel kod `HVA`, dok frontend po defaultu šalje `X-Hotel-Code: localhost`; lokalna baza je stale u odnosu na prethodni demo seed audit (`25` soba, `10` gostiju, `210` rezervacija umjesto očekivanih demo podataka). `fix_tenant.sql` je zastario jer cilja hardkodirani hotel ID koji ne postoji u trenutnoj bazi.
